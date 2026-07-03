@@ -50,11 +50,19 @@ function normalizeState(value) {
   return state;
 }
 
+function explicitBlobOptions() {
+  const siteID = process.env.BAZI_BLOBS_SITE_ID || process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
+  const token = process.env.BAZI_BLOBS_TOKEN || process.env.NETLIFY_AUTH_TOKEN;
+  if (!siteID || !token) return null;
+  return { name: STORE_NAME, siteID, token };
+}
+
 function getBlobStore() {
   try {
-    return getStore(STORE_NAME);
+    const options = explicitBlobOptions();
+    return options ? getStore(options) : getStore(STORE_NAME);
   } catch (error) {
-    throw new Error(`Netlify Blobs 未启用：${error.message}`);
+    throw new Error(`Netlify Blobs 未启用：${error.message}。可在 Netlify 环境变量设置 BAZI_BLOBS_SITE_ID 和 BAZI_BLOBS_TOKEN 后重新部署。`);
   }
 }
 
@@ -162,7 +170,7 @@ function routeFromEvent(event) {
   return route.startsWith("/") ? route : `/${route}`;
 }
 
-export async function handler(event) {
+async function handleEvent(event) {
   if (event.httpMethod === "OPTIONS") return json(204, {});
 
   const method = event.httpMethod || "GET";
@@ -170,10 +178,12 @@ export async function handler(event) {
 
   try {
     if (route === "/ping" && method === "GET") {
+      const state = await readState();
       return json(200, {
         ok: true,
         service: "bazi-account-netlify",
         storage: "netlify-blobs",
+        users: Object.keys(state.users || {}).length,
         time: nowIso()
       });
     }
@@ -276,4 +286,32 @@ export async function handler(event) {
       hint: "请确认部署的是整个项目文件夹，并且 Netlify 已安装 package.json 里的 @netlify/blobs。"
     });
   }
+}
+
+async function eventFromRequest(request) {
+  const url = new URL(request.url);
+  const headers = {};
+  request.headers.forEach((value, key) => {
+    headers[key] = value;
+  });
+
+  return {
+    httpMethod: request.method || "GET",
+    queryStringParameters: Object.fromEntries(url.searchParams.entries()),
+    headers,
+    body: request.method === "GET" || request.method === "HEAD" ? "" : await request.text(),
+    isBase64Encoded: false
+  };
+}
+
+function resultToResponse(result) {
+  return new Response(result.body || "", {
+    status: result.statusCode || 200,
+    headers: result.headers || JSON_HEADERS
+  });
+}
+
+export default async function accountFunction(request, context) {
+  const result = await handleEvent(await eventFromRequest(request));
+  return resultToResponse(result);
 }
