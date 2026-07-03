@@ -1,0 +1,4312 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>八字运势测算</title>
+  <meta name="description" content="离线八字运势测算工具，可生成四柱、五行分布、大运流年和今日、周、月、年运势摘要。">
+  <style>
+    :root {
+      --ink: #1c2326;
+      --muted: #657176;
+      --line: #dfe6e3;
+      --paper: #fbfaf5;
+      --panel: #ffffff;
+      --jade: #8f2637;
+      --jade-deep: #641827;
+      --gold: #b7822e;
+      --rose: #8f2637;
+      --sky: #3f6f95;
+      --shadow: 0 18px 50px rgba(70, 24, 36, .14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 10% 18%, rgba(183, 130, 46, .16), transparent 24rem),
+        radial-gradient(circle at 88% 4%, rgba(143, 38, 55, .16), transparent 28rem),
+        linear-gradient(180deg, #f8f1ee 0%, #f5ecef 100%);
+    }
+
+    button, input, select { font: inherit; }
+
+    .app {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 28px 18px 42px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-width: 0;
+    }
+
+    .seal {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      color: white;
+      background: linear-gradient(135deg, var(--jade), #4a1c2a);
+      box-shadow: var(--shadow);
+      flex: 0 0 auto;
+    }
+
+    .seal svg { width: 29px; height: 29px; }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(25px, 4vw, 40px);
+      letter-spacing: 0;
+      line-height: 1.12;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .source-note {
+      max-width: 410px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      text-align: right;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, .88);
+      border: 1px solid rgba(223, 230, 227, .9);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .form-panel {
+      position: sticky;
+      top: 16px;
+      padding: 18px;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    h2, h3 {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h2 { font-size: 18px; }
+    h3 { font-size: 16px; }
+
+    .field {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 13px;
+    }
+
+    label {
+      color: #344044;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #ccd8d4;
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 11px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--jade);
+      box-shadow: 0 0 0 3px rgba(143, 38, 55, .14);
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      padding: 4px;
+      background: #f7ecef;
+      border-radius: 8px;
+      border: 1px solid #ead0d6;
+      margin-bottom: 13px;
+    }
+
+    .switch input { position: absolute; opacity: 0; pointer-events: none; }
+
+    .switch label {
+      display: grid;
+      place-items: center;
+      min-height: 37px;
+      border-radius: 6px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .switch input:checked + label {
+      color: #fff;
+      background: var(--jade);
+      box-shadow: 0 8px 20px rgba(143, 38, 55, .25);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn {
+      min-height: 44px;
+      border: 0;
+      border-radius: 7px;
+      padding: 0 15px;
+      color: #fff;
+      background: var(--jade);
+      cursor: pointer;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover { background: var(--jade-deep); }
+
+    .btn.secondary {
+      color: var(--jade-deep);
+      background: #f7ecef;
+      border: 1px solid #ead0d6;
+    }
+
+    .btn.secondary:hover { background: #f1dde3; }
+
+    .btn svg { width: 18px; height: 18px; }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+      margin: 14px 0 0;
+    }
+
+    .hint strong {
+      color: var(--jade-deep);
+    }
+
+    .account-box {
+      margin-top: 16px;
+      padding: 10px;
+      border: 1px solid #ead0d6;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .76);
+    }
+
+    .top-account {
+      margin: 0 0 14px;
+      padding: 10px 12px;
+    }
+
+    .top-account #loginArea:not([hidden]) {
+      display: grid;
+      grid-template-columns: auto minmax(130px, 180px) minmax(130px, 180px) auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .top-account #loginArea .field {
+      margin-bottom: 0;
+    }
+
+    .top-account #loginArea label {
+      display: none;
+    }
+
+    .top-account input {
+      min-height: 36px;
+      padding: 7px 9px;
+      font-size: 13px;
+    }
+
+    .top-account #loginArea .account-actions {
+      margin-top: 0;
+    }
+
+    .top-account .btn {
+      min-height: 36px;
+      padding: 0 11px;
+      font-size: 13px;
+    }
+
+    .top-account #accountArea:not([hidden]) {
+      display: grid;
+      grid-template-columns: auto auto auto minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+    }
+
+    .top-account .account-current,
+    .top-account .history-head {
+      margin: 0;
+    }
+
+    .top-account .history-head {
+      align-self: center;
+    }
+
+    .top-account .history-list {
+      grid-column: auto;
+      display: flex;
+      gap: 6px;
+      max-height: 42px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 1px;
+    }
+
+    .account-head,
+    .history-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .top-account .account-head {
+      margin-bottom: 8px;
+    }
+
+    .account-head strong,
+    .history-head strong {
+      color: var(--jade-deep);
+      font-size: 15px;
+    }
+
+    .account-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .top-account .account-actions {
+      display: flex;
+      margin-top: 0;
+    }
+
+    .account-current {
+      margin: 0 0 12px;
+      color: #3c494d;
+      line-height: 1.55;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 8px;
+      max-height: 300px;
+      overflow: auto;
+      padding-right: 3px;
+    }
+
+    .history-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 7px;
+      align-items: stretch;
+      min-width: 0;
+    }
+
+    .top-account .history-row {
+      grid-template-columns: minmax(120px, 150px) auto;
+      flex: 0 0 auto;
+    }
+
+    .history-load {
+      min-width: 0;
+      border: 1px solid #dfe9e5;
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      padding: 6px 8px;
+      text-align: left;
+    }
+
+    .history-load:hover { border-color: var(--jade); }
+
+    .history-load strong,
+    .history-load span,
+    .history-load em {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .history-load strong {
+      color: var(--jade-deep);
+      font-size: 12px;
+    }
+
+    .history-load span,
+    .history-load em {
+      margin-top: 1px;
+      color: var(--muted);
+      font-size: 11px;
+      font-style: normal;
+    }
+
+    .history-delete {
+      width: 30px;
+      min-height: 30px;
+      border: 1px solid #ead0d6;
+      border-radius: 7px;
+      background: #f7ecef;
+      color: var(--jade-deep);
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .history-delete:hover { background: #f1dde3; }
+
+    .result {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-card {
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(240px, .92fr) minmax(260px, 1fr);
+      min-height: 280px;
+    }
+
+    .chart-art {
+      position: relative;
+      min-height: 280px;
+      background:
+        linear-gradient(rgba(18, 54, 48, .68), rgba(18, 54, 48, .68)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 650'%3E%3Crect width='900' height='650' fill='%232f655a'/%3E%3Cg fill='none' stroke='%23f2d89e' stroke-opacity='.58'%3E%3Ccircle cx='455' cy='325' r='230'/%3E%3Ccircle cx='455' cy='325' r='170'/%3E%3Ccircle cx='455' cy='325' r='100'/%3E%3Cpath d='M455 68v514M198 325h514M272 142l366 366M638 142 272 508'/%3E%3C/g%3E%3Cg fill='%23f2d89e' font-family='serif' font-size='42' text-anchor='middle'%3E%3Ctext x='455' y='113'%3E子%3C/text%3E%3Ctext x='650' y='204'%3E卯%3C/text%3E%3Ctext x='650' y='468'%3E午%3C/text%3E%3Ctext x='455' y='568'%3E酉%3C/text%3E%3Ctext x='260' y='468'%3E亥%3C/text%3E%3Ctext x='260' y='204'%3E巳%3C/text%3E%3C/g%3E%3Cg fill='%23fff4cc' fill-opacity='.86'%3E%3Ccircle cx='138' cy='92' r='3'/%3E%3Ccircle cx='766' cy='117' r='4'/%3E%3Ccircle cx='722' cy='553' r='3'/%3E%3Ccircle cx='102' cy='504' r='4'/%3E%3Ccircle cx='344' cy='64' r='2'/%3E%3Ccircle cx='548' cy='600' r='2'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .wheel {
+      position: absolute;
+      inset: 34px;
+      display: grid;
+      place-items: center;
+    }
+
+    .wheel-inner {
+      width: min(100%, 245px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid rgba(248, 222, 166, .72);
+      display: grid;
+      place-items: center;
+      color: #fff8dc;
+      text-align: center;
+      background: rgba(8, 35, 32, .34);
+      box-shadow: inset 0 0 55px rgba(255, 236, 177, .12);
+    }
+
+    .wheel-inner strong {
+      display: block;
+      font-size: 46px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .summary {
+      padding: 22px;
+      display: grid;
+      align-content: center;
+      gap: 16px;
+    }
+
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+    }
+
+    .pillar {
+      min-width: 0;
+      padding: 12px 8px;
+      border-radius: 8px;
+      border: 1px solid #ead0d6;
+      background: #fff8f9;
+      text-align: center;
+    }
+
+    .pillar .name {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .pillar .gz {
+      color: var(--jade-deep);
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 6px;
+      padding: 4px 9px;
+      background: #f7ecef;
+      border: 1px solid #ead0d6;
+      color: #5a1a29;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .wuxing-char {
+      font-weight: 900;
+    }
+
+    .wuxing-wood { color: #16803f !important; }
+    .wuxing-fire { color: #d83232 !important; }
+    .wuxing-water { color: #1f6feb !important; }
+    .wuxing-metal { color: #f08a24 !important; }
+    .wuxing-earth { color: #8b5a2b !important; }
+
+    .section {
+      padding: 18px;
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .insight-card {
+      min-height: 132px;
+      padding: 14px;
+      border: 1px solid #dfe9e5;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .insight-card .eyebrow {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .insight-card strong {
+      display: block;
+      color: var(--jade-deep);
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .insight-card p {
+      margin: 8px 0 0;
+      color: #3c494d;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .bars {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) 42px;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #e7ecea;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--jade);
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .report {
+      padding: 15px;
+      border: 1px solid #e0e8e5;
+      border-radius: 8px;
+      background: #fff;
+      min-height: 172px;
+    }
+
+    .report.highlight {
+      border-color: rgba(143, 38, 55, .38);
+      box-shadow: inset 4px 0 0 var(--jade);
+    }
+
+    .report-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .score {
+      flex: 0 0 auto;
+      min-width: 58px;
+      height: 32px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--jade);
+      font-weight: 900;
+    }
+
+    .report p {
+      margin: 8px 0 0;
+      color: #3c494d;
+      line-height: 1.68;
+      font-size: 14px;
+    }
+
+    .report ul {
+      margin: 10px 0 0;
+      padding-left: 18px;
+      color: #3c494d;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .report li { margin: 5px 0; }
+
+    .report li.overall {
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .special-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .special-panel {
+      display: none;
+      border: 1px solid #dfe9e5;
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+      margin-top: 12px;
+    }
+
+    .special-panel.show {
+      display: block;
+    }
+
+    .special-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .special-card {
+      border: 1px solid #e2ebe7;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfdfc;
+      min-width: 0;
+    }
+
+    .special-card h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: var(--ink);
+    }
+
+    .special-card p {
+      margin: 6px 0 0;
+      color: #435054;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    .date-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .date-row {
+      display: grid;
+      grid-template-columns: 74px minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      border: 1px solid #e6eeea;
+      border-radius: 7px;
+      padding: 8px;
+      background: #fff;
+      font-size: 13px;
+    }
+
+    .date-row strong,
+    .date-row span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .date-row .score-mini {
+      color: var(--jade-deep);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .date-row .date-detail {
+      grid-column: 1 / -1;
+      margin: 0;
+      padding-top: 7px;
+      border-top: 1px solid #edf3f0;
+      color: #4c5a5d;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .empty-state {
+      padding: 14px;
+      border: 1px dashed #d7e1dd;
+      border-radius: 8px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .72);
+      line-height: 1.65;
+    }
+
+    .report-grid > .empty-state,
+    .insight-grid > .empty-state {
+      grid-column: 1 / -1;
+    }
+
+    .chart-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .full-chart {
+      display: none;
+      gap: 16px;
+      overflow-x: hidden;
+    }
+
+    .full-chart.show {
+      display: grid;
+    }
+
+    .mingpan-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mingpan-card {
+      border: 1px solid #dfe9e5;
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .mingpan-card .big {
+      color: var(--jade-deep);
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin: 8px 0;
+    }
+
+    .mingpan-card p,
+    .detail-box p {
+      margin: 6px 0 0;
+      color: #4a565a;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
+      gap: 8px;
+      padding: 2px;
+    }
+
+    .pick {
+      min-height: 38px;
+      border: 1px solid #d9e5e1;
+      border-radius: 7px;
+      background: #fff;
+      color: #263437;
+      cursor: pointer;
+      padding: 6px 7px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .pick strong {
+      display: block;
+      color: var(--jade-deep);
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    .pick span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+      margin-top: 2px;
+    }
+
+    .pick.active {
+      border-color: var(--jade);
+      background: #f7ecef;
+      box-shadow: 0 0 0 3px rgba(143, 38, 55, .1);
+    }
+
+    .flow-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .flow-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .scroll-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+      gap: 6px;
+      padding: 2px;
+      max-width: 100%;
+    }
+
+    .timeline .pick,
+    .scroll-row .pick {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .timeline .pick {
+      min-height: 42px;
+    }
+
+    .detail-box {
+      border: 1px solid #dfe9e5;
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    .detail-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .small-title {
+      margin: 16px 0 8px;
+      color: #334146;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .share {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      color: white;
+      background: rgba(22, 53, 48, .95);
+      padding: 10px 14px;
+      border-radius: 7px;
+      transition: opacity .2s, transform .2s;
+      z-index: 20;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .layout,
+      .hero-card {
+        grid-template-columns: 1fr;
+      }
+
+      .form-panel { position: static; }
+      .source-note { text-align: left; max-width: none; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .top-account #loginArea:not([hidden]),
+      .top-account #accountArea:not([hidden]) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .app { padding: 18px 12px 30px; }
+      .grid-two,
+      .insight-grid,
+      .report-grid,
+      .special-grid,
+      .mingpan-grid,
+      .flow-layout,
+      .share,
+      .account-actions,
+      .actions {
+        grid-template-columns: 1fr;
+      }
+      .date-row { grid-template-columns: 1fr; }
+      .pillars { grid-template-columns: repeat(2, 1fr); }
+      .scroll-row { grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); }
+      .timeline { grid-template-columns: repeat(auto-fit, minmax(66px, 1fr)); }
+      .chart-art { min-height: 230px; }
+      .wheel { inset: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="seal" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3v18M3 12h18M6.2 6.2l11.6 11.6M17.8 6.2 6.2 17.8"></path>
+          </svg>
+        </div>
+        <div>
+          <h1>八字运势测算</h1>
+          <p class="subtitle">输入出生信息，生成四柱、五行分布、今日运势、周报、月报和年报。</p>
+        </div>
+      </div>
+      <div class="source-note">参考传统排盘工具的使用方式：立春换年、节气定月、五行生克分析。结果仅作民俗文化与娱乐参考。</div>
+    </header>
+
+    <section class="panel account-box top-account" aria-label="账号与查询记录">
+      <div id="loginArea">
+        <span class="tag" id="accountStatus">未登录</span>
+        <div class="field">
+          <label for="accountName">账号</label>
+          <input id="accountName" autocomplete="username" placeholder="输入账号名">
+        </div>
+        <div class="field">
+          <label for="accountPassword">密码</label>
+          <input id="accountPassword" type="password" autocomplete="current-password" placeholder="输入密码">
+        </div>
+        <div class="account-actions">
+          <button class="btn" type="button" id="loginBtn" title="登录账号">登录</button>
+          <button class="btn secondary" type="button" id="registerBtn" title="注册账号">注册</button>
+        </div>
+      </div>
+      <div id="accountArea" hidden>
+        <p class="account-current">当前账号：<strong id="currentAccountName">--</strong></p>
+        <span class="tag" id="accountStatusLogged">未登录</span>
+        <div class="account-actions">
+          <button class="btn secondary" type="button" id="logoutBtn" title="退出账号">退出</button>
+          <button class="btn secondary" type="button" id="clearHistoryBtn" title="清空查询记录">清空记录</button>
+        </div>
+        <div class="history-head">
+          <strong>查询记录</strong>
+          <span class="tag" id="historyCount">0条</span>
+        </div>
+        <div class="history-list" id="historyList">
+          <div class="empty-state">登录后，生成报告会自动保存到这里。</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <section class="panel form-panel">
+        <div class="panel-title">
+          <h2>出生资料</h2>
+          <span class="tag">离线生成</span>
+        </div>
+
+        <form id="baziForm">
+          <div class="field">
+            <label for="name">姓名或称呼</label>
+            <input id="name" name="name" autocomplete="name" placeholder="例如：张三">
+          </div>
+
+          <div class="switch" role="radiogroup" aria-label="性别">
+            <input id="male" type="radio" name="gender" value="男" checked>
+            <label for="male">男</label>
+            <input id="female" type="radio" name="gender" value="女">
+            <label for="female">女</label>
+          </div>
+
+          <div class="grid-two">
+            <div class="field">
+              <label for="birthDate">出生日期</label>
+              <input id="birthDate" name="birthDate" type="date" required>
+            </div>
+            <div class="field">
+              <label for="birthTime">出生时间（24小时制）</label>
+              <input id="birthTime" name="birthTime" type="time" required step="60" placeholder="例如 08:30 或 23:15">
+            </div>
+          </div>
+
+          <div class="grid-two">
+            <div class="field">
+              <label for="calendar">历法</label>
+              <select id="calendar" name="calendar">
+                <option value="solar">公历</option>
+                <option value="lunar">农历（按公历近似）</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="city">出生地</label>
+              <input id="city" name="city" placeholder="例如：奥克兰">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="focus">重点关注</label>
+            <select id="focus" name="focus">
+              <option value="overall">整体运势</option>
+              <option value="career">事业财运</option>
+              <option value="love">感情人际</option>
+              <option value="health">健康状态</option>
+            </select>
+          </div>
+
+          <div class="actions">
+            <button class="btn" type="submit" title="生成报告">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <path d="M14 2v6h6M9 15l2 2 4-5"></path>
+              </svg>
+              生成报告
+            </button>
+            <button class="btn secondary" type="button" id="todayBtn" title="填入今天">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"></path>
+              </svg>
+            </button>
+          </div>
+        </form>
+
+        <p class="hint" id="calibrationNote">说明：出生时间请用24小时制，例如 08:30、14:05、23:15。直接打开 HTML 时记录保存在当前浏览器；通过账号服务器打开时记录会保存到服务器，可跨设备登录查看。农历换算、真太阳时和精确节气需专业万年历支持，本页以公历日期和常用节气边界近似计算。</p>
+      </section>
+
+      <section class="result" id="result">
+        <div class="panel hero-card">
+          <div class="chart-art" aria-hidden="true">
+            <div class="wheel">
+              <div class="wheel-inner">
+                <strong id="dayMasterMark">木</strong>
+                <span id="wheelText">日主五行</span>
+              </div>
+            </div>
+          </div>
+          <div class="summary">
+            <div>
+              <h2 id="summaryTitle">请先生成八字报告</h2>
+              <p class="subtitle" id="summaryText">报告会自动显示四柱、五行倾向与不同周期的运势预测。</p>
+            </div>
+            <div class="pillars" aria-label="四柱">
+              <div class="pillar"><div class="name">年柱</div><div class="gz" id="yearPillar">--</div></div>
+              <div class="pillar"><div class="name">月柱</div><div class="gz" id="monthPillar">--</div></div>
+              <div class="pillar"><div class="name">日柱</div><div class="gz" id="dayPillar">--</div></div>
+              <div class="pillar"><div class="name">时柱</div><div class="gz" id="hourPillar">--</div></div>
+            </div>
+          <div class="meta" id="metaTags">
+              <span class="tag">等待输入</span>
+            </div>
+            <div class="empty-state" id="quickHint">填好出生日期和时间后点击“生成报告”，这里会显示你的日主、五行格局和近期预测重点。</div>
+            <div class="chart-actions">
+              <button class="btn secondary" type="button" id="fullChartBtn" title="查看完整命盘" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"></path>
+                </svg>
+                查看完整命盘
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <section class="panel section full-chart" id="fullChart" aria-hidden="true">
+          <div class="panel-title">
+            <h2>完整命盘与大运流年</h2>
+            <span class="tag" id="chartTag">点击条目看细节</span>
+          </div>
+          <div class="detail-box" id="patternBox">
+            <div class="detail-title">
+              <h3>八字格局</h3>
+              <span class="tag">待生成</span>
+            </div>
+            <p>生成报告后，这里会显示正八格、取格依据、格局性格和喜用忌凶。</p>
+          </div>
+          <div class="mingpan-grid" id="mingpanGrid"></div>
+          <div>
+            <div class="small-title">大运</div>
+            <div class="timeline" id="luckTimeline"></div>
+          </div>
+          <div class="flow-layout">
+            <div class="flow-stack">
+              <div>
+                <div class="small-title">流年</div>
+                <div class="scroll-row" id="yearFlow"></div>
+              </div>
+              <div>
+                <div class="small-title">流月</div>
+                <div class="scroll-row" id="monthFlow"></div>
+              </div>
+              <div>
+                <div class="small-title">流日</div>
+                <div class="scroll-row" id="dayFlow"></div>
+              </div>
+            </div>
+            <div class="detail-box" id="flowDetail">
+              <div class="detail-title">
+                <h3>细节</h3>
+                <span class="tag">未选择</span>
+              </div>
+              <p>生成报告后，点击大运、流年、流月或流日，可查看十神、五行关系、冲合刑破害与常见神煞。</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel section">
+          <div class="panel-title">
+            <h2>智能摘要</h2>
+            <span class="tag" id="focusTag">待生成</span>
+          </div>
+          <div class="insight-grid" id="insights">
+            <div class="empty-state">生成报告后，会自动提炼格局、机会信号和风险信号。</div>
+          </div>
+        </section>
+
+        <section class="panel section">
+          <div class="panel-title">
+            <h2>五行分布</h2>
+            <span class="tag" id="balanceTag">未测算</span>
+          </div>
+          <div class="bars" id="bars">
+            <div class="empty-state">生成报告后，这里会显示木、火、土、金、水的相对强弱。</div>
+          </div>
+        </section>
+
+        <section class="panel section">
+          <div class="panel-title">
+            <h2>运势报告</h2>
+            <span class="tag" id="periodTag">今日起算</span>
+          </div>
+          <div class="report-grid" id="reports">
+            <div class="empty-state">生成后会展示今日、每周、每月和年度四个周期的运势预测。</div>
+          </div>
+        </section>
+
+        <section class="panel section">
+          <div class="panel-title">
+            <h2>专项日期</h2>
+            <span class="tag" id="specialTag">点击查看</span>
+          </div>
+          <div class="special-actions">
+            <button class="btn secondary" type="button" id="wealthDatesBtn" title="查看大财日期" aria-expanded="false" aria-controls="wealthDatesPanel">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+              大财日期
+            </button>
+            <button class="btn secondary" type="button" id="riskDatesBtn" title="查看灾害和健康日期" aria-expanded="false" aria-controls="riskDatesPanel">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M10.3 3.5 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.5a2 2 0 0 0-3.4 0Z"></path>
+                <path d="M12 9v4M12 17h.01"></path>
+              </svg>
+              灾害和健康日期
+            </button>
+          </div>
+          <div class="special-panel" id="wealthDatesPanel" aria-hidden="true">
+            <div class="empty-state">生成报告后，点击“大财日期”会显示一生财运峰值、今年财运最好的一天和未来十年逐年财运日。</div>
+          </div>
+          <div class="special-panel" id="riskDatesPanel" aria-hidden="true">
+            <div class="empty-state">生成报告后，点击“灾害和健康日期”会显示一生低谷风险日、今年高风险日和未来十年逐年风险日。</div>
+          </div>
+        </section>
+
+        <section class="panel section">
+          <div class="panel-title">
+            <h2>生成链接</h2>
+            <span class="tag">可分享同一页面</span>
+          </div>
+          <div class="share">
+            <input id="shareLink" readonly value="生成报告后会出现专属链接">
+            <button class="btn secondary" type="button" id="copyBtn" title="复制链接">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              复制
+            </button>
+          </div>
+          <p class="hint">复制的是带参数的本地链接。放到网站服务器后，也能作为在线测算链接使用。</p>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <div class="toast" id="toast">已复制链接</div>
+
+  <script>
+    const stems = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+    const branches = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+    const stemElement = { 甲: "木", 乙: "木", 丙: "火", 丁: "火", 戊: "土", 己: "土", 庚: "金", 辛: "金", 壬: "水", 癸: "水" };
+    const branchElement = { 子: "水", 丑: "土", 寅: "木", 卯: "木", 辰: "土", 巳: "火", 午: "火", 未: "土", 申: "金", 酉: "金", 戌: "土", 亥: "水" };
+    const elementColors = { 木: "#16803f", 火: "#d83232", 土: "#8b5a2b", 金: "#f08a24", 水: "#1f6feb" };
+    const elementClasses = { 木: "wuxing-wood", 火: "wuxing-fire", 土: "wuxing-earth", 金: "wuxing-metal", 水: "wuxing-water" };
+    const ganzhiElement = { ...stemElement, ...branchElement };
+    const elementCycle = ["木", "火", "土", "金", "水"];
+    const monthBranches = ["寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥", "子", "丑"];
+    const startStemForTigerMonth = { 0: 2, 5: 2, 1: 4, 6: 4, 2: 6, 7: 6, 3: 8, 8: 8, 4: 0, 9: 0 };
+    const startStemForZiHour = { 0: 0, 5: 0, 1: 2, 6: 2, 2: 4, 7: 4, 3: 6, 8: 6, 4: 8, 9: 8 };
+    const hiddenStems = {
+      子: ["癸"], 丑: ["己", "癸", "辛"], 寅: ["甲", "丙", "戊"], 卯: ["乙"],
+      辰: ["戊", "乙", "癸"], 巳: ["丙", "戊", "庚"], 午: ["丁", "己"], 未: ["己", "丁", "乙"],
+      申: ["庚", "壬", "戊"], 酉: ["辛"], 戌: ["戊", "辛", "丁"], 亥: ["壬", "甲"]
+    };
+    const nayin = ["海中金", "炉中火", "大林木", "路旁土", "剑锋金", "山头火", "涧下水", "城头土", "白蜡金", "杨柳木", "泉中水", "屋上土", "霹雳火", "松柏木", "长流水", "沙中金", "山下火", "平地木", "壁上土", "金箔金", "覆灯火", "天河水", "大驿土", "钗钏金", "桑柘木", "大溪水", "沙中土", "天上火", "石榴木", "大海水"];
+    const clashPairs = { 子: "午", 午: "子", 丑: "未", 未: "丑", 寅: "申", 申: "寅", 卯: "酉", 酉: "卯", 辰: "戌", 戌: "辰", 巳: "亥", 亥: "巳" };
+    const combinePairs = { 子: "丑", 丑: "子", 寅: "亥", 亥: "寅", 卯: "戌", 戌: "卯", 辰: "酉", 酉: "辰", 巳: "申", 申: "巳", 午: "未", 未: "午" };
+    const harmPairs = { 子: "未", 未: "子", 丑: "午", 午: "丑", 寅: "巳", 巳: "寅", 卯: "辰", 辰: "卯", 申: "亥", 亥: "申", 酉: "戌", 戌: "酉" };
+    const breakPairs = { 子: "酉", 酉: "子", 卯: "午", 午: "卯", 辰: "丑", 丑: "辰", 未: "戌", 戌: "未", 寅: "亥", 亥: "寅", 巳: "申", 申: "巳" };
+    const punishmentPairs = { 子: ["卯"], 卯: ["子"], 寅: ["巳", "申"], 巳: ["寅", "申"], 申: ["寅", "巳"], 丑: ["未", "戌"], 未: ["丑", "戌"], 戌: ["丑", "未"], 辰: ["辰"], 午: ["午"], 酉: ["酉"], 亥: ["亥"] };
+    const combineElementPairs = { 子丑: "土", 寅亥: "木", 卯戌: "火", 辰酉: "金", 巳申: "水", 午未: "火土" };
+    const disasterBranchByGroup = { 申子辰: "巳", 亥卯未: "申", 寅午戌: "亥", 巳酉丑: "寅" };
+    let chartContext = null;
+    let selectedLuck = 0;
+    let selectedYear = 0;
+    let selectedMonth = 0;
+    let selectedDay = 0;
+    const accountStorageKey = "baziAccountStoreV1";
+    const remoteSessionKey = "baziRemoteSessionV1";
+    let currentAccountId = null;
+    let remoteAuthToken = "";
+    let remoteAccountUser = null;
+    let remoteAccountRecords = [];
+
+    const copy = {
+      木: {
+        nature: "生发、规划、学习与人脉扩展",
+        risk: "容易出现计划扩张、人脉增加与方向分散并存的情况。"
+      },
+      火: {
+        nature: "表达、曝光、热情与决断",
+        risk: "容易出现曝光上升、情绪升温、口舌争执或节奏过快。"
+      },
+      土: {
+        nature: "稳定、承接、资源整理与信用",
+        risk: "容易出现库存、责任、流程、房产家宅或长期合作事项。"
+      },
+      金: {
+        nature: "规则、效率、判断与执行",
+        risk: "容易出现合同、报价、规则、工具器械和强硬沟通。"
+      },
+      水: {
+        nature: "信息、流动、灵感与远方机会",
+        risk: "容易出现信息流动、远方客户、物流交通和判断摇摆。"
+      }
+    };
+
+    const focusLabels = {
+      overall: "整体运势",
+      career: "事业财运",
+      love: "感情人际",
+      health: "健康状态"
+    };
+
+    const focusTips = {
+      overall: "整体盘面以五行强弱为主线，近期变化多落在喜忌被引动的位置。",
+      career: "事业财运看财官印食伤的引动，订单、预算、合同、作品和客户关系会成为主要应事点。",
+      love: "感情人际看桃花、合冲与比劫信息，沟通边界、邀约机会和真实需求会被放大。",
+      health: "健康状态看被引动五行对应的节律与身体信号，容易应在压力、睡眠、饮食和旧症反复。"
+    };
+
+    const knowledgeBase = {
+      schemaVersion: 1,
+      sources: [
+        {
+          id: "yt-9NH6DOhSs5g",
+          title: "九龙道长八字进阶班第1集 如何看财运加强篇",
+          url: "https://www.youtube.com/watch?v=9NH6DOhSs5g&list=PL_ZDuvwV7mBAP4R67V0XlkWkc89Hi1pk0",
+          channel: "中华易学",
+          status: "metadata-only"
+        },
+        {
+          id: "yt-4z-Ddh1UIrw",
+          title: "九龙道长进阶课：八字案例实战讲解4",
+          url: "https://www.youtube.com/watch?v=4z-Ddh1UIrw&list=PLwaXzpIVb_sd5zogbtuOj_QSQ5fpD8m9k",
+          channel: "数字易学",
+          status: "metadata-only"
+        },
+        {
+          id: "wx-Xu4JwguLudcqVVsu6movnw",
+          title: "关于周易那些事儿-第1集-借天时地利人和",
+          url: "https://mp.weixin.qq.com/s/Xu4JwguLudcqVVsu6movnw",
+          channel: "九龙周易",
+          status: "metadata-only"
+        },
+        {
+          id: "scribd-821935726",
+          title: "2 九龙道长课程笔记",
+          url: "https://www.scribd.com/document/821935726/2-%E4%B9%9D%E9%BE%99%E9%81%93%E9%95%BF%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0",
+          channel: "Scribd",
+          status: "preview-imported"
+        },
+        {
+          id: "local-doc-365-notes-6",
+          title: "九龙道长365集笔记(6)",
+          url: "C:\\Users\\Eric\\xwechat_files\\wxid_0lnbrdv86g7z12_e112\\msg\\file\\2026-06\\九龙道长365集笔记(6).doc",
+          channel: "本地Word资料",
+          status: "text-extracted"
+        },
+        {
+          id: "local-pdf-essential",
+          title: "九龙道长八字必备知识点",
+          url: "C:\\Users\\Eric\\xwechat_files\\wxid_0lnbrdv86g7z12_e112\\msg\\file\\2026-06\\九龙道长八字必备知识点.pdf",
+          channel: "本地PDF资料",
+          status: "scanned-needs-ocr"
+        }
+      ],
+      rules: [
+        {
+          id: "wealth-star-active",
+          topic: "财运",
+          priority: 90,
+          when: { tenGodIncludes: ["财"] },
+          scoreAdjust: 7,
+          tags: ["财星", "资源变现"],
+          messages: {
+            report: "理论库命中财星：更容易出现订单、报价、回款、客户资源、投资消费或现实利益分配等事项，金额、期限、交付边界会成为关键变量。",
+            flow: "财星被引动，重点看钱款、客户、资源、价格和现实利益。"
+          }
+        },
+        {
+          id: "weak-day-meets-wealth",
+          topic: "财运",
+          priority: 95,
+          when: { tenGodIncludes: ["财"], dayStrength: ["偏弱"] },
+          scoreAdjust: -6,
+          tags: ["身弱财多", "风险控制"],
+          messages: {
+            report: "理论库提示身弱遇财：机会看得见，但承接力不足时，容易伴随库存、现金流、支出和承诺压力。",
+            flow: "身弱遇财时，机会大小与承接能力同步影响结果。"
+          }
+        },
+        {
+          id: "strong-day-can-take-wealth",
+          topic: "财运",
+          priority: 82,
+          when: { tenGodIncludes: ["财"], dayStrength: ["偏旺", "中和"] },
+          scoreAdjust: 4,
+          tags: ["可担财", "主动变现"],
+          messages: {
+            report: "理论库提示日主有力遇财：谈价、成交、客户名单和技能产品化信号增强，真实成交比空想更容易落地。",
+            flow: "日主有力遇财，资源和成交更容易被自己承接。"
+          }
+        },
+        {
+          id: "output-generates-wealth",
+          topic: "财运",
+          priority: 76,
+          when: { tenGodIncludes: ["食", "伤"] },
+          scoreAdjust: 3,
+          tags: ["食伤生财", "表达获利"],
+          messages: {
+            report: "理论库命中食伤：财运多从表达、展示、手艺、内容、销售话术和方案输出中打开，看不见的能力更容易转成作品、报价或订单。",
+            flow: "食伤引动时，价值输出与收益转化前后相连。"
+          }
+        },
+        {
+          id: "officer-contract-wealth",
+          topic: "事业财运",
+          priority: 70,
+          when: { tenGodIncludes: ["官", "杀"] },
+          scoreAdjust: 1,
+          tags: ["规则合同", "职位责任"],
+          messages: {
+            report: "理论库命中官杀：财运常与规则、职位、平台、合同、审批和责任绑定，流程稳定度会影响收益。",
+            flow: "官杀引动时，合同、规则、责任和资质是关键。"
+          }
+        },
+        {
+          id: "resource-supports-weak-day",
+          topic: "综合",
+          priority: 68,
+          when: { tenGodIncludes: ["印"], dayStrength: ["偏弱"] },
+          scoreAdjust: 4,
+          tags: ["印星扶身", "学习贵人"],
+          messages: {
+            report: "理论库命中印星扶身：学习、资料、贵人、认证和系统能力被引动，基础资源会影响后续财机承接。",
+            flow: "印星扶身，能力与资源会影响变现节奏。"
+          }
+        },
+        {
+          id: "peer-competition-wealth",
+          topic: "财运",
+          priority: 72,
+          when: { tenGodIncludes: ["比", "劫"] },
+          scoreAdjust: -2,
+          tags: ["比劫", "竞争分利"],
+          messages: {
+            report: "理论库命中比劫：同业竞争、朋友合伙、分账议价和资源被分流的概率上升，贡献、成本和分成容易成为争议点。",
+            flow: "比劫引动时，竞争、合伙分账和人情支出信号增强。"
+          }
+        },
+        {
+          id: "branch-clash-volatility",
+          topic: "冲合刑破害",
+          priority: 65,
+          when: { effectIncludes: ["冲"] },
+          scoreAdjust: -3,
+          tags: ["冲动变化", "备选方案"],
+          messages: {
+            report: "理论库命中地支冲：事情容易有变动、反复、临时出行或沟通冲突，钱款与合同波动较明显。",
+            flow: "见冲则动，重要事项波动增强。"
+          }
+        },
+        {
+          id: "branch-combine-cooperation",
+          topic: "冲合刑破害",
+          priority: 63,
+          when: { effectIncludes: ["合"] },
+          scoreAdjust: 2,
+          tags: ["合动合作", "资源牵线"],
+          messages: {
+            report: "理论库命中地支合：合作、邀约、撮合资源和旧关系牵线的概率上升，也容易因关系牵扯导致效率下降。",
+            flow: "见合则有牵连，合作与边界问题同步出现。"
+          }
+        },
+        {
+          id: "branch-break-loss",
+          topic: "冲合刑破害",
+          priority: 66,
+          when: { effectIncludes: ["破"] },
+          scoreAdjust: -3,
+          tags: ["地支破", "暗损破耗"],
+          messages: {
+            report: "理论库命中地支破：事情容易有暗损、破耗、关系裂缝、合同细节漏洞或原计划被拆开重做，钱款与健康事项波动加重。",
+            flow: "见破主破耗和裂缝，合同、钱款、身体小信号更容易浮出。"
+          }
+        },
+        {
+          id: "scribd-weak-body-wealth-pressure",
+          topic: "财运",
+          priority: 98,
+          when: { tenGodIncludes: ["财"], dayStrength: ["偏弱"] },
+          scoreAdjust: -4,
+          tags: ["身弱财旺", "财来有压"],
+          messages: {
+            report: "笔记规则提示身弱财旺：见财不等于能稳稳拿住，容易先有压力、支出、承诺或周转要求，资源、能力和现金流承接会成为关键。",
+            flow: "身弱财旺，承接力与财机大小同步影响结果。"
+          }
+        },
+        {
+          id: "scribd-strong-body-wealth-opportunity",
+          topic: "财运",
+          priority: 88,
+          when: { tenGodIncludes: ["财"], dayStrength: ["偏旺", "中和"] },
+          scoreAdjust: 3,
+          tags: ["身强任财", "财机可取"],
+          messages: {
+            report: "笔记规则提示身强见财：订单、价格、资产和客户资源更容易被自己承接，同时受食伤生财、官杀护财或比劫分财影响。",
+            flow: "身强见财，机会更容易被自己承接。"
+          }
+        },
+        {
+          id: "scribd-direct-wealth-stability",
+          topic: "财运",
+          priority: 74,
+          when: { tenGodExact: ["正财"] },
+          scoreAdjust: 2,
+          tags: ["正财", "稳定收入"],
+          messages: {
+            report: "笔记规则命中正财：更偏稳定收入、固定客户、工资回款和可预期资源，长期复购与固定价格信号明显。",
+            flow: "正财重稳定，固定收入和长期客户信号增强。"
+          }
+        },
+        {
+          id: "scribd-indirect-wealth-volatility",
+          topic: "财运",
+          priority: 74,
+          when: { tenGodExact: ["偏财"] },
+          scoreAdjust: 1,
+          tags: ["偏财", "流动机会"],
+          messages: {
+            report: "笔记规则命中偏财：更偏项目型机会、临时订单、人脉资源、投资消费和外部市场变化，机会快但波动也大。",
+            flow: "偏财重流动，机会来得快，波动也更明显。"
+          }
+        },
+        {
+          id: "scribd-output-produces-wealth",
+          topic: "财运",
+          priority: 86,
+          when: { tenGodIncludes: ["食", "伤"] },
+          scoreAdjust: 4,
+          tags: ["食伤生财", "先出后入"],
+          messages: {
+            report: "笔记规则命中食伤生财：财不是凭空来，往往先通过技术、表达、方案、内容、销售展示把价值放出去，再形成订单、回款或客户转化。",
+            flow: "食伤生财，先展示价值，再承接成交。"
+          }
+        },
+        {
+          id: "scribd-wealth-meets-combine",
+          topic: "财运",
+          priority: 78,
+          when: { tenGodIncludes: ["财"], effectIncludes: ["合"] },
+          scoreAdjust: 2,
+          tags: ["财逢合", "合作取财"],
+          messages: {
+            report: "笔记规则命中财逢合：钱财机会多经由合作、介绍、客户牵线或旧关系而来，分账、权责和交付期限会被放大。",
+            flow: "财逢合，合作牵线与分账边界同步出现。"
+          }
+        },
+        {
+          id: "scribd-wealth-meets-clash",
+          topic: "财运",
+          priority: 80,
+          when: { tenGodIncludes: ["财"], effectIncludes: ["冲"] },
+          scoreAdjust: -3,
+          tags: ["财逢冲", "财动不稳"],
+          messages: {
+            report: "笔记规则命中财逢冲：客户、价格、付款、库存或合作条件容易变动，机会虽动但不稳。",
+            flow: "财逢冲，钱财事项、合同和回款更容易波动。"
+          }
+        },
+        {
+          id: "scribd-peer-divides-wealth",
+          topic: "财运",
+          priority: 77,
+          when: { tenGodIncludes: ["比", "劫"] },
+          scoreAdjust: -3,
+          tags: ["比劫分财", "竞争分利"],
+          messages: {
+            report: "笔记规则命中比劫分财：同业竞争、朋友合伙、人情往来和资源被分走的信号增强，贡献、成本、库存和分成容易成为矛盾点。",
+            flow: "比劫分财，合作和人情账信号增强。"
+          }
+        },
+        {
+          id: "scribd-balanced-elements-steady",
+          topic: "综合",
+          priority: 52,
+          when: { balance: ["balanced"] },
+          scoreAdjust: 2,
+          tags: ["五行较平衡", "稳中求进"],
+          messages: {
+            report: "笔记规则提示五行平衡：盘面不过度偏向单一方向，财运和状态多呈稳定节奏，极端波动较少。",
+            flow: "五行较平衡时，稳扎稳打比猛冲更有利。"
+          }
+        },
+        {
+          id: "scribd-elements-too-biased",
+          topic: "综合",
+          priority: 56,
+          when: { balance: ["biased"] },
+          scoreAdjust: -2,
+          tags: ["五行偏枯", "先调后取"],
+          messages: {
+            report: "笔记规则提示五行偏枯：某一气过强或过弱时，吉凶多由调候与平衡决定，事情容易表现为过热、过冷、过燥或阻滞。",
+            flow: "五行偏枯，平衡状态会影响吉凶。"
+          }
+        },
+        {
+          id: "local-pattern-eight-structure",
+          topic: "八字格局",
+          priority: 84,
+          when: { balance: ["balanced", "normal", "biased"] },
+          scoreAdjust: 0,
+          tags: ["正八格", "月令取格"],
+          messages: {
+            report: "本地笔记提示正八格：先看月令本气、中气、余气是否透干；未透时再取日元外天干力量较明显者为格，用格局看性格追求和人生发力点。",
+            flow: "格局判断以月令透干为先，再看旺衰喜忌。"
+          }
+        },
+        {
+          id: "local-dynamic-strength",
+          topic: "旺衰喜忌",
+          priority: 92,
+          when: { dayStrength: ["从强", "从弱"] },
+          scoreAdjust: -1,
+          tags: ["从格", "破格风险"],
+          messages: {
+            report: "本地笔记提示从强从弱：从格不按普通强弱取用，最怕大运流年合化破格；一旦喜忌转换，事业、财运、健康和六亲关系容易出现明显转折。",
+            flow: "从格遇合化破格时，事情波动会放大。"
+          }
+        },
+        {
+          id: "local-punishment-risk",
+          topic: "灾害健康",
+          priority: 88,
+          when: { effectIncludes: ["刑"] },
+          scoreAdjust: -4,
+          tags: ["地支相刑", "灾病口舌"],
+          messages: {
+            report: "本地笔记命中地支刑：刑多主伤病、官非、口舌、内耗或亲属关系压力，遇流年流日补齐三刑、自刑时风险增强。",
+            flow: "见刑主伤病、官非、口舌和内耗。"
+          }
+        },
+        {
+          id: "local-disaster-sha-risk",
+          topic: "灾害健康",
+          priority: 90,
+          when: { starsIncludes: ["灾煞"] },
+          scoreAdjust: -5,
+          tags: ["灾煞", "突发风险"],
+          messages: {
+            report: "本地笔记命中灾煞：灾煞主疾病、官司、牢狱、破财或突发血光风险；若无贵人护身，风险更集中。",
+            flow: "灾煞被引动，突发病灾、破财、官非和交通风险增强。"
+          }
+        },
+        {
+          id: "local-killing-health-pressure",
+          topic: "健康",
+          priority: 82,
+          when: { tenGodIncludes: ["杀"] },
+          scoreAdjust: -2,
+          tags: ["七杀病痛", "压力"],
+          messages: {
+            report: "本地笔记提示七杀主实际病痛和压力，若同时见冲刑害或忌神五行过旺，对应五脏和身体部位更容易被引动。",
+            flow: "七杀引动时，压力、病痛和冲突信号更明显。"
+          }
+        },
+        {
+          id: "local-resource-channel-health",
+          topic: "健康",
+          priority: 72,
+          when: { tenGodIncludes: ["印"] },
+          scoreAdjust: 1,
+          tags: ["偏印经络", "修复"],
+          messages: {
+            report: "本地笔记提示偏印与经络淤堵、资料学习、修复系统有关；印星为喜时利恢复和学习，为忌时易想多、堵滞或行动不足。",
+            flow: "印星引动，修复、资料、学习与身体恢复信号增强。"
+          }
+        }
+      ]
+    };
+
+    function pad(n) {
+      return String(n).padStart(2, "0");
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function colorizeGanzhi(scope = document.body) {
+      const pattern = /[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]/g;
+      const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          pattern.lastIndex = 0;
+          if (!pattern.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+          pattern.lastIndex = 0;
+          const parent = node.parentElement;
+          if (!parent || parent.closest(".wuxing-char, script, style, svg, textarea, select, option")) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach((node) => {
+        const fragment = document.createDocumentFragment();
+        let lastIndex = 0;
+        node.nodeValue.replace(pattern, (char, index) => {
+          if (index > lastIndex) fragment.append(document.createTextNode(node.nodeValue.slice(lastIndex, index)));
+          const element = ganzhiElement[char];
+          const span = document.createElement("span");
+          span.className = `wuxing-char ${elementClasses[element]}`;
+          span.textContent = char;
+          fragment.append(span);
+          lastIndex = index + char.length;
+          return char;
+        });
+        if (lastIndex < node.nodeValue.length) fragment.append(document.createTextNode(node.nodeValue.slice(lastIndex)));
+        node.parentNode.replaceChild(fragment, node);
+      });
+    }
+
+    function enableGanzhiAutoColor() {
+      let pending = false;
+      const schedule = () => {
+        if (pending) return;
+        pending = true;
+        requestAnimationFrame(() => {
+          pending = false;
+          colorizeGanzhi();
+        });
+      };
+      colorizeGanzhi();
+      new MutationObserver(schedule).observe(document.body, {
+        childList: true,
+        characterData: true,
+        subtree: true
+      });
+    }
+
+    function parseLocalDate(dateText, timeText) {
+      const [year, month, day] = dateText.split("-").map(Number);
+      const [hour, minute] = timeText.split(":").map(Number);
+      return new Date(year, month - 1, day, hour, minute || 0, 0);
+    }
+
+    function julianDay(date) {
+      let y = date.getFullYear();
+      let m = date.getMonth() + 1;
+      const d = date.getDate();
+      if (m <= 2) {
+        y -= 1;
+        m += 12;
+      }
+      const a = Math.floor(y / 100);
+      const b = 2 - a + Math.floor(a / 4);
+      return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + b - 1524;
+    }
+
+    function ganzhi(index) {
+      const normalized = ((index % 60) + 60) % 60;
+      return {
+        stem: stems[normalized % 10],
+        branch: branches[normalized % 12],
+        text: stems[normalized % 10] + branches[normalized % 12],
+        index: normalized
+      };
+    }
+
+    function cycleIndex(stem, branch) {
+      for (let i = 0; i < 60; i++) {
+        if (stems[i % 10] === stem && branches[i % 12] === branch) return i;
+      }
+      return 0;
+    }
+
+    function yearPillar(date) {
+      let y = date.getFullYear();
+      const liChun = new Date(y, 1, 4, 12, 0, 0);
+      if (date < liChun) y -= 1;
+      return ganzhi(y - 1984);
+    }
+
+    function monthIndexBySolarTerm(date) {
+      const y = date.getFullYear();
+      const boundaries = [
+        new Date(y, 1, 4, 12), new Date(y, 2, 6, 12), new Date(y, 3, 5, 12),
+        new Date(y, 4, 6, 12), new Date(y, 5, 6, 12), new Date(y, 6, 7, 12),
+        new Date(y, 7, 8, 12), new Date(y, 8, 8, 12), new Date(y, 9, 8, 12),
+        new Date(y, 10, 7, 12), new Date(y, 11, 7, 12), new Date(y + 1, 0, 6, 12)
+      ];
+      for (let i = boundaries.length - 1; i >= 0; i--) {
+        if (date >= boundaries[i]) return i;
+      }
+      return 11;
+    }
+
+    function monthPillar(date, yearStemIndex) {
+      const mIndex = monthIndexBySolarTerm(date);
+      const stemStart = startStemForTigerMonth[yearStemIndex];
+      const stem = stems[(stemStart + mIndex) % 10];
+      const branch = monthBranches[mIndex];
+      return { stem, branch, text: stem + branch, index: cycleIndex(stem, branch) };
+    }
+
+    function dayPillar(date) {
+      return ganzhi(julianDay(date) + 49);
+    }
+
+    function runCalibrationCheck() {
+      const sample = parseLocalDate("1999-01-14", "16:30");
+      const result = dayPillar(sample).text;
+      const note = document.getElementById("calibrationNote");
+      const status = result === "丙寅" ? "已校准" : `需校准，当前为${result}`;
+      note.textContent = `说明：此工具不联网保存资料。日柱基准样例：公历1999-01-14 16:30 = 丙寅（${status}）。农历换算、真太阳时和精确节气需专业万年历支持，本页以公历日期和常用节气边界近似计算。`;
+      if (result !== "丙寅") {
+        console.error(`日柱校验失败：1999-01-14 16:30 应为丙寅，当前为${result}`);
+      }
+    }
+
+    function hourPillar(date, dayStemIndex) {
+      const hour = date.getHours();
+      const branchIndex = hour === 23 ? 0 : Math.floor((hour + 1) / 2) % 12;
+      const stemStart = startStemForZiHour[dayStemIndex];
+      const stem = stems[(stemStart + branchIndex) % 10];
+      const branch = branches[branchIndex];
+      return { stem, branch, text: stem + branch, index: cycleIndex(stem, branch) };
+    }
+
+    function countElements(pillars) {
+      const counts = { 木: 0, 火: 0, 土: 0, 金: 0, 水: 0 };
+      pillars.forEach((p, index) => {
+        const isMonth = index === 1;
+        counts[stemElement[p.stem]] += isMonth ? 1.35 : 1.15;
+        counts[branchElement[p.branch]] += isMonth ? 1.25 : 1;
+        const weights = isMonth ? [0.6, 0.35, 0.2] : [0.35, 0.2, 0.12];
+        (hiddenStems[p.branch] || []).forEach((stem, stemIndex) => {
+          counts[stemElement[stem]] += weights[stemIndex] || 0.1;
+        });
+      });
+      return counts;
+    }
+
+    function relation(dayElement, targetElement) {
+      const dayIndex = elementCycle.indexOf(dayElement);
+      const targetIndex = elementCycle.indexOf(targetElement);
+      const diff = (targetIndex - dayIndex + 5) % 5;
+      if (diff === 0) return "比助";
+      if (diff === 1) return "输出";
+      if (diff === 2) return "财星";
+      if (diff === 3) return "官星";
+      return "印星";
+    }
+
+    function strengthLabel(dayElement, counts) {
+      const total = Object.values(counts).reduce((a, b) => a + b, 0);
+      const own = counts[dayElement] / total;
+      const support = counts[elementCycle[(elementCycle.indexOf(dayElement) + 4) % 5]] / total;
+      const value = own + support;
+      if (value >= .72) return { label: "从强", value };
+      if (value >= .54) return { label: "偏旺", value };
+      if (value <= .22) return { label: "从弱", value };
+      if (value <= .46) return { label: "偏弱", value };
+      return { label: "中和", value };
+    }
+
+    function favorableElements(dayElement, strength) {
+      const i = elementCycle.indexOf(dayElement);
+      if (strength.label === "偏弱") return [dayElement, elementCycle[(i + 4) % 5]];
+      if (strength.label === "从强") return [dayElement, elementCycle[(i + 4) % 5]];
+      if (strength.label === "偏旺") return [elementCycle[(i + 1) % 5], elementCycle[(i + 2) % 5], elementCycle[(i + 3) % 5]];
+      if (strength.label === "从弱") return [elementCycle[(i + 1) % 5], elementCycle[(i + 2) % 5], elementCycle[(i + 3) % 5]];
+      return [elementCycle[(i + 1) % 5], elementCycle[(i + 4) % 5]];
+    }
+
+    function periodPillar(period) {
+      const now = new Date();
+      if (period === "day") return dayPillar(now);
+      if (period === "week") {
+        const start = new Date(now);
+        start.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+        return dayPillar(start);
+      }
+      if (period === "month") return monthPillar(now, yearPillar(now).index % 10);
+      return yearPillar(now);
+    }
+
+    function weekDates(anchor = new Date()) {
+      const start = new Date(anchor.getFullYear(), anchor.getMonth(), anchor.getDate(), 12, 0, 0);
+      start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+      return Array.from({ length: 7 }, (_, i) => {
+        const date = new Date(start);
+        date.setDate(start.getDate() + i);
+        return date;
+      });
+    }
+
+    function formatDateShort(date) {
+      return `${pad(date.getMonth() + 1)}/${pad(date.getDate())}`;
+    }
+
+    function uniqueList(items) {
+      return Array.from(new Set(items.filter(Boolean)));
+    }
+
+    function periodScore(dayElement, favorable, targetPillar, salt) {
+      const elems = [stemElement[targetPillar.stem], branchElement[targetPillar.branch]];
+      let score = 62 + salt;
+      elems.forEach((el) => {
+        if (favorable.includes(el)) score += 9;
+        if (el === dayElement) score += 3;
+        if (relation(dayElement, el) === "官星") score -= 2;
+      });
+      return Math.max(42, Math.min(96, Math.round(score)));
+    }
+
+    function ruleMatches(rule, facts) {
+      const when = rule.when || {};
+      if (when.tenGodIncludes && !when.tenGodIncludes.some((text) => facts.tenGod.includes(text))) return false;
+      if (when.tenGodExact && !when.tenGodExact.includes(facts.tenGod)) return false;
+      if (when.dayStrength && !when.dayStrength.includes(facts.dayStrength)) return false;
+      if (when.focus && !when.focus.includes(facts.focus)) return false;
+      if (when.element && !when.element.includes(facts.element)) return false;
+      if (when.balance && !when.balance.includes(facts.balance)) return false;
+      if (when.effectIncludes && !when.effectIncludes.some((text) => facts.effectsText.includes(text))) return false;
+      if (when.starsIncludes && !when.starsIncludes.some((text) => facts.starsText.includes(text))) return false;
+      return true;
+    }
+
+    function balanceState(counts) {
+      const values = Object.values(counts);
+      const max = Math.max(...values);
+      const min = Math.min(...values);
+      if (max - min <= 1.1) return "balanced";
+      if (max >= min * 2.4 || min <= .55) return "biased";
+      return "normal";
+    }
+
+    function knowledgeMatches(facts) {
+      return knowledgeBase.rules
+        .filter((rule) => ruleMatches(rule, facts))
+        .sort((a, b) => (b.priority || 0) - (a.priority || 0));
+    }
+
+    function knowledgeTags(matches) {
+      return Array.from(new Set(matches.flatMap((rule) => rule.tags || [])));
+    }
+
+    function predictionOnlyText(text) {
+      const suggestionPattern = /适合|不宜|宜|建议|行动|注意|避免|要先|也要|仍要|要防|需防|少做|保守|优先/;
+      return (String(text || "").match(/[^。；]+[。；]?/g) || [])
+        .map((sentence) => {
+          if (!suggestionPattern.test(sentence)) return sentence;
+          const predictiveParts = sentence
+            .split(/[，,；;]/)
+            .map((part) => part.trim())
+            .filter((part) => part && !suggestionPattern.test(part));
+          return predictiveParts.length ? `${predictiveParts.join("，")}。` : "";
+        })
+        .join("")
+        .replace(/需防/g, "可能出现")
+        .replace(/要防/g, "可能出现")
+        .replace(/。。+/g, "。");
+    }
+
+    function knowledgeText(matches, type = "report", limit = 2) {
+      return matches
+        .map((rule) => rule.messages?.[type] || rule.messages?.report)
+        .filter(Boolean)
+        .map(predictionOnlyText)
+        .slice(0, limit)
+        .join("");
+    }
+
+    function starPrediction(stars) {
+      const map = {
+        天乙贵人: "容易遇到愿意帮忙的人，专业人士、上级、老客户或熟人协助信号增强。",
+        文昌: "容易出现考试、培训、文书、合同、方案、证件、系统资料等事项。",
+        禄神: "容易出现收入、福利、岗位资源、稳定客户或可兑现机会。",
+        羊刃: "事情容易变得强硬或急躁，口舌、磕碰、刀火金属器具、运动拉伤信号增强。",
+        桃花: "人缘、曝光、客户缘和感情互动增加，可能有邀约、应酬、关注度上升，也容易出现暧昧和边界不清。",
+        驿马: "容易有出行、搬动、拜访、差旅、车辆、交通、物流、维修、换路线等事情。",
+        华盖: "容易想独处、研究专业、处理审美创作、玄学宗教或小众兴趣，也可能觉得别人不太理解自己。",
+        灾煞: "灾煞被引动，突发破财、病痛、官非、交通磕碰或计划突然受阻的概率上升。",
+        伏吟: "容易重复旧事、旧人旧问题再出现，同类事情反复确认。",
+        无明显常用神煞: "没有特别突出的神煞信号，预测重点落在五行喜忌、十神和冲合刑破害关系上。"
+      };
+      return stars.map((star) => map[star] || `${star}被引动，需结合实际事务观察对应变化。`);
+    }
+
+    function healthPrediction(element, favorable, strength) {
+      const bodyMap = {
+        木: {
+          organs: "肝胆、筋膜、四肢伸展、眼睛与情绪疏泄",
+          signs: "容易有眼疲劳、肩颈紧、筋骨拉扯、情绪憋闷或睡眠不够深的感觉"
+        },
+        火: {
+          organs: "心脏、血液循环、血压、眼神、口舌与睡眠质量",
+          signs: "容易上火、心烦、口舌生疮、睡眠浅、心率快或血压波动"
+        },
+        土: {
+          organs: "脾胃、消化、肌肉、口腔、代谢与湿气",
+          signs: "容易胃胀、消化慢、食欲不稳、疲倦困重或甜食淀粉吃多"
+        },
+        金: {
+          organs: "肺部、呼吸道、鼻咽、皮肤、牙齿与大肠",
+          signs: "容易鼻喉干痒、咳嗽、皮肤敏感、便秘或对空气环境更敏感"
+        },
+        水: {
+          organs: "肾脏、泌尿、生殖、骨骼、腰腿、耳朵与内分泌节律",
+          signs: "容易腰膝酸、怕冷、水肿、泌尿不适、耳鸣或精力恢复慢"
+        }
+      };
+      const info = bodyMap[element];
+      const isFavorable = favorable.includes(element);
+      const strengthText = strength.label === "偏旺" ? "本局能量偏旺时，相关部位更怕过度消耗和火气堆积；" : strength.label === "偏弱" ? "本局能量偏弱时，相关部位更怕透支和恢复不足；" : "本局整体中和时，重点在节奏稳定和日常保养；";
+      const tone = isFavorable ? "此五行为喜用，被引动时多表现为恢复力和稳定性上升。" : "此五行不是当前优先喜用，被引动时更容易表现为过度、失衡或小毛病拖大。";
+      return `${element}对应${info.organs}。${strengthText}${tone}近期${info.signs}。此为民俗健康预测，如有明显不适应以专业医生意见为准。`;
+    }
+
+    function elementExtremes(counts) {
+      const sorted = elementCycle.slice().sort((a, b) => counts[b] - counts[a]);
+      return { strongest: sorted[0], weakest: sorted[sorted.length - 1] };
+    }
+
+    function balanceDetail(ctx) {
+      const { strongest, weakest } = elementExtremes(ctx.counts);
+      const state = balanceState(ctx.counts);
+      const fireWaterGap = ctx.counts.火 - ctx.counts.水;
+      let climate = "";
+      if (fireWaterGap >= 2) climate = "火明显多于水，容易出现急躁、燥热、决策过快和口舌升温。";
+      else if (fireWaterGap <= -2) climate = "水明显多于火，容易出现犹豫、拖延、寒湿停滞和信息摇摆。";
+      else if (ctx.counts.土 >= Math.max(...Object.values(ctx.counts)) && ctx.counts.土 - ctx.counts[weakest] >= 2) climate = "土气偏重，事务容易卡在库存、流程、责任或现实压力上。";
+      else climate = "寒暖燥湿不算极端，重点看十神、喜忌和冲合刑破害的触发。";
+      if (state === "balanced") return `五行较平衡，财运与状态多呈稳定节奏；${climate}`;
+      if (state === "biased") return `五行偏向${strongest}、${weakest}不足，吉凶起伏多由调候与流通决定；${climate}`;
+      return `五行有轻重但未到偏枯，当前以补${weakest}、顺${strongest}为调节重点；${climate}`;
+    }
+
+    function tenGodScenario(stemGod, ctx) {
+      const strength = ctx?.strength?.label || "中和";
+      if (stemGod === "正财") {
+        return strength === "偏弱"
+          ? "正财临身但日主偏弱，稳定收入、固定客户和回款会伴随成本、定金、交付边界压力。"
+          : "正财临身，稳定收入、固定客户、工资回款和长期复购信号明显。";
+      }
+      if (stemGod === "偏财") {
+        return strength === "偏弱"
+          ? "偏财临身但日主偏弱，外部机会、人情资源或临时订单容易来得急，并伴随库存和现金流压力。"
+          : "偏财临身，项目机会、人脉资源、临时订单和市场变化更活跃。";
+      }
+      if (stemGod.includes("食") || stemGod.includes("伤")) {
+        return "食伤被引动，属于先输出再生财的信号，作品、方案、内容推广、手艺经验与报价转化更明显。";
+      }
+      if (stemGod.includes("官") || stemGod.includes("杀")) {
+        return "官杀被引动，财机常被规则、平台、合同、资质、职位责任牵住。";
+      }
+      if (stemGod.includes("印")) {
+        return strength === "偏弱"
+          ? "印星被引动，能力、资料、贵人和系统支持会成为财机能否承接的关键。"
+          : "印星被引动，学习、证照、文书和后台资源增多，也容易只准备不成交。";
+      }
+      if (stemGod.includes("比") || stemGod.includes("劫")) {
+        return "比劫被引动，竞争、同业、朋友合伙、分账议价和人情支出会变明显。";
+      }
+      return "十神信号不偏单一，预测重点落在原局喜忌、流日触发和实际事项的交叉点。";
+    }
+
+    function effectStrategy(effectText, stemGod) {
+      const wealth = stemGod.includes("财");
+      if (effectText.includes("冲")) {
+        return wealth
+          ? "财星逢冲，客户、价格、付款、库存或合作条件容易变动。"
+          : "见冲则动，容易临时改期、出行、争执或旧问题翻起。";
+      }
+      if (effectText.includes("刑")) {
+        return "见刑主压力、伤病、官非、口舌或内耗，尤其三刑、自刑被引动时更明显。";
+      }
+      if (effectText.includes("破")) {
+        return "见破主暗损、破耗、关系裂缝和计划被拆开重做，钱款、合同、健康小问题容易浮出。";
+      }
+      if (effectText.includes("合")) {
+        return wealth
+          ? "财星见合，合作牵线、客户介绍和资源撮合增加，也伴随金额、权责、交付时间牵扯。"
+          : "见合则有牵连，协商、邀约和关系修复增多，也容易被人情拖慢效率。";
+      }
+      if (effectText.includes("害")) {
+        return "见害多主暗耗和误会，文件、口头承诺、时间节点和细节交接容易出问题。";
+      }
+      if (effectText.includes("同")) {
+        return "同支有伏吟意味，旧事、旧客户、旧流程可能重复出现。";
+      }
+      return "冲合刑破害不重，预测重点落在十神、五行喜忌和现实事项触发上。";
+    }
+
+    function actionAdvice(stemGod, effectText) {
+      return "";
+    }
+
+    function patternNameFromGod(god) {
+      if (god === "正财") return "正财格";
+      if (god === "偏财") return "偏财格";
+      if (god === "正官") return "正官格";
+      if (god === "七杀") return "七杀格";
+      if (god === "正印") return "正印格";
+      if (god === "偏印") return "枭印格";
+      if (god === "食神") return "食神格";
+      if (god === "伤官") return "伤官格";
+      return "比劫助身格";
+    }
+
+    function patternProfile(patternName) {
+      const profiles = {
+        正财格: "重稳定收入、固定客户、信用、家庭责任和长期复购，财运多走稳定累积路线。",
+        偏财格: "重商业机会、人脉资源、项目型收入和外部市场，行动力强但波动也大。",
+        正官格: "重规则、职位、名誉、责任和制度，事业多与正规流程、长期信用和资质有关。",
+        七杀格: "重压力、竞争、决断和执行，挑战型事务多，急躁、冲突和身体透支信号也明显。",
+        正印格: "重学习、贵人、证照、资料、保护和系统支持，能力与后台资源会影响后续承接。",
+        枭印格: "重领悟、研究、偏门技能和独立判断，专业深挖明显，也容易想太多、行动慢。",
+        食神格: "重口才、作品、技术、享受和稳定输出，内容、服务、手艺容易带来收益。",
+        伤官格: "重表达、创意、突破和不服管，创新推广明显，也容易牵动规则、合同和口舌。",
+        比劫助身格: "重朋友、团队、竞争、自主和合伙，容易靠人脉协作起势，也容易出现钱财分配问题。"
+      };
+      return profiles[patternName] || "此格局需结合月令、透干、旺衰和大运流年综合判断。";
+    }
+
+    function buildPattern(ctx) {
+      const dayStem = ctx.pillars[2].stem;
+      const monthBranch = ctx.pillars[1].branch;
+      const monthHidden = hiddenStems[monthBranch] || [];
+      const visibleStems = ctx.pillars.map((pillar) => pillar.stem);
+      let chosenStem = monthHidden.find((stem) => stem !== dayStem && visibleStems.includes(stem));
+      let basis = "";
+      if (chosenStem) {
+        const rank = ["本气", "中气", "余气"][monthHidden.indexOf(chosenStem)] || "藏干";
+        basis = `月令${monthBranch}中${rank}${chosenStem}透干，按月令透干取格。`;
+      } else {
+        const candidates = ctx.pillars
+          .map((pillar, index) => ({ stem: pillar.stem, index, god: index === 2 ? "日主" : tenGod(dayStem, pillar.stem) }))
+          .filter((item) => item.index !== 2);
+        const weightMap = { 1: 3, 0: 2, 3: 1.4 };
+        const scored = candidates.map((item) => {
+          const element = stemElement[item.stem];
+          const hiddenBonus = monthHidden.includes(item.stem) ? 2 : 0;
+          return { ...item, score: (ctx.counts[element] || 0) + (weightMap[item.index] || 1) + hiddenBonus };
+        }).sort((a, b) => b.score - a.score);
+        chosenStem = scored[0]?.stem || ctx.pillars[1].stem;
+        basis = "月令本气、中气、余气未明显透干，取日元之外天干中力量较明显者为格。";
+      }
+      const god = tenGod(dayStem, chosenStem);
+      const patternName = patternNameFromGod(god);
+      const useful = ctx.favorable.join("、");
+      const avoid = elementCycle.filter((el) => !ctx.favorable.includes(el)).join("、");
+      const levelHints = [];
+      const balance = balanceState(ctx.counts);
+      if (balance === "balanced") levelHints.push("五行较平衡，格局层次较稳");
+      if (balance === "biased") levelHints.push("五行偏枯，需先调候流通");
+      if (["从强", "从弱"].includes(ctx.strength.label)) levelHints.push(`${ctx.strength.label}，大运流年破格时起伏会更明显`);
+      if (!levelHints.length) levelHints.push("格局需随大运流年喜忌变化动态判断");
+      return {
+        name: patternName,
+        god,
+        stem: chosenStem,
+        basis,
+        profile: patternProfile(patternName),
+        useful,
+        avoid,
+        level: levelHints.join("；")
+      };
+    }
+
+    function buildInsights(ctx) {
+      const sortedElements = elementCycle.slice().sort((a, b) => ctx.counts[b] - ctx.counts[a]);
+      const strongest = sortedElements[0];
+      const weakest = sortedElements[sortedElements.length - 1];
+      const dayStem = ctx.pillars[2].stem;
+      const dayBranch = ctx.pillars[2].branch;
+      const currentYear = yearPillar(new Date());
+      const yearGod = tenGod(dayStem, currentYear.stem);
+      const yearStars = symbolicStars(ctx, currentYear);
+      const yearEffects = branchEffects(ctx, currentYear);
+      const firstFavorable = ctx.favorable[0];
+      const pattern = ctx.pattern || buildPattern(ctx);
+      return [
+        {
+          label: "命盘重点",
+          title: `${dayStem}${dayBranch}日主，${ctx.strength.label}`,
+          text: `五行中${strongest}较明显、${weakest}较弱。喜用集中在${ctx.favorable.join("、")}，${firstFavorable}被引动时应事更明显。${balanceDetail(ctx)}`
+        },
+        {
+          label: "八字格局",
+          title: `${pattern.name}｜${pattern.god}`,
+          text: `${pattern.basis}${pattern.profile}喜用方向：${pattern.useful}；不利信号多看：${pattern.avoid}。${pattern.level}。`
+        },
+        {
+          label: "近期预测",
+          title: `${currentYear.text}年引动${yearGod}`,
+          text: `${focusTips[ctx.state.focus] || focusTips.overall}${tenGodScenario(yearGod, ctx)}今年常见信号：${starPrediction(yearStars).slice(0, 2).join("")}`
+        },
+        {
+          label: "风险预测",
+          title: yearEffects[0] || "稳步推进",
+          text: `${yearEffects.join("、")}。${effectStrategy(yearEffects.join("、"), yearGod)}`
+        }
+      ];
+    }
+
+    function renderInsights(ctx) {
+      document.getElementById("focusTag").textContent = focusLabels[ctx.state.focus] || "整体运势";
+      document.getElementById("insights").innerHTML = buildInsights(ctx).map((item) => `
+        <article class="insight-card">
+          <p class="eyebrow">${escapeHtml(item.label)}</p>
+          <strong>${escapeHtml(item.title)}</strong>
+          <p>${escapeHtml(item.text)}</p>
+        </article>
+      `).join("");
+    }
+
+    function buildReport(title, periodKey, dayElement, strength, favorable, salt, ctx) {
+      const p = periodPillar(periodKey);
+      const mainElement = stemElement[p.stem];
+      const score = periodScore(dayElement, favorable, p, salt);
+      const tone = score >= 82 ? "顺势较强" : score >= 70 ? "稳中有进" : score >= 58 ? "平稳整理" : "阻力偏重";
+      const rel = relation(dayElement, mainElement);
+      const helpful = favorable.includes(mainElement) ? "与喜用方向相合" : "与原局喜用不完全同频";
+      const stemGod = ctx ? tenGod(ctx.pillars[2].stem, p.stem) : rel;
+      const stars = ctx ? symbolicStars(ctx, p) : ["需生成命盘后分析"];
+      const effects = ctx ? branchEffects(ctx, p) : ["需生成命盘后分析"];
+      const starText = stars.join("、");
+      const effectText = effects.join("、");
+      const matches = ctx ? knowledgeMatches({
+        tenGod: stemGod,
+        dayStrength: strength.label,
+        focus: ctx.state.focus,
+        element: mainElement,
+        balance: balanceState(ctx.counts),
+        effectsText: effectText,
+        starsText: starText,
+        periodKey
+      }) : [];
+      const knowledgeScore = matches.reduce((sum, rule) => sum + (rule.scoreAdjust || 0), 0);
+      const adjustedScore = Math.max(42, Math.min(96, score + knowledgeScore));
+      const knowledgeNote = knowledgeText(matches, "report", 2);
+      const matchedTags = knowledgeTags(matches).slice(0, 3);
+      const focus = {
+        day: "今日应事集中在当天反馈、临时沟通、付款见面和身体感受。",
+        week: "本周应事呈分段推进，阻力点和顺势窗口会交替出现。",
+        month: "本月应事多落在节奏、规则、资源、预算与合作边界。",
+        year: "今年应事多落在事业结构、学习方向、家庭责任和长期趋势。"
+      }[periodKey];
+      const moneyHint = tenGodScenario(stemGod, ctx || { strength });
+      const relationHint = effectStrategy(effectText, stemGod);
+      const balanceHint = ctx ? balanceDetail(ctx) : "";
+      const starHint = starPrediction(stars).join("");
+      return {
+        title,
+        periodKey,
+        score: adjustedScore,
+        text: `${title}主气为${p.text}，五行偏${mainElement}，十神为${stemGod}，整体为${tone}。${moneyHint}${copy[mainElement].risk}此周期${helpful}。${knowledgeNote}`,
+        items: [
+          `整体预测：${focus}${relationHint}${balanceHint}`,
+          `具体预测：${starHint}`,
+          `事业/财运：${moneyHint}${stemGod.includes("财") ? "同时观察食伤是否能带来展示与成交，官杀是否能带来合同和规则保护，比劫是否造成竞争分利。" : ""}`,
+          `感情人际：${starText.includes("桃花") ? "人缘较旺，客户、朋友或伴侣互动增加，也容易出现暧昧和边界不清。" : "人际以稳定沟通为主，误会多来自情绪化判断和安排不具体。"}`,
+          `健康与状态：${healthPrediction(mainElement, favorable, strength)}`
+        ],
+        tags: [`${p.text}`, `${mainElement}`, stemGod, ...matchedTags, ...stars.slice(0, 2)]
+      };
+    }
+
+    function buildWeekReport(ctx) {
+      const dates = weekDates(new Date());
+      const dayStem = ctx.pillars[2].stem;
+      const daily = dates.map((date) => {
+        const pillar = dayPillar(date);
+        const stemGod = tenGod(dayStem, pillar.stem);
+        const stemEl = stemElement[pillar.stem];
+        const branchEl = branchElement[pillar.branch];
+        const stars = symbolicStars(ctx, pillar);
+        const effects = branchEffects(ctx, pillar);
+        const favorableHit = [stemEl, branchEl].some((el) => ctx.favorable.includes(el));
+        const wealthHit = stemGod.includes("财");
+        const officerHit = stemGod.includes("官") || stemGod.includes("杀");
+        const outputHit = stemGod.includes("食") || stemGod.includes("伤");
+        const resourceHit = stemGod.includes("印");
+        const peerHit = stemGod.includes("比") || stemGod.includes("劫");
+        const volatileHit = effects.some((effect) => /冲|刑|破|害/.test(effect));
+        const cooperativeHit = effects.some((effect) => effect.includes("合"));
+        let score = 58;
+        if (favorableHit) score += 8;
+        if (wealthHit) score += ctx.strength.label === "偏弱" ? -2 : 5;
+        if (officerHit) score += 1;
+        if (outputHit) score += 3;
+        if (resourceHit && ctx.strength.label === "偏弱") score += 4;
+        if (peerHit) score -= 1;
+        if (volatileHit) score -= 5;
+        if (cooperativeHit) score += 3;
+        return { date, pillar, stemGod, stemEl, branchEl, stars, effects, favorableHit, wealthHit, officerHit, outputHit, resourceHit, peerHit, volatileHit, cooperativeHit, score };
+      });
+      const avgScore = Math.round(daily.reduce((sum, item) => sum + item.score, 0) / daily.length);
+      const bestDays = daily.slice().sort((a, b) => b.score - a.score).slice(0, 2);
+      const volatileDays = daily.filter((item) => item.volatileHit);
+      const wealthDays = daily.filter((item) => item.wealthHit);
+      const outputDays = daily.filter((item) => item.outputHit);
+      const officerDays = daily.filter((item) => item.officerHit);
+      const peerDays = daily.filter((item) => item.peerHit);
+      const cooperativeDays = daily.filter((item) => item.cooperativeHit);
+      const dominantGod = Object.entries(daily.reduce((map, item) => {
+        const key = item.stemGod;
+        map[key] = (map[key] || 0) + 1;
+        return map;
+      }, {})).sort((a, b) => b[1] - a[1])[0]?.[0] || "十神";
+      const weekPillarText = daily.map((item) => `${formatDateShort(item.date)}${item.pillar.text}`).join("、");
+      const allEffects = uniqueList(daily.flatMap((item) => item.effects).filter((text) => text !== "与原局地支无明显冲合刑破害"));
+      const allStars = uniqueList(daily.flatMap((item) => item.stars).filter((text) => text !== "无明显常用神煞"));
+      const matches = knowledgeMatches({
+        tenGod: dominantGod,
+        dayStrength: ctx.strength.label,
+        focus: ctx.state.focus,
+        element: ctx.dayElement,
+        balance: balanceState(ctx.counts),
+        effectsText: allEffects.join("、"),
+        starsText: allStars.join("、"),
+        periodKey: "week"
+      });
+      const knowledgeNote = knowledgeText(matches, "report", 1);
+      const matchedTags = knowledgeTags(matches).slice(0, 2);
+      const focusText = {
+        overall: `本周以${dominantGod}为主线，${bestDays.map((item) => `${formatDateShort(item.date)} ${item.pillar.text}`).join("、")}两天顺势信号较强。`,
+        career: `事业财运重点落在${wealthDays.length ? wealthDays.map((item) => `${formatDateShort(item.date)} ${item.stemGod}`).join("、") : "客户、报价和交付节奏"}，当天确认类事项较多。`,
+        love: `感情人际重点看合与桃花信号，${cooperativeDays.length ? cooperativeDays.map((item) => formatDateShort(item.date)).join("、") : "本周以稳定沟通为主"}容易出现联络互动。`,
+        health: `健康状态随流日波动，刑冲破害日${volatileDays.length ? volatileDays.map((item) => formatDateShort(item.date)).join("、") : "不明显"}更容易紧绷、急躁或睡眠受扰。`
+      }[ctx.state.focus] || "";
+      const wealthText = wealthDays.length
+        ? `财星日为${wealthDays.map((item) => `${formatDateShort(item.date)}${item.pillar.text}`).join("、")}，谈钱、报价、回款、下单或客户资源信号增强。`
+        : "本周财星不算突出，财运更依赖前期积累、表达展示和稳定执行。";
+      const outputText = outputDays.length
+        ? `食伤日为${outputDays.map((item) => `${formatDateShort(item.date)}${item.pillar.text}`).join("、")}，展示、内容、话术、方案、作品和成交转化信号增强。`
+        : "本周食伤信号不强，销售展示要靠提前准备，别临场才想话术。";
+      const officerText = officerDays.length
+        ? `官杀日为${officerDays.map((item) => `${formatDateShort(item.date)}${item.pillar.text}`).join("、")}，合同、规则、资质、审批和责任分工事项增强。`
+        : "官杀日不突出，规则压力较轻，但合同、时间、交付边界仍要写清楚。";
+      const peerText = peerDays.length
+        ? `比劫日为${peerDays.map((item) => `${formatDateShort(item.date)}${item.pillar.text}`).join("、")}，同业竞争、合伙分账、人情支出或资源被分流要多留意。`
+        : "比劫竞争不算突出，合作上以清楚分工和稳定兑现为主。";
+      const riskText = volatileDays.length
+        ? `刑冲破害较明显的日子是${volatileDays.map((item) => `${formatDateShort(item.date)}${item.pillar.text}`).join("、")}，容易临时变动、沟通反复、破耗暗损或计划被打断。`
+        : "本周与原局刑冲破害不重，整体波动较小。";
+      const relationText = cooperativeDays.length
+        ? `合动日为${cooperativeDays.map((item) => `${formatDateShort(item.date)}${item.pillar.text}`).join("、")}，合作、邀约、撮合资源和关系修复信号增强。`
+        : "合动信号不强，人际合作以清楚表达和稳定兑现为主。";
+      return {
+        title: "本周周报",
+        periodKey: "week",
+        score: Math.max(42, Math.min(96, avgScore + matches.reduce((sum, rule) => sum + (rule.scoreAdjust || 0), 0))),
+        text: `本周流日为${weekPillarText}。整体以${dominantGod}信号较明显，高分日集中在${bestDays.map((item) => `${formatDateShort(item.date)}${item.pillar.text}`).join("、")}。${knowledgeNote}`,
+        items: [
+          `整体预测：${focusText}${riskText}${balanceDetail(ctx)}`,
+          `事业/财运：${wealthText}${outputText}${officerText}${peerText}`,
+          `感情人际：${relationText}`,
+          `健康与状态：${volatileDays.length ? "刑冲破害日容易紧绷或节奏被打断，睡眠、交通、运动拉伤、暗耗破损和情绪火气信号增强。" : "本周状态以稳定作息和持续执行为主，小事打乱节奏的概率较低。"}`
+        ],
+        tags: ["流日汇总", dominantGod, ...matchedTags, ...allStars.slice(0, 2), ...allEffects.slice(0, 1)]
+      };
+    }
+
+    function renderBars(counts) {
+      const max = Math.max(...Object.values(counts), 1);
+      const bars = document.getElementById("bars");
+      bars.innerHTML = elementCycle.map((el) => {
+        const pct = Math.round((counts[el] / max) * 100);
+        return `<div class="bar-row"><strong>${el}</strong><div class="bar"><span style="width:${pct}%;background:${elementColors[el]}"></span></div><span>${counts[el].toFixed(1)}</span></div>`;
+      }).join("");
+    }
+
+    function renderReports(reports) {
+      const focus = chartContext?.state?.focus || "overall";
+      const highlightMap = { overall: "day", career: "month", love: "week", health: "day" };
+      const highlightPeriod = highlightMap[focus] || "day";
+      document.getElementById("reports").innerHTML = reports.map((r) => `
+        <article class="report ${r.periodKey === highlightPeriod ? "highlight" : ""}">
+          <div class="report-head">
+            <h3>${escapeHtml(r.title)}</h3>
+            <div class="score">${escapeHtml(r.score)}</div>
+          </div>
+          <div class="meta">${r.tags.map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join("")}</div>
+          <p>${escapeHtml(r.text)}</p>
+          <ul>${(r.items || []).map((item) => `<li class="${item.startsWith("整体：") ? "overall" : ""}">${escapeHtml(item)}</li>`).join("")}</ul>
+        </article>
+      `).join("");
+    }
+
+    function tenGod(dayStem, targetStem) {
+      const dayEl = stemElement[dayStem];
+      const targetEl = stemElement[targetStem];
+      const samePolarity = stems.indexOf(dayStem) % 2 === stems.indexOf(targetStem) % 2;
+      const rel = relation(dayEl, targetEl);
+      if (rel === "比助") return samePolarity ? "比肩" : "劫财";
+      if (rel === "输出") return samePolarity ? "食神" : "伤官";
+      if (rel === "财星") return samePolarity ? "偏财" : "正财";
+      if (rel === "官星") return samePolarity ? "七杀" : "正官";
+      return samePolarity ? "偏印" : "正印";
+    }
+
+    function emptyBranches(pillar) {
+      const groupStart = Math.floor(pillar.index / 10) * 10;
+      const used = new Set(Array.from({ length: 10 }, (_, i) => branches[(groupStart + i) % 12]));
+      return branches.filter((b) => !used.has(b)).join("");
+    }
+
+    function pillarNayin(pillar) {
+      return nayin[Math.floor(pillar.index / 2)];
+    }
+
+    function branchGroup(branch) {
+      if (["申", "子", "辰"].includes(branch)) return "申子辰";
+      if (["寅", "午", "戌"].includes(branch)) return "寅午戌";
+      if (["巳", "酉", "丑"].includes(branch)) return "巳酉丑";
+      return "亥卯未";
+    }
+
+    function symbolicStars(ctx, target) {
+      const dayStem = ctx.pillars[2].stem;
+      const dayBranch = ctx.pillars[2].branch;
+      const targetBranch = target.branch;
+      const stars = [];
+      const noble = {
+        甲: ["丑", "未"], 戊: ["丑", "未"], 庚: ["丑", "未"],
+        乙: ["子", "申"], 己: ["子", "申"],
+        丙: ["亥", "酉"], 丁: ["亥", "酉"],
+        壬: ["卯", "巳"], 癸: ["卯", "巳"], 辛: ["寅", "午"]
+      };
+      const wenchang = { 甲: "巳", 乙: "午", 丙: "申", 丁: "酉", 戊: "申", 己: "酉", 庚: "亥", 辛: "子", 壬: "寅", 癸: "卯" };
+      const lu = { 甲: "寅", 乙: "卯", 丙: "巳", 丁: "午", 戊: "巳", 己: "午", 庚: "申", 辛: "酉", 壬: "亥", 癸: "子" };
+      const yangren = { 甲: "卯", 丙: "午", 戊: "午", 庚: "酉", 壬: "子", 乙: "寅", 丁: "巳", 己: "巳", 辛: "申", 癸: "亥" };
+      const peach = { 申子辰: "酉", 寅午戌: "卯", 巳酉丑: "午", 亥卯未: "子" };
+      const horse = { 申子辰: "寅", 寅午戌: "申", 巳酉丑: "亥", 亥卯未: "巳" };
+      const huagai = { 申子辰: "辰", 寅午戌: "戌", 巳酉丑: "丑", 亥卯未: "未" };
+      const group = branchGroup(dayBranch);
+      const yearGroup = branchGroup(ctx.pillars[0].branch);
+      if ((noble[dayStem] || []).includes(targetBranch)) stars.push("天乙贵人");
+      if (wenchang[dayStem] === targetBranch) stars.push("文昌");
+      if (lu[dayStem] === targetBranch) stars.push("禄神");
+      if (yangren[dayStem] === targetBranch) stars.push("羊刃");
+      if (peach[group] === targetBranch) stars.push("桃花");
+      if (horse[group] === targetBranch) stars.push("驿马");
+      if (huagai[group] === targetBranch) stars.push("华盖");
+      if (disasterBranchByGroup[yearGroup] === targetBranch) stars.push("灾煞");
+      if (targetBranch === dayBranch) stars.push("伏吟");
+      if (stars.length === 0) stars.push("无明显常用神煞");
+      return stars;
+    }
+
+    function branchEffects(ctx, target) {
+      const effects = [];
+      ctx.pillars.forEach((p, index) => {
+        const label = ["年", "月", "日", "时"][index];
+        branchRelationObjects(target.branch, p.branch).forEach((relationItem) => {
+          effects.push(`${relationItem.type}${label}支${p.branch}${relationElementSuffix(relationItem)}`);
+        });
+      });
+      return effects.length ? effects : ["与原局地支无明显冲合刑破害"];
+    }
+
+    function combineTransformElement(leftBranch, rightBranch) {
+      if (combinePairs[leftBranch] !== rightBranch) return "";
+      return combineElementPairs[leftBranch + rightBranch] || combineElementPairs[rightBranch + leftBranch] || "";
+    }
+
+    function relationElementSuffix(relationItem) {
+      return relationItem.type === "合" && relationItem.element ? `化${relationItem.element}` : "";
+    }
+
+    function branchRelationObjects(leftBranch, rightBranch) {
+      const relations = [];
+      if (clashPairs[leftBranch] === rightBranch) relations.push({ type: "冲" });
+      if (combinePairs[leftBranch] === rightBranch) relations.push({ type: "合", element: combineTransformElement(leftBranch, rightBranch) });
+      if ((punishmentPairs[leftBranch] || []).includes(rightBranch)) relations.push({ type: "刑" });
+      if (breakPairs[leftBranch] === rightBranch) relations.push({ type: "破" });
+      if (harmPairs[leftBranch] === rightBranch) relations.push({ type: "害" });
+      if (leftBranch === rightBranch) relations.push({ type: "同" });
+      return relations;
+    }
+
+    function elementParts(elementText) {
+      return elementCycle.filter((element) => String(elementText || "").includes(element));
+    }
+
+    function elementIsFavorable(ctx, elementText) {
+      return elementParts(elementText).some((element) => ctx.favorable.includes(element));
+    }
+
+    function elementIsWealth(ctx, elementText) {
+      return elementParts(elementText).some((element) => relation(ctx.dayElement, element) === "财星");
+    }
+
+    function controlsElement(controller, controlled) {
+      const map = { 木: "土", 土: "水", 水: "火", 火: "金", 金: "木" };
+      return map[controller] === controlled;
+    }
+
+    function stemControlType(leftStem, rightStem) {
+      const leftEl = stemElement[leftStem];
+      const rightEl = stemElement[rightStem];
+      if (controlsElement(leftEl, rightEl)) return "克";
+      if (controlsElement(rightEl, leftEl)) return "被克";
+      return "";
+    }
+
+    function hiddenGodsForPillar(ctx, pillar) {
+      const dayStem = ctx.pillars[2].stem;
+      return (hiddenStems[pillar.branch] || []).map((stem) => tenGod(dayStem, stem));
+    }
+
+    function luckForDate(ctx, date) {
+      if (!ctx.lucks || !ctx.lucks.length) ctx.lucks = buildLuckCycles(ctx);
+      const year = date.getFullYear();
+      const active = ctx.lucks.find((luck) => year >= luck.startYear && year <= luck.endYear);
+      if (active) return active;
+      return year < ctx.lucks[0].startYear ? ctx.lucks[0] : ctx.lucks[ctx.lucks.length - 1];
+    }
+
+    function flowStackForDate(ctx, date) {
+      const luck = luckForDate(ctx, date);
+      const flowYear = yearPillar(date);
+      const flowMonth = monthPillar(date, (flowYear.index % 10 + 10) % 10);
+      const flowDay = dayPillar(date);
+      const layers = [
+        { key: "luck", label: "大运", pillar: luck.pillar, weight: 1.25 },
+        { key: "year", label: "流年", pillar: flowYear, weight: 1.2 },
+        { key: "month", label: "流月", pillar: flowMonth, weight: 1 },
+        { key: "day", label: "流日", pillar: flowDay, weight: 1.35 }
+      ];
+      return {
+        luck,
+        year: { year: date.getFullYear(), pillar: flowYear },
+        month: { month: date.getMonth() + 1, pillar: flowMonth },
+        day: { date, pillar: flowDay },
+        layers
+      };
+    }
+
+    function flowLayerProfiles(ctx, stack) {
+      const dayStem = ctx.pillars[2].stem;
+      return stack.layers.map((layer) => {
+        const pillar = layer.pillar;
+        const stemEl = stemElement[pillar.stem];
+        const branchEl = branchElement[pillar.branch];
+        const hiddenGods = hiddenGodsForPillar(ctx, pillar);
+        return {
+          ...layer,
+          stemEl,
+          branchEl,
+          stemGod: tenGod(dayStem, pillar.stem),
+          hiddenGods,
+          stars: symbolicStars(ctx, pillar),
+          favorableHit: ctx.favorable.includes(stemEl) || ctx.favorable.includes(branchEl)
+        };
+      });
+    }
+
+    function natalBranchLayers(ctx) {
+      return ctx.pillars.map((pillar, index) => ({
+        key: ["birthYear", "birthMonth", "birthDay", "birthHour"][index],
+        label: ["原局年", "原局月", "原局日", "原局时"][index],
+        pillar,
+        weight: index === 2 ? 1.2 : index === 1 ? 1.08 : 1
+      }));
+    }
+
+    function flowBranchInteractions(ctx, stack) {
+      const interactions = [];
+      const natal = natalBranchLayers(ctx);
+      stack.layers.forEach((targetLayer, targetIndex) => {
+        const bases = natal.concat(stack.layers.slice(0, targetIndex));
+        bases.forEach((baseLayer) => {
+          branchRelationObjects(targetLayer.pillar.branch, baseLayer.pillar.branch).forEach((relationItem) => {
+            const weight = (targetLayer.weight + (baseLayer.weight || 1)) / 2;
+            const label = `${targetLayer.label}${relationItem.type}${baseLayer.label}支${baseLayer.pillar.branch}${relationElementSuffix(relationItem)}`;
+            interactions.push({
+              ...relationItem,
+              label,
+              weight,
+              target: targetLayer,
+              base: baseLayer,
+              targetBranch: targetLayer.pillar.branch,
+              baseBranch: baseLayer.pillar.branch
+            });
+          });
+        });
+      });
+      return interactions;
+    }
+
+    function skyClashGroundConflict(ctx, stack) {
+      const signals = [];
+      const natal = natalBranchLayers(ctx);
+      stack.layers.forEach((targetLayer, targetIndex) => {
+        const bases = natal.concat(stack.layers.slice(0, targetIndex));
+        bases.forEach((baseLayer) => {
+          const stemControl = stemControlType(targetLayer.pillar.stem, baseLayer.pillar.stem);
+          const branchClash = clashPairs[targetLayer.pillar.branch] === baseLayer.pillar.branch;
+          if (!stemControl || !branchClash) return;
+          const targetPalace = palaceMeaning(targetLayer);
+          const basePalace = palaceMeaning(baseLayer);
+          const label = `${targetLayer.label}${targetLayer.pillar.text}${stemControl}${baseLayer.label}${baseLayer.pillar.text}，天克地冲`;
+          const touchesDay = baseLayer.key === "birthDay";
+          const touchesFamily = ["birthYear", "birthMonth", "birthHour"].includes(baseLayer.key);
+          const elements = [stemElement[targetLayer.pillar.stem], stemElement[baseLayer.pillar.stem], branchElement[targetLayer.pillar.branch], branchElement[baseLayer.pillar.branch]];
+          signals.push({
+            label,
+            target: targetLayer,
+            base: baseLayer,
+            weight: (targetLayer.weight + (baseLayer.weight || 1)) / 2 + (touchesDay ? 0.45 : 0) + (touchesFamily ? 0.25 : 0),
+            touchesDay,
+            touchesFamily,
+            people: uniqueList([targetPalace.people, basePalace.people]).join("、"),
+            matters: uniqueList([targetPalace.matters, basePalace.matters]).join("、"),
+            favorable: elements.some((element) => ctx.favorable.includes(element)),
+            wealth: elements.some((element) => relation(ctx.dayElement, element) === "财星")
+          });
+        });
+      });
+      return signals.sort((a, b) => b.weight - a.weight);
+    }
+
+    function stackText(stack) {
+      return `大运${stack.luck.pillar.text}、流年${stack.year.pillar.text}、流月${stack.month.pillar.text}、流日${stack.day.pillar.text}`;
+    }
+
+    function flowEffectText(interactions) {
+      return interactions.length ? uniqueList(interactions.map((item) => item.label)).join("、") : "大运流年流月流日与原局无明显冲合刑破害";
+    }
+
+    function formatFullDate(date) {
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    }
+
+    function monthsForElement(element) {
+      const map = {
+        木: [2, 3],
+        火: [5, 6],
+        土: [3, 6, 9, 12],
+        金: [8, 9],
+        水: [11, 12]
+      };
+      return map[element] || [1, 4, 7, 10];
+    }
+
+    function candidateDatesForYear(ctx, year) {
+      const dates = [];
+      const first = new Date(year, 0, 1, 12, 0, 0);
+      const last = new Date(year, 11, 31, 12, 0, 0);
+      const start = year === ctx.birthDate.getFullYear()
+        ? new Date(ctx.birthDate.getFullYear(), ctx.birthDate.getMonth(), ctx.birthDate.getDate(), 12, 0, 0)
+        : first;
+      for (let date = new Date(start); date <= last; date.setDate(date.getDate() + 1)) {
+        dates.push(new Date(date));
+      }
+      return dates;
+    }
+
+    function scoreLayerInfluence(ctx, profile) {
+      const gods = [profile.stemGod, ...profile.hiddenGods];
+      const branchRel = relation(ctx.dayElement, profile.branchEl);
+      const wealthHit = gods.some((god) => god.includes("财")) || branchRel === "财星";
+      const outputHit = gods.some((god) => god.includes("食") || god.includes("伤")) || branchRel === "输出";
+      const officerHit = gods.some((god) => god.includes("官") || god.includes("杀")) || branchRel === "官星";
+      const resourceHit = gods.some((god) => god.includes("印")) || branchRel === "印星";
+      const peerHit = gods.some((god) => god.includes("比") || god.includes("劫")) || branchRel === "比助";
+      const favorableCount = [profile.stemEl, profile.branchEl].filter((element) => ctx.favorable.includes(element)).length;
+      const unfavorableCount = 2 - favorableCount;
+      const weakCannotCarry = ctx.strength.label === "偏弱" && wealthHit && favorableCount === 0;
+      return {
+        ...profile,
+        gods,
+        branchRel,
+        wealthHit,
+        outputHit,
+        officerHit,
+        resourceHit,
+        peerHit,
+        favorableCount,
+        unfavorableCount,
+        weakCannotCarry
+      };
+    }
+
+    function specialScoreCache(ctx, mode, date) {
+      if (!ctx.specialScoreCache) ctx.specialScoreCache = {};
+      const key = `${mode}:${formatFullDate(date)}`;
+      return {
+        key,
+        get: () => ctx.specialScoreCache[key],
+        set: (value) => {
+          ctx.specialScoreCache[key] = value;
+          return value;
+        }
+      };
+    }
+
+    function godSources(profile, matcher, branchRelName) {
+      const sources = [];
+      if (matcher(profile.stemGod)) sources.push(profile.stemGod);
+      profile.hiddenGods.filter(matcher).slice(0, 2).forEach((god) => sources.push(`藏${god}`));
+      if (branchRelName && profile.branchRel === branchRelName) sources.push(`支${branchRelName}`);
+      return uniqueList(sources);
+    }
+
+    function layerSignalText(layer, sources) {
+      return `${layer.label}${layer.pillar.text}${sources.slice(0, 2).join("/")}`;
+    }
+
+    function displaySpecialScore(rawScore, mode) {
+      const normalized = mode === "wealth"
+        ? 50 + rawScore * 0.22
+        : 58 + rawScore * 0.1;
+      return Math.max(5, Math.min(98, Math.round(normalized)));
+    }
+
+    function scoreGrade(score, mode) {
+      if (score >= 92) return mode === "wealth" ? "极旺" : "极高";
+      if (score >= 82) return mode === "wealth" ? "很旺" : "偏高";
+      if (score >= 70) return mode === "wealth" ? "较旺" : "风险偏高";
+      if (score >= 58) return "中等";
+      return mode === "wealth" ? "偏弱" : "较低";
+    }
+
+    function concurrentPairTitle(left, right) {
+      const key = `${left.key}-${right.key}`;
+      const names = {
+        "luck-year": "岁运并临",
+        "luck-month": "运月并临",
+        "luck-day": "运日并临",
+        "year-month": "岁月并临",
+        "year-day": "岁日并临",
+        "month-day": "月日并临"
+      };
+      return names[key] || `${left.label}${right.label}并临`;
+    }
+
+    function concurrentSignals(ctx, layers) {
+      const pairBoost = {
+        "luck-year": 1.45,
+        "luck-month": 1.05,
+        "luck-day": 1.1,
+        "year-month": 1.3,
+        "year-day": 1.15,
+        "month-day": 1.35
+      };
+      const signals = [];
+      for (let i = 0; i < layers.length; i++) {
+        for (let j = i + 1; j < layers.length; j++) {
+          const left = layers[i];
+          const right = layers[j];
+          const sameStem = left.pillar.stem === right.pillar.stem;
+          const sameBranch = left.pillar.branch === right.pillar.branch;
+          if (!sameStem && !sameBranch) continue;
+          const exact = sameStem && sameBranch;
+          const pairKey = `${left.key}-${right.key}`;
+          const title = concurrentPairTitle(left, right);
+          const label = exact
+            ? `${title}${left.pillar.text}`
+            : sameBranch
+              ? `${title}同支${left.pillar.branch}`
+              : `${title}同干${left.pillar.stem}`;
+          const elements = uniqueList([
+            sameStem ? left.stemEl : "",
+            sameBranch ? left.branchEl : ""
+          ]);
+          const rels = elements.map((element) => relation(ctx.dayElement, element));
+          const repeatedStars = uniqueList(left.stars.filter((star) => star !== "无明显常用神煞" && right.stars.includes(star)));
+          const riskStars = repeatedStars.filter((star) => ["羊刃", "灾煞", "驿马", "伏吟"].includes(star));
+          const goodStars = repeatedStars.filter((star) => ["天乙贵人", "禄神", "文昌"].includes(star));
+          const base = exact ? 2.4 : sameBranch ? 1.55 : 1;
+          const strength = base * (pairBoost[pairKey] || 1);
+          signals.push({
+            label,
+            exact,
+            sameStem,
+            sameBranch,
+            strength,
+            elements,
+            rels,
+            favorable: elements.some((element) => ctx.favorable.includes(element)),
+            wealth: rels.includes("财星"),
+            output: rels.includes("输出"),
+            officer: rels.includes("官星"),
+            peer: rels.includes("比助"),
+            riskStars,
+            goodStars
+          });
+        }
+      }
+      return signals.sort((a, b) => b.strength - a.strength);
+    }
+
+    function addElementPower(map, element, amount) {
+      if (!element) return;
+      map[element] = (map[element] || 0) + amount;
+    }
+
+    function flowEnergyProfile(ctx, layers) {
+      const power = { 木: 0, 火: 0, 土: 0, 金: 0, 水: 0 };
+      elementCycle.forEach((element) => {
+        power[element] += (ctx.counts[element] || 0) * 0.45;
+      });
+      layers.forEach((layer) => {
+        addElementPower(power, layer.stemEl, 1.1 * layer.weight);
+        addElementPower(power, layer.branchEl, 1.25 * layer.weight);
+        const hiddenWeights = [0.45, 0.25, 0.15];
+        (hiddenStems[layer.pillar.branch] || []).forEach((stem, index) => {
+          addElementPower(power, stemElement[stem], (hiddenWeights[index] || 0.12) * layer.weight);
+        });
+      });
+      const sorted = elementCycle.slice().sort((a, b) => power[b] - power[a]);
+      const total = Object.values(power).reduce((sum, value) => sum + value, 0) || 1;
+      const dominant = sorted[0];
+      const weakest = sorted[sorted.length - 1];
+      const dominantRatio = power[dominant] / total;
+      const gap = power[dominant] - power[weakest];
+      const favorablePower = ctx.favorable.reduce((sum, element) => sum + (power[element] || 0), 0);
+      const wealthPower = elementCycle
+        .filter((element) => relation(ctx.dayElement, element) === "财星")
+        .reduce((sum, element) => sum + (power[element] || 0), 0);
+      return {
+        power,
+        dominant,
+        weakest,
+        dominantRel: relation(ctx.dayElement, dominant),
+        weakestRel: relation(ctx.dayElement, weakest),
+        dominantRatio,
+        gap,
+        favorablePower,
+        wealthPower,
+        imbalance: dominantRatio >= 0.34 || gap >= 3.8
+      };
+    }
+
+    function starStrengthProfile(layers) {
+      const stats = {};
+      layers.forEach((layer) => {
+        layer.stars
+          .filter((star) => star !== "无明显常用神煞")
+          .forEach((star) => {
+            if (!stats[star]) stats[star] = { star, count: 0, weight: 0, layers: [] };
+            stats[star].count += 1;
+            stats[star].weight += layer.weight;
+            stats[star].layers.push(layer.label);
+          });
+      });
+      const list = Object.values(stats).sort((a, b) => b.weight - a.weight);
+      const riskMap = { 羊刃: 4.5, 灾煞: 5, 驿马: 2.6, 伏吟: 3.2 };
+      const goodMap = { 天乙贵人: 4, 禄神: 4.2, 文昌: 2.2, 桃花: 1.4 };
+      const riskPower = list.reduce((sum, item) => sum + (riskMap[item.star] || 0) * item.weight, 0);
+      const goodPower = list.reduce((sum, item) => sum + (goodMap[item.star] || 0) * item.weight, 0);
+      const repeated = list.filter((item) => item.count >= 2);
+      return { list, repeated, riskPower, goodPower };
+    }
+
+    function palaceMeaning(layer) {
+      const map = {
+        birthYear: { people: "父母长辈、祖辈、远方亲戚", matters: "家宅祖业、长辈健康、老客户、外部环境" },
+        birthMonth: { people: "父母、兄弟姐妹、同事上级", matters: "工作平台、门店经营、团队分工、客户来源" },
+        birthDay: { people: "自己、伴侣、亲密关系", matters: "身体状态、婚恋关系、个人决定、钱款承接" },
+        birthHour: { people: "子女晚辈、员工徒弟、下属", matters: "子女学业、后续项目、交付结果、长期收益" },
+        luck: { people: "自己当前十年环境", matters: "长期趋势、职业路径、家庭大背景" },
+        year: { people: "今年接触的人和外部机会", matters: "年度机会、政策规则、客户变化" },
+        month: { people: "本月合作对象、同事客户", matters: "订单进度、合同沟通、短期现金流" },
+        day: { people: "当天直接接触的人", matters: "当天决定、出行见面、付款签约、身体感受" }
+      };
+      return map[layer?.key] || { people: "相关人事", matters: "相关事项" };
+    }
+
+    function elementEventText(element, mode) {
+      const map = {
+        木: mode === "wealth" ? "客户增长、学习进修、宣传扩展、人脉介绍、方案策划" : "肝胆筋骨、眼睛、情绪憋闷、合同条款生枝、计划反复修改",
+        火: mode === "wealth" ? "曝光推广、口碑传播、直播展示、快速成交、名气带单" : "心火血压、睡眠、口舌争执、电子设备、火烫急躁",
+        土: mode === "wealth" ? "库存房产、固定资产、长期订单、稳定复购、信用沉淀" : "脾胃消化、湿气困重、拖延堵塞、家宅维修、库存积压",
+        金: mode === "wealth" ? "报价谈判、合同结算、工具设备、规则效率、回款确认" : "肺呼吸、皮肤牙齿、刀金磕碰、合同处罚、车辆器械损耗",
+        水: mode === "wealth" ? "信息渠道、远方客户、物流流动、灵感方案、线上订单" : "肾泌尿、腰腿耳朵、交通水险、信息误传、资金流动失控"
+      };
+      return map[element] || "事务变化";
+    }
+
+    function relationEventText(type, mode) {
+      const wealthMap = {
+        合: "合作牵线、客户介绍、资源撮合、旧关系带来订单，但分账和交付边界要写清",
+        冲: "客户临时改价改期、付款节奏变化、库存或合同条件被迫调整",
+        刑: "合作里有压力、催促、责任追究或口舌争执，容易因流程细节卡住钱",
+        破: "暗中破耗、设备损坏、合同漏洞、定金尾款被拆分，利润被小项吃掉",
+        害: "误会暗耗、口头承诺不清、客户隐藏条件，容易有人情账和隐性成本"
+      };
+      const riskMap = {
+        合: "事情被关系牵住，容易因为亲友、伴侣、合作方而改变原计划",
+        冲: "突发变动、出行奔波、争执碰撞、旧问题翻起，重要事项容易临时改动",
+        刑: "压力、伤病、官非、口舌、内耗变重，硬扛和赌气信号增强",
+        破: "破财破物、关系裂缝、计划拆改、设备维修、合同细节出问题",
+        害: "暗耗误会、小人背后消耗、信息不对称、身体小毛病拖大"
+      };
+      return (mode === "wealth" ? wealthMap : riskMap)[type] || "事项被引动";
+    }
+
+    function splitSummaryText(text) {
+      return String(text || "")
+        .split(/[、，；;,.。]/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    function impactFocus(items) {
+      const people = [];
+      const matters = [];
+      (items || []).filter(Boolean).forEach((item) => {
+        if (item.people) people.push(...splitSummaryText(item.people));
+        if (item.matters) matters.push(...splitSummaryText(item.matters));
+        [item.target, item.base].filter(Boolean).forEach((layer) => {
+          const palace = palaceMeaning(layer);
+          people.push(...splitSummaryText(palace.people));
+          matters.push(...splitSummaryText(palace.matters));
+        });
+      });
+      return {
+        people: uniqueList(people).slice(0, 4).join("、") || "自己和相关人事",
+        matters: uniqueList(matters).slice(0, 4).join("、") || "当天事务"
+      };
+    }
+
+    function describeInteractionImpact(item, mode) {
+      const targetPalace = palaceMeaning(item.target);
+      const basePalace = palaceMeaning(item.base);
+      const relText = relationEventText(item.type, mode);
+      const people = uniqueList([targetPalace.people, basePalace.people]).join("、");
+      return `${item.label}：应${people}，主${relText}`;
+    }
+
+    function describeEnergyImpact(ctx, energy, mode) {
+      const useful = ctx.favorable.includes(energy.dominant) ? "喜用被引动，推动信号增强" : "非优先喜用，失衡信号增强";
+      const carry = ctx.strength.label === "偏弱" && energy.dominantRel === "财星" ? "，身弱财重先看承接力" : "";
+      return `能量：${energy.dominant}旺(${energy.dominantRel})、${energy.weakest}弱；${useful}${carry}`;
+    }
+
+    function describeStarImpact(starStrength, mode) {
+      const repeated = starStrength.repeated;
+      if (!repeated.length) return "";
+      const starMap = {
+        天乙贵人: "贵人助力",
+        禄神: "收入岗位",
+        文昌: "文书证件",
+        桃花: "客户人缘",
+        羊刃: "磕碰争执",
+        灾煞: "突发阻滞",
+        驿马: "出行奔波",
+        伏吟: "旧事反复"
+      };
+      const selected = repeated
+        .filter((item) => mode === "wealth" ? ["天乙贵人", "禄神", "文昌", "桃花"].includes(item.star) : ["羊刃", "灾煞", "驿马", "伏吟"].includes(item.star))
+        .slice(0, 3);
+      if (!selected.length) return "";
+      return `神煞：${selected.map((item) => `${item.star}${item.count}见`).join("、")}，${selected.map((item) => starMap[item.star] || "信号增强").slice(0, 2).join("、")}`;
+    }
+
+    function describeKillingDisasterImpact(layers, starStrength, severeEffects, skyConflicts) {
+      const killingLayers = layers.filter((layer) => layer.gods.some((god) => god.includes("杀")));
+      const disasterStars = starStrength.list.filter((item) => item.star === "灾煞");
+      const parts = [];
+      if (killingLayers.length) {
+        parts.push(`七杀：${killingLayers.map((layer) => `${layer.label}${layer.pillar.text}`).slice(0, 3).join("、")}，防压力、处罚、炎症痛感`);
+      }
+      if (disasterStars.length) {
+        parts.push(`灾煞：${uniqueList(disasterStars.flatMap((item) => item.layers)).slice(0, 3).join("、")}，防突发病痛、破财、交通`);
+      }
+      if (skyConflicts.length) {
+        const focus = impactFocus(skyConflicts);
+        parts.push(`天克地冲：${skyConflicts.slice(0, 2).map((item) => item.label).join("、")}，多应${focus.people}`);
+      }
+      if (severeEffects.length) {
+        const familyHits = severeEffects.filter((item) => ["birthYear", "birthMonth", "birthHour"].includes(item.base.key));
+        if (familyHits.length) {
+          const familyFocus = impactFocus(familyHits);
+          parts.push(`亲人宫：${familyFocus.people}，看${familyFocus.matters}`);
+        }
+      }
+      return uniqueList(parts).slice(0, 3).join("；");
+    }
+
+    function buildSpecificPrediction(ctx, mode, details) {
+      const { energy, interactions, combineEffects, severeEffects, skyConflicts, concurrent, starStrength, wealthLayers, peerLayers, weakPressure, layers } = details;
+      const mainSignals = mode === "wealth"
+        ? combineEffects.concat(severeEffects.slice(0, 1), skyConflicts.slice(0, 1))
+        : skyConflicts.concat(severeEffects, combineEffects.slice(0, 1));
+      const focus = impactFocus(mainSignals);
+      const parts = [describeEnergyImpact(ctx, energy, mode)];
+      if (mainSignals.length) parts.push(`重点：${focus.people}；${focus.matters}`);
+      if (mode === "wealth") {
+        const moneyFocus = wealthLayers.length
+          ? `财星动在${uniqueList(wealthLayers).slice(0, 3).join("、")}`
+          : combineEffects.length
+            ? "合化带来资源撮合"
+            : "重点看客户、报价和现金流";
+        parts.push(`可能：${moneyFocus}，利报价、回款、复购或资源变现`);
+        const starText = describeStarImpact(starStrength, mode);
+        if (starText) parts.push(starText);
+        const warning = peerLayers.length
+          ? "合伙分账、同行竞争、人情支出先算清"
+          : weakPressure
+            ? "现金流、库存和交付能力先评估"
+            : "价格、数量、交付时间和收款方式写清";
+        parts.push(`伴随：${warning}`);
+      } else {
+        const killingDisasterText = describeKillingDisasterImpact(layers, starStrength, severeEffects, skyConflicts || []);
+        if (killingDisasterText) parts.push(killingDisasterText);
+        const riskSource = uniqueList((skyConflicts || []).concat(severeEffects).map((item) => item.label)).slice(0, 3).join("、");
+        parts.push(`可能：${riskSource ? `${riskSource}引发` : "忌神叠加时易见"}病痛、破财、交通、合同或关系波动`);
+        parts.push("高发场景：高风险出行、冲动投资、大额付款和无书面承诺更容易出问题");
+      }
+      return `${uniqueList(parts).filter(Boolean).slice(0, 5).join("。")}。`;
+    }
+
+    function conciseSpecialReasons(reasons, mode) {
+      const list = uniqueList(reasons).filter(Boolean);
+      if (!list.length) return "";
+      const first = list[0];
+      const priority = mode === "wealth"
+        ? ["财星", "合化", "并临", "食伤", "官杀", "神煞助力", "能量", "比劫", "天克地冲", "刑冲破害", "日主偏弱"]
+        : ["天克地冲", "刑冲破害", "凶煞", "七杀", "灾煞", "并临", "能量偏枯", "风险神煞", "身弱", "贵人"];
+      const selected = [first];
+      priority.forEach((keyword) => {
+        const hit = list.find((item) => item !== first && item.includes(keyword) && !selected.includes(item));
+        if (hit) selected.push(hit);
+      });
+      list.forEach((item) => {
+        if (selected.length < 5 && !selected.includes(item)) selected.push(item);
+      });
+      return selected.slice(0, 5).join("；");
+    }
+
+    function dateFortuneScore(ctx, date, mode) {
+      const cache = specialScoreCache(ctx, mode, date);
+      const cached = cache.get();
+      if (cached) return cached;
+      const stack = flowStackForDate(ctx, date);
+      const pillar = stack.day.pillar;
+      const layers = flowLayerProfiles(ctx, stack).map((profile) => scoreLayerInfluence(ctx, profile));
+      const interactions = flowBranchInteractions(ctx, stack);
+      const effects = uniqueList(interactions.map((item) => item.label));
+      const effectText = flowEffectText(interactions);
+      const stars = uniqueList(layers.flatMap((layer) => layer.stars).filter((star) => star !== "无明显常用神煞"));
+      const concurrent = concurrentSignals(ctx, layers);
+      const energy = flowEnergyProfile(ctx, layers);
+      const starStrength = starStrengthProfile(layers);
+      const skyConflicts = skyClashGroundConflict(ctx, stack);
+      const stemGod = layers.find((layer) => layer.key === "day")?.stemGod || tenGod(ctx.pillars[2].stem, pillar.stem);
+      const stackLabel = stackText(stack);
+      let wealth = 43;
+      let risk = 36;
+      let wealthPower = 0;
+      let outputPower = 0;
+      let officerPower = 0;
+      let peerPower = 0;
+      let weakPressure = 0;
+      const wealthLayers = [];
+      const outputLayers = [];
+      const officerLayers = [];
+      const peerLayers = [];
+
+      layers.forEach((layer) => {
+        const weight = layer.weight;
+        const wealthSources = godSources(layer, (god) => god.includes("财"), "财星");
+        const outputSources = godSources(layer, (god) => god.includes("食") || god.includes("伤"), "输出");
+        const officerSources = godSources(layer, (god) => god.includes("官") || god.includes("杀"), "官星");
+        const peerSources = godSources(layer, (god) => god.includes("比") || god.includes("劫"), "比助");
+        wealth += layer.favorableCount * 4.5 * weight;
+        risk += layer.unfavorableCount * 2.5 * weight;
+        if (layer.wealthHit) {
+          const amount = layer.weakCannotCarry ? 2.5 * weight : 8.5 * weight;
+          wealth += amount;
+          wealthPower += amount;
+          wealthLayers.push(layerSignalText(layer, wealthSources));
+          if (layer.weakCannotCarry) {
+            weakPressure += 1;
+            risk += 5 * weight;
+          }
+        }
+        if (layer.outputHit) {
+          wealth += 4.5 * weight;
+          outputPower += 4.5 * weight;
+          outputLayers.push(layerSignalText(layer, outputSources));
+        }
+        if (layer.officerHit) {
+          wealth += 2.2 * weight;
+          risk += layer.gods.some((god) => god.includes("杀")) ? 4.5 * weight : 2 * weight;
+          officerPower += 2.2 * weight;
+          officerLayers.push(layerSignalText(layer, officerSources));
+        }
+        if (layer.resourceHit && ["偏弱", "从强"].includes(ctx.strength.label)) {
+          wealth += 3 * weight;
+          risk -= 1.5 * weight;
+        }
+        if (layer.peerHit) {
+          wealth -= 4.5 * weight;
+          risk += 3 * weight;
+          peerPower += 4.5 * weight;
+          peerLayers.push(layerSignalText(layer, peerSources));
+        }
+        if (layer.stars.includes("禄神")) wealth += 5.5 * weight;
+        if (layer.stars.includes("天乙贵人")) {
+          wealth += 4.5 * weight;
+          risk -= 4 * weight;
+        }
+        if (layer.stars.includes("文昌")) wealth += 2.5 * weight;
+        if (layer.stars.includes("桃花")) wealth += ctx.state.focus === "love" || ctx.state.focus === "career" ? 2 * weight : 0.5 * weight;
+        if (layer.stars.includes("羊刃")) risk += 7.5 * weight;
+        if (layer.stars.includes("灾煞")) risk += 8.5 * weight;
+        if (layer.stars.includes("驿马")) risk += 4 * weight;
+        if (layer.stars.includes("伏吟")) risk += 4 * weight;
+      });
+
+      if (wealthPower && outputPower) wealth += Math.min(10, 4 + outputPower * 0.35);
+      if (wealthPower && officerPower && peerPower < wealthPower) wealth += 4;
+      if (wealthPower && peerPower > wealthPower * 0.65) wealth -= 7;
+      if (weakPressure) wealth -= weakPressure * 3;
+      if (balanceState(ctx.counts) === "biased") risk += 4;
+
+      concurrent.forEach((signal) => {
+        if (signal.wealth) wealth += 5.5 * signal.strength;
+        if (signal.output && wealthPower) wealth += 2.4 * signal.strength;
+        if (signal.officer && wealthPower) wealth += 1.4 * signal.strength;
+        if (signal.favorable) wealth += 3.6 * signal.strength;
+        if (signal.goodStars.length) wealth += signal.goodStars.length * 2.8 * signal.strength;
+        if (signal.peer && wealthPower) wealth -= 3.8 * signal.strength;
+        if (!signal.favorable && !signal.wealth) risk += 2.4 * signal.strength;
+        if (signal.riskStars.length) risk += signal.riskStars.length * 5.2 * signal.strength;
+        if (signal.exact) risk += 4.2 * signal.strength;
+        if (signal.sameBranch && signal.riskStars.length) risk += 2.8 * signal.strength;
+      });
+
+      if (energy.imbalance) {
+        risk += 9 + energy.gap * 1.2;
+        wealth -= energy.dominantRel === "财星" && ctx.strength.label !== "偏弱" ? 0 : 3;
+      }
+      if (energy.dominantRel === "财星") wealth += ctx.strength.label === "偏弱" ? 1.5 : 6;
+      if (energy.dominantRel === "输出" && wealthPower) wealth += 3.5;
+      if (ctx.favorable.includes(energy.dominant)) wealth += 4.5;
+      else risk += 3.5;
+      if (energy.favorablePower < energy.wealthPower * 0.55 && ctx.strength.label === "偏弱") {
+        risk += 6;
+        wealth -= 4;
+      }
+      wealth += Math.min(12, starStrength.goodPower * 0.28);
+      risk += Math.min(18, starStrength.riskPower * 0.35);
+      if (starStrength.repeated.some((item) => ["羊刃", "灾煞"].includes(item.star))) risk += 9;
+      if (starStrength.repeated.some((item) => ["天乙贵人", "禄神"].includes(item.star))) wealth += 5;
+
+      skyConflicts.forEach((signal) => {
+        risk += 13 * signal.weight;
+        wealth -= signal.wealth ? 6 * signal.weight : 3.5 * signal.weight;
+        if (signal.touchesDay) risk += 6;
+        if (signal.touchesFamily) risk += 4;
+        if (signal.favorable) wealth -= 2.5;
+      });
+
+      const severeEffects = interactions.filter((item) => ["冲", "刑", "破", "害"].includes(item.type));
+      const combineEffects = interactions.filter((item) => item.type === "合");
+      const riskStars = stars.filter((star) => ["羊刃", "灾煞", "驿马", "伏吟"].includes(star));
+      severeEffects.forEach((item) => {
+        const involved = [branchElement[item.targetBranch], branchElement[item.baseBranch]];
+        const touchesWealth = involved.some((element) => relation(ctx.dayElement, element) === "财星");
+        const touchesFavorable = involved.some((element) => ctx.favorable.includes(element));
+        const touchesDay = item.base.key === "birthDay";
+        const riskMap = { 冲: 8.5, 刑: 10, 破: 7, 害: 8 };
+        const wealthPenaltyMap = { 冲: 3.8, 刑: 4.6, 破: 4.2, 害: 3.6 };
+        risk += (riskMap[item.type] || 5) * item.weight;
+        wealth -= (wealthPenaltyMap[item.type] || 2.5) * item.weight;
+        if (touchesDay) risk += 3.5 * item.weight;
+        if (touchesDay) wealth -= 2.5 * item.weight;
+        if (touchesWealth) wealth -= 6.5 * item.weight;
+        if (touchesFavorable) wealth -= 4.5 * item.weight;
+      });
+      if (severeEffects.length >= 4) {
+        risk += 8;
+        wealth -= 10;
+      }
+      if (riskStars.length >= 2) wealth -= 4;
+
+      combineEffects.forEach((item) => {
+        const favorableTransform = elementIsFavorable(ctx, item.element);
+        const wealthTransform = elementIsWealth(ctx, item.element);
+        if (favorableTransform) wealth += 6 * item.weight;
+        if (wealthTransform) wealth += 5 * item.weight;
+        if (!favorableTransform && item.element) risk += 2.5 * item.weight;
+        if (item.base.key === "birthDay" || item.target.key === "day") wealth += 1.5 * item.weight;
+      });
+
+      const goodStars = stars.filter((star) => ["禄神", "天乙贵人", "文昌"].includes(star));
+      if (goodStars.length && severeEffects.length) risk -= 3;
+      const rawScore = mode === "wealth" ? wealth : risk;
+      const severeTie = severeEffects.reduce((sum, item) => {
+        const map = { 冲: 3.5, 刑: 4.5, 破: 3.2, 害: 3 };
+        return sum + (map[item.type] || 1.5) * item.weight;
+      }, 0);
+      const starTie = riskStars.length * 2.2 - goodStars.length * 0.8;
+      const tieScore = mode === "wealth"
+        ? rawScore + wealthPower * 0.25 + outputPower * 0.2 + goodStars.length * 1.5 + concurrent.filter((item) => item.wealth || item.favorable).length * 1.8 - severeEffects.length * 1.2
+        : rawScore + severeTie + starTie + weakPressure * 1.5 + concurrent.reduce((sum, item) => sum + (item.riskStars.length ? item.strength : 0), 0) + (energy.imbalance ? energy.gap : 0) + skyConflicts.length * 4;
+      const score = displaySpecialScore(rawScore, mode);
+      const reasons = [stackLabel];
+      if (mode === "wealth") {
+        if (concurrent.some((item) => item.wealth || item.favorable || item.goodStars.length)) reasons.push(`并临助财：${concurrent.filter((item) => item.wealth || item.favorable || item.goodStars.length).slice(0, 2).map((item) => item.label).join("、")}`);
+        if (energy.dominantRel === "财星" || ctx.favorable.includes(energy.dominant)) reasons.push(`能量偏${energy.dominant}，为${energy.dominantRel}${ctx.favorable.includes(energy.dominant) ? "且属喜用" : ""}`);
+        if (starStrength.repeated.some((item) => ["天乙贵人", "禄神", "文昌"].includes(item.star))) reasons.push(`吉神重复：${starStrength.repeated.filter((item) => ["天乙贵人", "禄神", "文昌"].includes(item.star)).map((item) => `${item.star}${item.count}见`).slice(0, 2).join("、")}`);
+        if (wealthLayers.length) reasons.push(`财星在${uniqueList(wealthLayers).slice(0, 3).join("、")}被引动`);
+        if (outputLayers.length && wealthLayers.length) reasons.push(`食伤生财：${uniqueList(outputLayers).slice(0, 2).join("、")}先输出再取财`);
+        if (officerLayers.length && wealthLayers.length) reasons.push(`官杀护财：${uniqueList(officerLayers).slice(0, 2).join("、")}利规则合同`);
+        if (combineEffects.length) {
+          const combineText = uniqueList(combineEffects.map((item) => `${item.label}${elementIsFavorable(ctx, item.element) ? "为喜用" : elementIsWealth(ctx, item.element) ? "为财星" : ""}`)).slice(0, 2).join("、");
+          reasons.push(`合化信号：${combineText}`);
+        }
+        if (goodStars.length) reasons.push(`神煞助力：${goodStars.slice(0, 3).join("、")}`);
+        if (peerLayers.length) reasons.push(`比劫分财：${uniqueList(peerLayers).slice(0, 2).join("、")}`);
+        if (skyConflicts.length) reasons.push(`天克地冲风险：${skyConflicts.slice(0, 2).map((item) => item.label).join("、")}`);
+        if (severeEffects.length) reasons.push(`刑冲破害：${uniqueList(severeEffects.map((item) => item.label)).slice(0, 2).join("、")}`);
+        if (weakPressure) reasons.push("日主偏弱见财，现金流和承接压力同步出现");
+      } else {
+        if (concurrent.length) reasons.push(`并临加重：${concurrent.slice(0, 3).map((item) => item.label).join("、")}`);
+        if (skyConflicts.length) reasons.push(`天克地冲：${skyConflicts.slice(0, 3).map((item) => item.label).join("、")}`);
+        if (energy.imbalance) reasons.push(`能量偏枯：${energy.dominant}过旺、${energy.weakest}偏弱，${energy.dominantRel}气过重`);
+        if (starStrength.repeated.some((item) => ["羊刃", "灾煞", "驿马", "伏吟"].includes(item.star))) reasons.push(`凶煞重复：${starStrength.repeated.filter((item) => ["羊刃", "灾煞", "驿马", "伏吟"].includes(item.star)).map((item) => `${item.star}${item.count}见`).slice(0, 3).join("、")}`);
+        if (severeEffects.length) reasons.push(`刑冲破害叠加：${uniqueList(severeEffects.map((item) => item.label)).slice(0, 4).join("、")}`);
+        if (riskStars.length) reasons.push(`风险神煞：${riskStars.slice(0, 4).join("、")}`);
+        if (layers.some((layer) => layer.gods.some((god) => god.includes("杀") || god.includes("伤")))) reasons.push("七杀伤官压力较明显，冲突、伤病和口舌信号增强");
+        if (weakPressure) reasons.push("身弱财压，钱款承诺和身体消耗同看");
+        if (combineEffects.some((item) => elementIsFavorable(ctx, item.element))) reasons.push("喜用合化形成缓冲");
+        if (goodStars.length) reasons.push(`贵人缓解：${goodStars.slice(0, 2).join("、")}`);
+        if (!severeEffects.length && !riskStars.length) reasons.push("刑冲破害不重，风险主要看忌神五行叠加");
+      }
+      const detail = buildSpecificPrediction(ctx, mode, {
+        energy,
+        interactions,
+        combineEffects,
+        severeEffects,
+        skyConflicts,
+        concurrent,
+        starStrength,
+        wealthLayers,
+        peerLayers,
+        weakPressure,
+        layers
+      });
+      return cache.set({ date, pillar, stemGod, stars, effects, stack, score, rawScore, tieScore, mode, reasons: conciseSpecialReasons(reasons, mode), detail });
+    }
+
+    function compareSpecialDates(a, b) {
+      const primary = (b.rawScore ?? b.score) - (a.rawScore ?? a.score);
+      if (Math.abs(primary) > 0.001) return primary;
+      const secondary = (b.tieScore ?? 0) - (a.tieScore ?? 0);
+      if (Math.abs(secondary) > 0.001) return secondary;
+      return Math.abs(b.pillar.index - 30) - Math.abs(a.pillar.index - 30);
+    }
+
+    function bestDateForYear(ctx, year, mode) {
+      if (!ctx.specialYearCache) ctx.specialYearCache = {};
+      const cacheKey = `${mode}:${year}`;
+      if (ctx.specialYearCache[cacheKey]) return ctx.specialYearCache[cacheKey];
+      const scored = candidateDatesForYear(ctx, year).map((date) => dateFortuneScore(ctx, date, mode));
+      scored.sort(compareSpecialDates);
+      ctx.specialYearCache[cacheKey] = scored[0];
+      return scored[0];
+    }
+
+    function buildSpecialDates(ctx) {
+      const startYear = ctx.birthDate.getFullYear();
+      const endYear = startYear + 88;
+      const currentYear = new Date().getFullYear();
+      const lifeYears = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
+      const wealthLife = lifeYears.map((year) => bestDateForYear(ctx, year, "wealth")).sort(compareSpecialDates)[0];
+      const riskLife = lifeYears.map((year) => bestDateForYear(ctx, year, "risk")).sort(compareSpecialDates)[0];
+      return {
+        wealth: {
+          life: wealthLife,
+          current: bestDateForYear(ctx, currentYear, "wealth"),
+          yearly: Array.from({ length: 10 }, (_, i) => bestDateForYear(ctx, currentYear + i, "wealth"))
+        },
+        risk: {
+          life: riskLife,
+          current: bestDateForYear(ctx, currentYear, "risk"),
+          yearly: Array.from({ length: 10 }, (_, i) => bestDateForYear(ctx, currentYear + i, "risk"))
+        }
+      };
+    }
+
+    function compactDetail(text, maxLength = 140) {
+      if (!text || text.length <= maxLength) return text || "";
+      const sliced = text.slice(0, maxLength);
+      const cut = Math.max(sliced.lastIndexOf("。"), sliced.lastIndexOf("；"));
+      return `${sliced.slice(0, cut > 80 ? cut + 1 : maxLength)}...`;
+    }
+
+    function specialRow(item, label, compact = false) {
+      const detail = compact ? compactDetail(item.detail, 120) : item.detail;
+      const mode = item.mode || "wealth";
+      return `<div class="date-row">
+        <strong>${escapeHtml(label)}</strong>
+        <span>${escapeHtml(formatFullDate(item.date))} ${escapeHtml(item.pillar.text)}｜${escapeHtml(item.reasons)}</span>
+        <span class="score-mini">${escapeHtml(item.score)}分｜${escapeHtml(scoreGrade(item.score, mode))}</span>
+        ${detail ? `<p class="date-detail">${escapeHtml(detail)}</p>` : ""}
+      </div>`;
+    }
+
+    function renderSpecialPanel(type) {
+      const panel = document.getElementById(type === "wealth" ? "wealthDatesPanel" : "riskDatesPanel");
+      if (!chartContext) {
+        panel.innerHTML = `<div class="empty-state">请先生成报告，再查看专项日期。</div>`;
+        return;
+      }
+      if (!chartContext.specialDates) chartContext.specialDates = buildSpecialDates(chartContext);
+      const data = chartContext.specialDates[type];
+      const title = type === "wealth" ? "大财日期" : "灾害和健康日期";
+      const mainTitle = type === "wealth" ? "一生财运峰值" : "一生最需谨慎";
+      const currentTitle = type === "wealth" ? "今年财运最好的一天" : "今年最需谨慎的一天";
+      const tip = type === "wealth"
+        ? "按原局、大运、流年、流月、流日叠加评分，重点看财星、合化、并临和回款承接力。"
+        : "按原局、大运、流年、流月、流日叠加评分，重点看天克地冲、刑冲破害、七杀灾煞和亲人宫位。";
+      panel.innerHTML = `
+        <div class="special-grid">
+          <article class="special-card">
+            <h3>${escapeHtml(mainTitle)}</h3>
+            ${specialRow(data.life, `${data.life.date.getFullYear()}年`)}
+            <p>${escapeHtml(tip)}</p>
+          </article>
+          <article class="special-card">
+            <h3>${escapeHtml(currentTitle)}</h3>
+            ${specialRow(data.current, `${data.current.date.getFullYear()}年`)}
+            <p>日期为趋势预测，实际仍需结合真实事项、环境和个人选择。</p>
+          </article>
+        </div>
+        <div class="special-card" style="margin-top:12px">
+          <h3>未来十年逐年${escapeHtml(title)}</h3>
+          <div class="date-list">
+            ${data.yearly.map((item) => specialRow(item, `${item.date.getFullYear()}年`, true)).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleSpecialPanel(type) {
+      const panelId = type === "wealth" ? "wealthDatesPanel" : "riskDatesPanel";
+      const btnId = type === "wealth" ? "wealthDatesBtn" : "riskDatesBtn";
+      const otherPanelId = type === "wealth" ? "riskDatesPanel" : "wealthDatesPanel";
+      const otherBtnId = type === "wealth" ? "riskDatesBtn" : "wealthDatesBtn";
+      const panel = document.getElementById(panelId);
+      const btn = document.getElementById(btnId);
+      const otherPanel = document.getElementById(otherPanelId);
+      const otherBtn = document.getElementById(otherBtnId);
+      const willShow = !panel.classList.contains("show");
+      otherPanel.classList.remove("show");
+      otherPanel.setAttribute("aria-hidden", "true");
+      otherBtn.setAttribute("aria-expanded", "false");
+      if (willShow) {
+        renderSpecialPanel(type);
+        panel.classList.add("show");
+        panel.setAttribute("aria-hidden", "false");
+        btn.setAttribute("aria-expanded", "true");
+        document.getElementById("specialTag").textContent = type === "wealth" ? "大财日期" : "灾害健康";
+      } else {
+        panel.classList.remove("show");
+        panel.setAttribute("aria-hidden", "true");
+        btn.setAttribute("aria-expanded", "false");
+        document.getElementById("specialTag").textContent = "点击查看";
+      }
+    }
+
+    function resetSpecialPanels() {
+      ["wealthDatesPanel", "riskDatesPanel"].forEach((id) => {
+        const panel = document.getElementById(id);
+        panel.classList.remove("show");
+        panel.setAttribute("aria-hidden", "true");
+      });
+      document.getElementById("wealthDatesPanel").innerHTML = `<div class="empty-state">生成报告后，点击“大财日期”会显示一生财运峰值、今年财运最好的一天和未来十年逐年财运日。</div>`;
+      document.getElementById("riskDatesPanel").innerHTML = `<div class="empty-state">生成报告后，点击“灾害和健康日期”会显示一生低谷风险日、今年高风险日和未来十年逐年风险日。</div>`;
+      ["wealthDatesBtn", "riskDatesBtn"].forEach((id) => document.getElementById(id).setAttribute("aria-expanded", "false"));
+      document.getElementById("specialTag").textContent = "点击查看";
+    }
+
+    function buildLuckCycles(ctx) {
+      const birthYearStem = ctx.pillars[0].stem;
+      const isYangYear = stems.indexOf(birthYearStem) % 2 === 0;
+      const forward = (ctx.state.gender === "男" && isYangYear) || (ctx.state.gender === "女" && !isYangYear);
+      const startAge = 6;
+      return Array.from({ length: 8 }, (_, i) => {
+        const offset = forward ? i + 1 : -(i + 1);
+        const stemIndex = (stems.indexOf(ctx.pillars[1].stem) + offset + 10) % 10;
+        const branchIndex = (branches.indexOf(ctx.pillars[1].branch) + offset + 12) % 12;
+        const stem = stems[stemIndex];
+        const branch = branches[branchIndex];
+        const start = startAge + i * 10;
+        return {
+          pillar: { stem, branch, text: stem + branch, index: cycleIndex(stem, branch) },
+          startAge: start,
+          endAge: start + 9,
+          startYear: ctx.birthDate.getFullYear() + start,
+          endYear: ctx.birthDate.getFullYear() + start + 9
+        };
+      });
+    }
+
+    function buildFlowYears(ctx, luck) {
+      return Array.from({ length: 10 }, (_, i) => {
+        const year = luck.startYear + i;
+        return { year, pillar: ganzhi(year - 1984) };
+      });
+    }
+
+    function buildFlowMonths(yearItem) {
+      const yearStemIndex = (yearItem.pillar.index % 10 + 10) % 10;
+      return monthBranches.map((branch, i) => {
+        const stem = stems[(startStemForTigerMonth[yearStemIndex] + i) % 10];
+        return { month: i + 1, pillar: { stem, branch, text: stem + branch, index: cycleIndex(stem, branch) } };
+      });
+    }
+
+    function buildFlowDays(yearItem, monthItem) {
+      const base = new Date(yearItem.year, monthItem.month - 1, 1, 12, 0, 0);
+      const daysInMonth = new Date(yearItem.year, monthItem.month, 0).getDate();
+      return Array.from({ length: daysInMonth }, (_, i) => {
+        const date = new Date(base);
+        date.setDate(base.getDate() + i);
+        return { date, pillar: dayPillar(date) };
+      });
+    }
+
+    function renderMingpan(ctx) {
+      const labels = ["年柱", "月柱", "日柱", "时柱"];
+      const grid = document.getElementById("mingpanGrid");
+      grid.innerHTML = ctx.pillars.map((p, index) => {
+        const hidden = hiddenStems[p.branch].map((s) => `${s}${tenGod(ctx.pillars[2].stem, s)}`).join("、");
+        return `<article class="mingpan-card">
+          <span class="tag">${escapeHtml(labels[index])}</span>
+          <div class="big">${escapeHtml(p.text)}</div>
+          <p>天干十神：${escapeHtml(index === 2 ? "日主" : tenGod(ctx.pillars[2].stem, p.stem))}</p>
+          <p>地支藏干：${escapeHtml(hidden)}</p>
+          <p>纳音：${escapeHtml(pillarNayin(p))}；旬空：${escapeHtml(emptyBranches(p))}</p>
+        </article>`;
+      }).join("");
+      colorizeGanzhi(grid);
+    }
+
+    function renderPatternBox(ctx) {
+      const pattern = ctx.pattern || buildPattern(ctx);
+      const box = document.getElementById("patternBox");
+      box.innerHTML = `
+        <div class="detail-title">
+          <h3>${escapeHtml(pattern.name)}</h3>
+          <span class="tag">${escapeHtml(pattern.god)}</span>
+        </div>
+        <div class="meta">
+          <span class="tag">取格：${escapeHtml(pattern.stem)}</span>
+          <span class="tag">日主：${escapeHtml(ctx.strength.label)}</span>
+          <span class="tag">喜用：${escapeHtml(pattern.useful)}</span>
+        </div>
+        <p><strong>取格依据：</strong>${escapeHtml(pattern.basis)}</p>
+        <p><strong>性格追求：</strong>${escapeHtml(pattern.profile)}</p>
+        <p><strong>喜用忌凶：</strong>当前喜用偏向${escapeHtml(pattern.useful)}，过度或不利处先看${escapeHtml(pattern.avoid)}。${escapeHtml(pattern.level)}。</p>
+      `;
+      colorizeGanzhi(box);
+    }
+
+    function renderFullChart(ctx) {
+      chartContext = ctx;
+      selectCurrentFlow(new Date());
+      renderPatternBox(ctx);
+      renderMingpan(ctx);
+      renderLuckTimeline();
+      renderFlowYears();
+      document.getElementById("chartTag").textContent = `${ctx.state.name || "命主"}完整命盘`;
+    }
+
+    function revealFullChart() {
+      const panel = document.getElementById("fullChart");
+      panel.classList.add("show");
+      panel.style.display = "grid";
+      panel.setAttribute("aria-hidden", "false");
+      updateFullChartButton(true);
+    }
+
+    function hideFullChart() {
+      const panel = document.getElementById("fullChart");
+      panel.classList.remove("show");
+      panel.style.display = "";
+      panel.setAttribute("aria-hidden", "true");
+      updateFullChartButton(false);
+    }
+
+    function updateFullChartButton(isOpen) {
+      const btn = document.getElementById("fullChartBtn");
+      if (!btn) return;
+      const label = isOpen ? "隐藏完整命盘" : "查看完整命盘";
+      const textNode = Array.from(btn.childNodes).find((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+      if (textNode) textNode.textContent = ` ${label}`;
+      else btn.append(` ${label}`);
+      btn.title = label;
+      btn.setAttribute("aria-expanded", String(isOpen));
+    }
+
+    function selectCurrentFlow(today) {
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth() + 1;
+      selectedLuck = chartContext.lucks.findIndex((luck) => currentYear >= luck.startYear && currentYear <= luck.endYear);
+      if (selectedLuck < 0) {
+        selectedLuck = currentYear < chartContext.lucks[0].startYear ? 0 : chartContext.lucks.length - 1;
+      }
+      const luck = chartContext.lucks[selectedLuck];
+      selectedYear = Math.max(0, Math.min(9, currentYear - luck.startYear));
+      selectedMonth = Math.max(0, Math.min(11, currentMonth - 1));
+      selectedDay = today.getDate() - 1;
+    }
+
+    function renderLuckTimeline() {
+      const lucks = chartContext.lucks;
+      const timeline = document.getElementById("luckTimeline");
+      timeline.innerHTML = lucks.map((l, i) => `
+        <button class="pick ${i === selectedLuck ? "active" : ""}" type="button" data-luck="${i}">
+          <strong>${l.pillar.text}</strong>
+          <span>${l.startAge}-${l.endAge}岁</span>
+          <span>${l.startYear}-${l.endYear}</span>
+        </button>
+      `).join("");
+      colorizeGanzhi(timeline);
+    }
+
+    function renderFlowYears() {
+      const years = buildFlowYears(chartContext, chartContext.lucks[selectedLuck]);
+      chartContext.flowYears = years;
+      selectedYear = Math.min(selectedYear, years.length - 1);
+      const yearFlow = document.getElementById("yearFlow");
+      yearFlow.innerHTML = years.map((y, i) => `
+        <button class="pick ${i === selectedYear ? "active" : ""}" type="button" data-year="${i}">
+          <strong>${y.pillar.text}</strong><span>${y.year}年</span>
+        </button>
+      `).join("");
+      colorizeGanzhi(yearFlow);
+      renderFlowMonths();
+      const day = chartContext.flowDays[selectedDay];
+      showFlowDetail("流日", day.pillar, `${day.date.getFullYear()}-${pad(day.date.getMonth() + 1)}-${pad(day.date.getDate())}`);
+      requestAnimationFrame(scrollActiveFlowIntoView);
+    }
+
+    function renderFlowMonths() {
+      const months = buildFlowMonths(chartContext.flowYears[selectedYear]);
+      chartContext.flowMonths = months;
+      selectedMonth = Math.min(selectedMonth, months.length - 1);
+      const monthFlow = document.getElementById("monthFlow");
+      monthFlow.innerHTML = months.map((m, i) => `
+        <button class="pick ${i === selectedMonth ? "active" : ""}" type="button" data-month="${i}">
+          <strong>${m.pillar.text}</strong><span>${m.month}月</span>
+        </button>
+      `).join("");
+      colorizeGanzhi(monthFlow);
+      renderFlowDays();
+    }
+
+    function renderFlowDays() {
+      const days = buildFlowDays(chartContext.flowYears[selectedYear], chartContext.flowMonths[selectedMonth]);
+      chartContext.flowDays = days;
+      selectedDay = Math.max(0, Math.min(selectedDay, days.length - 1));
+      const dayFlow = document.getElementById("dayFlow");
+      dayFlow.innerHTML = days.map((d, i) => `
+        <button class="pick ${i === selectedDay ? "active" : ""}" type="button" data-day="${i}">
+          <strong>${d.pillar.text}</strong><span>${d.date.getMonth() + 1}/${d.date.getDate()}</span>
+        </button>
+      `).join("");
+      colorizeGanzhi(dayFlow);
+    }
+
+    function scrollActiveFlowIntoView() {
+      ["luckTimeline", "yearFlow", "monthFlow", "dayFlow"].forEach((id) => {
+        const active = document.querySelector(`#${id} .pick.active`);
+        if (active) active.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    }
+
+    function showFlowDetail(type, pillar, label) {
+      const ctx = chartContext;
+      const dayStem = ctx.pillars[2].stem;
+      const stars = symbolicStars(ctx, pillar);
+      const effects = branchEffects(ctx, pillar);
+      const stemGod = tenGod(dayStem, pillar.stem);
+      const element = `${stemElement[pillar.stem]} / ${branchElement[pillar.branch]}`;
+      const predictions = starPrediction(stars);
+      const matches = knowledgeMatches({
+        tenGod: stemGod,
+        dayStrength: ctx.strength.label,
+        focus: ctx.state.focus,
+        element: stemElement[pillar.stem],
+        balance: balanceState(ctx.counts),
+        effectsText: effects.join("、"),
+        starsText: stars.join("、"),
+        periodKey: type
+      });
+      const knowledgeNote = knowledgeText(matches, "flow", 3);
+      const matchedTags = knowledgeTags(matches).slice(0, 4);
+      const scenarioText = tenGodScenario(stemGod, ctx);
+      const strategyText = effectStrategy(effects.join("、"), stemGod);
+      const detail = document.getElementById("flowDetail");
+      detail.innerHTML = `
+        <div class="detail-title">
+          <h3>${escapeHtml(type)} ${escapeHtml(pillar.text)}</h3>
+          <span class="tag">${escapeHtml(label)}</span>
+        </div>
+        <div class="meta">
+          <span class="tag">十神：${escapeHtml(stemGod)}</span>
+          <span class="tag">五行：${escapeHtml(element)}</span>
+          <span class="tag">纳音：${escapeHtml(pillarNayin(pillar))}</span>
+          ${matchedTags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}
+        </div>
+        <p><strong>神煞：</strong>${escapeHtml(stars.join("、"))}</p>
+        <p><strong>具体预测：</strong>${escapeHtml(scenarioText)}${escapeHtml(predictions.join(" "))}</p>
+        ${knowledgeNote ? `<p><strong>理论库：</strong>${escapeHtml(knowledgeNote)}</p>` : ""}
+        <p><strong>冲合刑破害：</strong>${escapeHtml(effects.join("、"))}</p>
+        <p><strong>应事预测：</strong>${escapeHtml(strategyText)}</p>
+        <p><strong>解读：</strong>${escapeHtml(pillar.text)}对日主${escapeHtml(dayStem)}形成${escapeHtml(stemGod)}之象。判断财运时先看日主能否承接，再看食伤是否生财、官杀是否护财、比劫是否分财；若同时见冲刑破害，事项容易伴随变动、压力、破耗、临时调整或沟通反复；若见合，则多与合作、邀约、关系牵动有关。此处为民俗预测提示，精细判断还需结合原局旺衰、用神与实际事项。</p>
+      `;
+      colorizeGanzhi(detail);
+    }
+
+    function encodeState(state) {
+      return btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+    }
+
+    function decodeState(value) {
+      try {
+        return JSON.parse(decodeURIComponent(escape(atob(value))));
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function formState() {
+      const form = document.getElementById("baziForm");
+      return {
+        name: form.name.value.trim(),
+        gender: form.gender.value,
+        birthDate: form.birthDate.value,
+        birthTime: form.birthTime.value,
+        calendar: form.calendar.value,
+        city: form.city.value.trim(),
+        focus: form.focus.value
+      };
+    }
+
+    function applyState(state) {
+      if (!state) return;
+      const form = document.getElementById("baziForm");
+      form.name.value = state.name || "";
+      form.birthDate.value = state.birthDate || "";
+      form.birthTime.value = state.birthTime || "";
+      form.calendar.value = state.calendar || "solar";
+      form.city.value = state.city || "";
+      form.focus.value = state.focus || "overall";
+      if (state.gender === "女") document.getElementById("female").checked = true;
+      else document.getElementById("male").checked = true;
+    }
+
+    function defaultAccountStore() {
+      return { version: 1, session: "", users: {} };
+    }
+
+    function readAccountStore() {
+      try {
+        const raw = localStorage.getItem(accountStorageKey);
+        if (!raw) return defaultAccountStore();
+        const store = JSON.parse(raw);
+        if (!store || typeof store !== "object") return defaultAccountStore();
+        return {
+          version: 1,
+          session: store.session || "",
+          users: store.users && typeof store.users === "object" ? store.users : {}
+        };
+      } catch (error) {
+        return defaultAccountStore();
+      }
+    }
+
+    function writeAccountStore(store) {
+      try {
+        localStorage.setItem(accountStorageKey, JSON.stringify(store));
+        return true;
+      } catch (error) {
+        showToast("浏览器阻止了本地保存");
+        return false;
+      }
+    }
+
+    function useRemoteAccounts() {
+      return location.protocol === "http:" || location.protocol === "https:";
+    }
+
+    function useLocalAccountServer() {
+      const host = location.hostname;
+      return host === "localhost" ||
+        host === "127.0.0.1" ||
+        host.startsWith("192.168.") ||
+        host.startsWith("10.") ||
+        /^172\.(1[6-9]|2\d|3[0-1])\./.test(host);
+    }
+
+    function accountApiUrl(path) {
+      if (useLocalAccountServer()) return `/api${path}`;
+      return `/.netlify/functions/bazi-account?route=${encodeURIComponent(path)}`;
+    }
+
+    function normalizeRemoteRecords(records) {
+      if (Array.isArray(records)) return records;
+      if (records && typeof records === "object" && records.id) return [records];
+      return [];
+    }
+
+    async function accountApi(path, options = {}) {
+      const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
+      if (remoteAuthToken) headers.Authorization = `Bearer ${remoteAuthToken}`;
+      let response;
+      try {
+        response = await fetch(accountApiUrl(path), { ...options, headers });
+      } catch (error) {
+        throw new Error(useLocalAccountServer() ? "连接不到账号服务器，请使用服务器窗口里的局域网网址，并检查防火墙" : "连接不到 Netlify 云端函数，请确认已部署 netlify/functions");
+      }
+      let data = {};
+      let responseText = "";
+      try {
+        responseText = await response.text();
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch (error) {
+        data = {};
+      }
+      if (!response.ok) {
+        const detail = data.error || responseText.replace(/\s+/g, " ").trim().slice(0, 160);
+        throw new Error(detail || `账号服务器返回异常(${response.status})`);
+      }
+      return data;
+    }
+
+    function setRemoteSession(data) {
+      remoteAuthToken = data.token || remoteAuthToken || "";
+      remoteAccountUser = data.user || null;
+      remoteAccountRecords = normalizeRemoteRecords(data.records);
+      if (remoteAuthToken) localStorage.setItem(remoteSessionKey, remoteAuthToken);
+    }
+
+    function clearRemoteSession() {
+      remoteAuthToken = "";
+      remoteAccountUser = null;
+      remoteAccountRecords = [];
+      localStorage.removeItem(remoteSessionKey);
+    }
+
+    function normalizeAccountName(name) {
+      return String(name || "").trim().toLowerCase();
+    }
+
+    function makeSalt() {
+      return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+    }
+
+    function localPasswordHash(password, salt) {
+      let hash = 2166136261;
+      const text = `${salt}:${password}`;
+      for (let round = 0; round < 4; round++) {
+        for (let i = 0; i < text.length; i++) {
+          hash ^= text.charCodeAt(i) + round;
+          hash = Math.imul(hash, 16777619);
+        }
+      }
+      return (hash >>> 0).toString(36);
+    }
+
+    function accountInputs() {
+      return {
+        name: document.getElementById("accountName").value.trim(),
+        password: document.getElementById("accountPassword").value
+      };
+    }
+
+    function currentAccount(store = readAccountStore()) {
+      if (useRemoteAccounts()) {
+        return remoteAccountUser ? { ...remoteAccountUser, records: remoteAccountRecords } : null;
+      }
+      if (!currentAccountId) return null;
+      return store.users[currentAccountId] || null;
+    }
+
+    function formatRecordTime(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "未知时间";
+      return date.toLocaleString("zh-CN", { hour12: false });
+    }
+
+    function recordDisplayName(record) {
+      return record?.state?.name || record?.title?.split("｜")[0] || "命主";
+    }
+
+    function recordBirthDate(record) {
+      return record?.state?.birthDate || String(record?.birthText || "").split(" ")[0] || "--";
+    }
+
+    function querySignature(state) {
+      return JSON.stringify([
+        state.name || "",
+        state.gender || "",
+        state.birthDate || "",
+        state.birthTime || "",
+        state.calendar || "",
+        state.city || "",
+        state.focus || ""
+      ]);
+    }
+
+    function buildHistoryRecord(ctx) {
+      const state = { ...ctx.state };
+      const pillars = ctx.pillars.map((pillar) => pillar.text).join(" ");
+      const birthText = `${state.birthDate || "--"} ${state.birthTime || "--"}`;
+      return {
+        id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
+        createdAt: new Date().toISOString(),
+        signature: querySignature(state),
+        state,
+        title: `${state.name || "命主"}｜${ctx.pillars[2].text}日柱`,
+        birthText,
+        pillars,
+        focus: focusLabels[state.focus] || "整体运势",
+        summary: `${ctx.pillars[0].text}年 ${ctx.pillars[1].text}月 ${ctx.pillars[2].text}日 ${ctx.pillars[3].text}时`
+      };
+    }
+
+    async function saveCurrentQueryRecord(ctx) {
+      if (useRemoteAccounts()) {
+        if (!remoteAuthToken || !remoteAccountUser || !ctx) return;
+        try {
+          const data = await accountApi("/records", {
+            method: "POST",
+            body: JSON.stringify({ record: buildHistoryRecord(ctx) })
+          });
+          remoteAccountRecords = normalizeRemoteRecords(data.records);
+          renderHistoryList();
+          showToast("已保存云端记录");
+        } catch (error) {
+          showToast(error.message || "云端保存失败");
+        }
+        return;
+      }
+      if (!currentAccountId || !ctx) return;
+      const store = readAccountStore();
+      const user = store.users[currentAccountId];
+      if (!user) return;
+      const record = buildHistoryRecord(ctx);
+      const records = Array.isArray(user.records) ? user.records : [];
+      user.records = [record, ...records.filter((item) => item.signature !== record.signature)].slice(0, 80);
+      store.session = currentAccountId;
+      if (writeAccountStore(store)) {
+        renderHistoryList();
+        showToast("已保存查询记录");
+      }
+    }
+
+    function renderHistoryList() {
+      const list = document.getElementById("historyList");
+      const count = document.getElementById("historyCount");
+      const store = readAccountStore();
+      const user = currentAccount(store);
+      const records = user && Array.isArray(user.records) ? user.records : [];
+      count.textContent = `${records.length}条`;
+      if (!user) {
+        list.innerHTML = `<div class="empty-state">登录后，生成报告会自动保存到这里。</div>`;
+        return;
+      }
+      if (!records.length) {
+        list.innerHTML = `<div class="empty-state">暂无查询记录。</div>`;
+        return;
+      }
+      list.innerHTML = records.map((record) => `
+        <div class="history-row">
+          <button class="history-load" type="button" data-record-id="${escapeHtml(record.id)}" title="打开这条记录">
+            <strong>${escapeHtml(recordDisplayName(record))}</strong>
+            <span>${escapeHtml(recordBirthDate(record))}</span>
+          </button>
+          <button class="history-delete" type="button" data-record-id="${escapeHtml(record.id)}" title="删除记录">删</button>
+        </div>
+      `).join("");
+    }
+
+    function renderAccountUI() {
+      const store = readAccountStore();
+      const sessionUser = currentAccount(store);
+      const loggedIn = Boolean(sessionUser);
+      document.getElementById("loginArea").hidden = loggedIn;
+      document.getElementById("accountArea").hidden = !loggedIn;
+      const statusText = loggedIn ? (useRemoteAccounts() ? "云端登录" : "本地登录") : "未登录";
+      document.getElementById("accountStatus").textContent = statusText;
+      document.getElementById("accountStatusLogged").textContent = statusText;
+      document.getElementById("currentAccountName").textContent = loggedIn ? sessionUser.name : "--";
+      renderHistoryList();
+    }
+
+    async function loginAccount() {
+      const input = accountInputs();
+      const accountId = normalizeAccountName(input.name);
+      if (!accountId || !input.password) {
+        showToast("请输入账号和密码");
+        return;
+      }
+      if (useRemoteAccounts()) {
+        try {
+          const data = await accountApi("/login", {
+            method: "POST",
+            body: JSON.stringify({ account: input.name, password: input.password })
+          });
+          setRemoteSession(data);
+          currentAccountId = data.user?.id || accountId;
+          document.getElementById("accountPassword").value = "";
+          renderAccountUI();
+          showToast("已云端登录");
+        } catch (error) {
+          showToast(error.message || "云端登录失败");
+        }
+        return;
+      }
+      const store = readAccountStore();
+      const user = store.users[accountId];
+      if (!user || localPasswordHash(input.password, user.salt) !== user.passwordHash) {
+        showToast("账号或密码不正确");
+        return;
+      }
+      currentAccountId = accountId;
+      store.session = accountId;
+      writeAccountStore(store);
+      document.getElementById("accountPassword").value = "";
+      renderAccountUI();
+      showToast("已登录");
+    }
+
+    async function registerAccount() {
+      const input = accountInputs();
+      const accountId = normalizeAccountName(input.name);
+      if (input.name.length < 2) {
+        showToast("账号至少2个字符");
+        return;
+      }
+      if (input.password.length < 4) {
+        showToast("密码至少4位");
+        return;
+      }
+      if (useRemoteAccounts()) {
+        try {
+          const data = await accountApi("/register", {
+            method: "POST",
+            body: JSON.stringify({ account: input.name, password: input.password })
+          });
+          setRemoteSession(data);
+          currentAccountId = data.user?.id || accountId;
+          document.getElementById("accountPassword").value = "";
+          renderAccountUI();
+          showToast("云端注册成功");
+        } catch (error) {
+          showToast(error.message || "云端注册失败");
+        }
+        return;
+      }
+      const store = readAccountStore();
+      if (store.users[accountId]) {
+        showToast("账号已存在");
+        return;
+      }
+      const salt = makeSalt();
+      store.users[accountId] = {
+        name: input.name,
+        salt,
+        passwordHash: localPasswordHash(input.password, salt),
+        createdAt: new Date().toISOString(),
+        records: []
+      };
+      currentAccountId = accountId;
+      store.session = accountId;
+      if (writeAccountStore(store)) {
+        document.getElementById("accountPassword").value = "";
+        renderAccountUI();
+        showToast("注册成功");
+      }
+    }
+
+    async function logoutAccount() {
+      if (useRemoteAccounts()) {
+        try {
+          if (remoteAuthToken) await accountApi("/logout", { method: "POST", body: "{}" });
+        } catch (error) {
+          // 本地清掉登录态即可，不影响下次重新登录。
+        }
+        clearRemoteSession();
+        currentAccountId = null;
+        renderAccountUI();
+        showToast("已退出云端账号");
+        return;
+      }
+      const store = readAccountStore();
+      store.session = "";
+      currentAccountId = null;
+      writeAccountStore(store);
+      renderAccountUI();
+      showToast("已退出");
+    }
+
+    function loadHistoryRecord(recordId) {
+      const user = currentAccount();
+      const record = user?.records?.find((item) => item.id === recordId);
+      if (!record) {
+        showToast("记录不存在");
+        return;
+      }
+      applyState(record.state);
+      generate({ skipHistory: true });
+      showToast("已打开记录");
+    }
+
+    async function deleteHistoryRecord(recordId) {
+      if (useRemoteAccounts()) {
+        if (!remoteAuthToken) return;
+        try {
+          const data = await accountApi(`/records/${encodeURIComponent(recordId)}`, { method: "DELETE" });
+          remoteAccountRecords = normalizeRemoteRecords(data.records);
+          renderHistoryList();
+          showToast("已删除云端记录");
+        } catch (error) {
+          showToast(error.message || "删除失败");
+        }
+        return;
+      }
+      const store = readAccountStore();
+      const user = currentAccount(store);
+      if (!user) return;
+      user.records = (user.records || []).filter((item) => item.id !== recordId);
+      writeAccountStore(store);
+      renderHistoryList();
+      showToast("已删除记录");
+    }
+
+    async function clearHistoryRecords() {
+      if (useRemoteAccounts()) {
+        if (!remoteAuthToken) return;
+        try {
+          const data = await accountApi("/records", { method: "DELETE" });
+          remoteAccountRecords = normalizeRemoteRecords(data.records);
+          renderHistoryList();
+          showToast("已清空云端记录");
+        } catch (error) {
+          showToast(error.message || "清空失败");
+        }
+        return;
+      }
+      const store = readAccountStore();
+      const user = currentAccount(store);
+      if (!user) return;
+      user.records = [];
+      writeAccountStore(store);
+      renderHistoryList();
+      showToast("已清空记录");
+    }
+
+    async function initAccountSystem() {
+      if (useRemoteAccounts()) {
+        remoteAuthToken = localStorage.getItem(remoteSessionKey) || "";
+        if (remoteAuthToken) {
+          try {
+            const data = await accountApi("/me");
+            setRemoteSession(data);
+            currentAccountId = data.user?.id || null;
+          } catch (error) {
+            clearRemoteSession();
+            currentAccountId = null;
+          }
+        }
+        renderAccountUI();
+        return;
+      }
+      const store = readAccountStore();
+      currentAccountId = store.session && store.users[store.session] ? store.session : null;
+      renderAccountUI();
+    }
+
+    function generate(options = {}) {
+      const state = formState();
+      if (!state.birthDate || !state.birthTime) return;
+      const date = parseLocalDate(state.birthDate, state.birthTime);
+      const y = yearPillar(date);
+      const m = monthPillar(date, y.index % 10);
+      const d = dayPillar(date);
+      const h = hourPillar(date, d.index % 10);
+      const pillars = [y, m, d, h];
+      const counts = countElements(pillars);
+      const dayElement = stemElement[d.stem];
+      const strength = strengthLabel(dayElement, counts);
+      const favorable = favorableElements(dayElement, strength);
+      const total = Object.values(counts).reduce((a, b) => a + b, 0);
+      const strongest = elementCycle.slice().sort((a, b) => counts[b] - counts[a])[0];
+
+      document.getElementById("summaryTitle").textContent = `${state.name || "命主"}：${d.stem}${dayElement}日主，格局${strength.label}`;
+      document.getElementById("summaryText").textContent = `四柱为${y.text}年、${m.text}月、${d.text}日、${h.text}时。五行中${strongest}气较明显，喜用方向显示为${favorable.join("、")}；当前预测重点为${focusLabels[state.focus] || "整体运势"}。`;
+      document.getElementById("dayMasterMark").textContent = dayElement;
+      document.getElementById("wheelText").textContent = `${d.stem}${d.branch}日主`;
+      document.getElementById("yearPillar").textContent = y.text;
+      document.getElementById("monthPillar").textContent = m.text;
+      document.getElementById("dayPillar").textContent = d.text;
+      document.getElementById("hourPillar").textContent = h.text;
+      document.getElementById("balanceTag").textContent = `总量 ${total.toFixed(1)}`;
+      document.getElementById("periodTag").textContent = new Date().toLocaleDateString("zh-CN");
+      document.getElementById("metaTags").innerHTML = [
+        state.gender,
+        state.city || "未填出生地",
+        state.calendar === "solar" ? "公历" : "农历近似",
+        focusLabels[state.focus] || "整体运势",
+        `日主：${dayElement}`,
+        `喜用：${favorable.join("、")}`
+      ].map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join("");
+
+      const ctx = {
+        state,
+        birthDate: date,
+        pillars,
+        counts,
+        dayElement,
+        strength,
+        favorable,
+        lucks: buildLuckCycles({ state, birthDate: date, pillars })
+      };
+      ctx.pattern = buildPattern(ctx);
+      chartContext = ctx;
+
+      renderBars(counts);
+      renderInsights(ctx);
+      renderReports([
+        buildReport("今日运势", "day", dayElement, strength, favorable, 0, ctx),
+        buildWeekReport(ctx),
+        buildReport("本月月报", "month", dayElement, strength, favorable, 1, ctx),
+        buildReport("年度年报", "year", dayElement, strength, favorable, 4, ctx)
+      ]);
+      resetSpecialPanels();
+      renderFullChart(ctx);
+      hideFullChart();
+      const link = `${location.href.split("#")[0]}#${encodeState(state)}`;
+      history.replaceState(null, "", link);
+      document.getElementById("shareLink").value = link;
+      const sourceSummary = knowledgeBase.sources.map((source) => `《${source.title}》`).join("、");
+      document.getElementById("quickHint").innerHTML = `<strong>智能预测：</strong>${escapeHtml(focusTips[state.focus] || focusTips.overall)}<br><strong>理论库：</strong>已加载 ${knowledgeBase.sources.length} 个来源、${knowledgeBase.rules.length} 条规则；${escapeHtml(sourceSummary)} 当前为元数据导入，补充字幕后可继续细化。`;
+      if (!options.skipHistory) saveCurrentQueryRecord(ctx);
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById("toast");
+      toast.textContent = text;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 1700);
+    }
+
+    document.getElementById("baziForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      generate();
+    });
+
+    document.getElementById("todayBtn").addEventListener("click", () => {
+      const now = new Date();
+      document.getElementById("birthDate").value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+      document.getElementById("birthTime").value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      generate();
+    });
+
+    document.getElementById("loginBtn").addEventListener("click", loginAccount);
+    document.getElementById("registerBtn").addEventListener("click", registerAccount);
+    document.getElementById("logoutBtn").addEventListener("click", logoutAccount);
+    document.getElementById("clearHistoryBtn").addEventListener("click", clearHistoryRecords);
+    document.getElementById("accountPassword").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") loginAccount();
+    });
+    document.getElementById("historyList").addEventListener("click", (event) => {
+      const deleteBtn = event.target.closest(".history-delete");
+      if (deleteBtn) {
+        deleteHistoryRecord(deleteBtn.dataset.recordId);
+        return;
+      }
+      const loadBtn = event.target.closest(".history-load");
+      if (loadBtn) loadHistoryRecord(loadBtn.dataset.recordId);
+    });
+
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      const link = document.getElementById("shareLink").value;
+      if (!link || link.startsWith("生成")) {
+        showToast("请先生成报告");
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(link);
+        showToast("已复制链接");
+      } catch (error) {
+        document.getElementById("shareLink").select();
+        document.execCommand("copy");
+        showToast("已选中链接");
+      }
+    });
+
+    document.getElementById("wealthDatesBtn").addEventListener("click", () => {
+      if (!chartContext) {
+        showToast("请先生成报告");
+        return;
+      }
+      toggleSpecialPanel("wealth");
+    });
+
+    document.getElementById("riskDatesBtn").addEventListener("click", () => {
+      if (!chartContext) {
+        showToast("请先生成报告");
+        return;
+      }
+      toggleSpecialPanel("risk");
+    });
+
+    document.getElementById("fullChartBtn").addEventListener("click", () => {
+      const panel = document.getElementById("fullChart");
+      if (!chartContext) {
+        showToast("请先生成报告");
+        return;
+      }
+      if (panel.classList.contains("show") || panel.style.display === "grid") {
+        hideFullChart();
+        return;
+      }
+      revealFullChart();
+      selectCurrentFlow(new Date());
+      renderLuckTimeline();
+      renderFlowYears();
+      panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      requestAnimationFrame(scrollActiveFlowIntoView);
+    });
+
+    document.getElementById("luckTimeline").addEventListener("click", (event) => {
+      const btn = event.target.closest("[data-luck]");
+      if (!btn || !chartContext) return;
+      selectedLuck = Number(btn.dataset.luck);
+      selectedYear = 0;
+      selectedMonth = 0;
+      selectedDay = 0;
+      renderLuckTimeline();
+      renderFlowYears();
+      const luck = chartContext.lucks[selectedLuck];
+      showFlowDetail("大运", luck.pillar, `${luck.startAge}-${luck.endAge}岁`);
+    });
+
+    document.getElementById("yearFlow").addEventListener("click", (event) => {
+      const btn = event.target.closest("[data-year]");
+      if (!btn || !chartContext) return;
+      selectedYear = Number(btn.dataset.year);
+      selectedMonth = 0;
+      selectedDay = 0;
+      renderFlowYears();
+      const item = chartContext.flowYears[selectedYear];
+      showFlowDetail("流年", item.pillar, `${item.year}年`);
+    });
+
+    document.getElementById("monthFlow").addEventListener("click", (event) => {
+      const btn = event.target.closest("[data-month]");
+      if (!btn || !chartContext) return;
+      selectedMonth = Number(btn.dataset.month);
+      selectedDay = 0;
+      renderFlowMonths();
+      const item = chartContext.flowMonths[selectedMonth];
+      showFlowDetail("流月", item.pillar, `${item.month}月`);
+    });
+
+    document.getElementById("dayFlow").addEventListener("click", (event) => {
+      const btn = event.target.closest("[data-day]");
+      if (!btn || !chartContext) return;
+      document.querySelectorAll("#dayFlow .pick").forEach((el) => el.classList.remove("active"));
+      btn.classList.add("active");
+      selectedDay = Number(btn.dataset.day);
+      const item = chartContext.flowDays[selectedDay];
+      showFlowDetail("流日", item.pillar, `${item.date.getFullYear()}-${pad(item.date.getMonth() + 1)}-${pad(item.date.getDate())}`);
+    });
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      enableGanzhiAutoColor();
+      await initAccountSystem();
+      runCalibrationCheck();
+      const state = location.hash ? decodeState(location.hash.slice(1)) : null;
+      if (state) {
+        applyState(state);
+        generate();
+        return;
+      }
+      const now = new Date();
+      document.getElementById("birthDate").value = "1990-01-01";
+      document.getElementById("birthTime").value = "08:30";
+    });
+  </script>
+</body>
+</html>

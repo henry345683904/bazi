@@ -1,0 +1,493 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-06-29",
+  "description": "八字预测理论知识库。后续可以继续追加视频、笔记、规则和案例，用于提升网页预测的评分与解释精度。",
+  "sources": [
+    {
+      "id": "yt-9NH6DOhSs5g",
+      "type": "youtube",
+      "url": "https://www.youtube.com/watch?v=9NH6DOhSs5g&list=PL_ZDuvwV7mBAP4R67V0XlkWkc89Hi1pk0",
+      "title": "九龙道长八字进阶班第1集 如何看财运加强篇 #九龙道长 #四柱八字 #易学",
+      "channel": "中华易学",
+      "publishedAt": "2023-06-29",
+      "topic": "财运加强篇",
+      "status": "metadata-only",
+      "transcriptStatus": "not-imported",
+      "notes": "当前环境已读取公开标题、频道、发布日期和简介信息，但未取得完整字幕。请后续补充字幕或课程笔记后，把 status 改为 transcript-imported，并追加 derivedRules。"
+    },
+    {
+      "id": "yt-4z-Ddh1UIrw",
+      "type": "youtube",
+      "url": "https://www.youtube.com/watch?v=4z-Ddh1UIrw&list=PLwaXzpIVb_sd5zogbtuOj_QSQ5fpD8m9k",
+      "title": "九龙道长进阶课：八字案例实战讲解4",
+      "channel": "数字易学",
+      "publishedAt": "2025-11-13T19:56:06-08:00",
+      "topic": "八字案例实战讲解",
+      "status": "metadata-only",
+      "transcriptStatus": "not-imported",
+      "notes": "当前环境已读取公开标题、频道、发布日期和简介。页面源码未暴露 captionTracks，暂未取得完整字幕。此来源先作为案例实战类待补数据源。"
+    },
+    {
+      "id": "wx-Xu4JwguLudcqVVsu6movnw",
+      "type": "wechat-video",
+      "url": "https://mp.weixin.qq.com/s/Xu4JwguLudcqVVsu6movnw",
+      "title": "关于周易那些事儿-第1集-借天时地利人和",
+      "channel": "九龙周易",
+      "publishedAt": "2021-06-11 08:42",
+      "topic": "借天时地利人和",
+      "status": "metadata-only",
+      "transcriptStatus": "not-imported",
+      "notes": "该链接为微信公众号视频页。当前环境可读取标题、简介、公众号名和发布时间，但 js_content 正文为空，未取得视频字幕或逐字稿；暂不新增预测规则。"
+    },
+    {
+      "id": "scribd-821935726",
+      "type": "scribd-document",
+      "url": "https://www.scribd.com/document/821935726/2-%E4%B9%9D%E9%BE%99%E9%81%93%E9%95%BF%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0",
+      "title": "2 九龙道长课程笔记",
+      "channel": "Scribd",
+      "publishedAt": "",
+      "topic": "九龙道长课程笔记",
+      "status": "preview-imported",
+      "transcriptStatus": "partial-preview",
+      "notes": "公开预览显示该文档约 196 页，可见章节包含何时发财、看大财小财、正财偏财、五行平衡、寒暖燥湿、空亡等内容。当前仅依据可见预览提炼规则，未导入受限全文。"
+    },
+    {
+      "id": "local-doc-365-notes-6",
+      "type": "word-document",
+      "url": "C:\\Users\\Eric\\xwechat_files\\wxid_0lnbrdv86g7z12_e112\\msg\\file\\2026-06\\九龙道长365集笔记(6).doc",
+      "title": "九龙道长365集笔记(6)",
+      "channel": "本地Word资料",
+      "publishedAt": "2026-06-29",
+      "topic": "八字基础、神煞、格局、疾病、合冲刑害",
+      "status": "text-extracted",
+      "transcriptStatus": "partial-text-extracted",
+      "notes": "已从传统 Word 二进制文档中抽取可读中文文本，确认包含日元强弱、喜用忌凶、大运流年分管、神煞、三刑六冲、正八格、疾病五行等规则。"
+    },
+    {
+      "id": "local-pdf-essential",
+      "type": "pdf",
+      "url": "C:\\Users\\Eric\\xwechat_files\\wxid_0lnbrdv86g7z12_e112\\msg\\file\\2026-06\\九龙道长八字必备知识点.pdf",
+      "title": "九龙道长八字必备知识点",
+      "channel": "本地PDF资料",
+      "publishedAt": "2026-06-29",
+      "topic": "八字必备知识点",
+      "status": "scanned-needs-ocr",
+      "transcriptStatus": "not-imported",
+      "notes": "该 PDF 检测到大量图片流，直接文本抽取为乱码，疑似扫描版或图片版；需后续 OCR 后再导入规则，当前不据此新增断语。"
+    }
+  ],
+  "rules": [
+    {
+      "id": "wealth-star-active",
+      "topic": "财运",
+      "sourceRefs": ["yt-9NH6DOhSs5g"],
+      "confidence": 0.55,
+      "priority": 90,
+      "when": {
+        "tenGodIncludes": ["财"]
+      },
+      "scoreAdjust": 7,
+      "tags": ["财星", "资源变现"],
+      "messages": {
+        "report": "理论库命中财星：更容易出现订单、报价、回款、客户资源、投资消费或现实利益分配等事项，宜把金额、期限、交付边界写清楚。",
+        "flow": "财星被引动，重点看钱款、客户、资源、价格和现实利益。"
+      }
+    },
+    {
+      "id": "weak-day-meets-wealth",
+      "topic": "财运",
+      "sourceRefs": ["yt-9NH6DOhSs5g"],
+      "confidence": 0.55,
+      "priority": 95,
+      "when": {
+        "tenGodIncludes": ["财"],
+        "dayStrength": ["偏弱"]
+      },
+      "scoreAdjust": -6,
+      "tags": ["身弱财多", "风险控制"],
+      "messages": {
+        "report": "理论库提示身弱遇财：机会看得见，但承接力要先补足，适合小步试单、先收定金、控制库存和现金流，不宜一次押太大。",
+        "flow": "身弱遇财时，先看自己能否承接，不要只看机会大小。"
+      }
+    },
+    {
+      "id": "strong-day-can-take-wealth",
+      "topic": "财运",
+      "sourceRefs": ["yt-9NH6DOhSs5g"],
+      "confidence": 0.52,
+      "priority": 82,
+      "when": {
+        "tenGodIncludes": ["财"],
+        "dayStrength": ["偏旺", "中和"]
+      },
+      "scoreAdjust": 4,
+      "tags": ["可担财", "主动变现"],
+      "messages": {
+        "report": "理论库提示日主有力遇财：适合主动谈价、推动成交、整理客户名单和把技能产品化，重心放在真实成交而不是空想。",
+        "flow": "日主有力遇财，可以更主动争取资源和成交。"
+      }
+    },
+    {
+      "id": "output-generates-wealth",
+      "topic": "财运",
+      "sourceRefs": ["yt-9NH6DOhSs5g"],
+      "confidence": 0.5,
+      "priority": 76,
+      "when": {
+        "tenGodIncludes": ["食", "伤"]
+      },
+      "scoreAdjust": 3,
+      "tags": ["食伤生财", "表达获利"],
+      "messages": {
+        "report": "理论库命中食伤：财运多从表达、展示、手艺、内容、销售话术和方案输出中打开，适合把看不见的能力做成可展示的作品或报价单。",
+        "flow": "食伤引动时，先输出价值，再谈收益。"
+      }
+    },
+    {
+      "id": "officer-contract-wealth",
+      "topic": "事业财运",
+      "sourceRefs": ["yt-9NH6DOhSs5g"],
+      "confidence": 0.48,
+      "priority": 70,
+      "when": {
+        "tenGodIncludes": ["官", "杀"]
+      },
+      "scoreAdjust": 1,
+      "tags": ["规则合同", "职位责任"],
+      "messages": {
+        "report": "理论库命中官杀：财运常与规则、职位、平台、合同、审批和责任绑定，先把流程走稳，比临时冲刺更有利。",
+        "flow": "官杀引动时，合同、规则、责任和资质是关键。"
+      }
+    },
+    {
+      "id": "resource-supports-weak-day",
+      "topic": "综合",
+      "sourceRefs": ["yt-9NH6DOhSs5g"],
+      "confidence": 0.5,
+      "priority": 68,
+      "when": {
+        "tenGodIncludes": ["印"],
+        "dayStrength": ["偏弱"]
+      },
+      "scoreAdjust": 4,
+      "tags": ["印星扶身", "学习贵人"],
+      "messages": {
+        "report": "理论库命中印星扶身：适合先学习、拿资料、找贵人、做认证和补系统能力，基础补起来后更容易承接后续财机。",
+        "flow": "印星扶身，先补能力与资源，再推进变现。"
+      }
+    },
+    {
+      "id": "peer-competition-wealth",
+      "topic": "财运",
+      "sourceRefs": ["yt-9NH6DOhSs5g"],
+      "confidence": 0.5,
+      "priority": 72,
+      "when": {
+        "tenGodIncludes": ["比", "劫"]
+      },
+      "scoreAdjust": -2,
+      "tags": ["比劫", "竞争分利"],
+      "messages": {
+        "report": "理论库命中比劫：同业竞争、朋友合伙、分账议价和资源被分流的概率上升，合作前要先讲清贡献、成本和分成。",
+        "flow": "比劫引动时，注意竞争、合伙分账和人情支出。"
+      }
+    },
+    {
+      "id": "branch-clash-volatility",
+      "topic": "冲合刑害",
+      "sourceRefs": ["yt-9NH6DOhSs5g"],
+      "confidence": 0.45,
+      "priority": 65,
+      "when": {
+        "effectIncludes": ["冲"]
+      },
+      "scoreAdjust": -3,
+      "tags": ["冲动变化", "备选方案"],
+      "messages": {
+        "report": "理论库命中地支冲：事情容易有变动、反复、临时出行或沟通冲突，钱款与合同要留备选方案和缓冲期。",
+        "flow": "见冲则动，重要事项要留缓冲。"
+      }
+    },
+    {
+      "id": "branch-combine-cooperation",
+      "topic": "冲合刑害",
+      "sourceRefs": ["yt-9NH6DOhSs5g"],
+      "confidence": 0.45,
+      "priority": 63,
+      "when": {
+        "effectIncludes": ["合"]
+      },
+      "scoreAdjust": 2,
+      "tags": ["合动合作", "资源牵线"],
+      "messages": {
+        "report": "理论库命中地支合：合作、邀约、撮合资源和旧关系牵线的概率上升，但也要防止关系牵扯导致效率下降。",
+        "flow": "见合则有牵连，利合作也要定边界。"
+      }
+    },
+    {
+      "id": "scribd-weak-body-wealth-pressure",
+      "topic": "财运",
+      "sourceRefs": ["scribd-821935726"],
+      "confidence": 0.62,
+      "priority": 98,
+      "when": {
+        "tenGodIncludes": ["财"],
+        "dayStrength": ["偏弱"]
+      },
+      "scoreAdjust": -4,
+      "tags": ["身弱财旺", "财来有压"],
+      "messages": {
+        "report": "笔记规则提示身弱财旺：见财不等于能稳稳拿住，容易先有压力、支出、承诺或周转要求；宜先补资源、能力和现金流承接。",
+        "flow": "身弱财旺，先看承接力，再看财机大小。"
+      }
+    },
+    {
+      "id": "scribd-strong-body-wealth-opportunity",
+      "topic": "财运",
+      "sourceRefs": ["scribd-821935726"],
+      "confidence": 0.62,
+      "priority": 88,
+      "when": {
+        "tenGodIncludes": ["财"],
+        "dayStrength": ["偏旺", "中和"]
+      },
+      "scoreAdjust": 3,
+      "tags": ["身强任财", "财机可取"],
+      "messages": {
+        "report": "笔记规则提示身强见财：更适合主动抓订单、价格、资产和客户资源，但仍要看是否有食伤生财、官杀护财或比劫分财。",
+        "flow": "身强见财，机会更容易被自己承接。"
+      }
+    },
+    {
+      "id": "scribd-direct-wealth-stability",
+      "topic": "财运",
+      "sourceRefs": ["scribd-821935726"],
+      "confidence": 0.58,
+      "priority": 74,
+      "when": {
+        "tenGodExact": ["正财"]
+      },
+      "scoreAdjust": 2,
+      "tags": ["正财", "稳定收入"],
+      "messages": {
+        "report": "笔记规则命中正财：更偏稳定收入、固定客户、工资回款和可预期资源，适合守信用、定价格、做长期复购。",
+        "flow": "正财重稳定，宜确认固定收入和长期客户。"
+      }
+    },
+    {
+      "id": "scribd-indirect-wealth-volatility",
+      "topic": "财运",
+      "sourceRefs": ["scribd-821935726"],
+      "confidence": 0.58,
+      "priority": 74,
+      "when": {
+        "tenGodExact": ["偏财"]
+      },
+      "scoreAdjust": 1,
+      "tags": ["偏财", "流动机会"],
+      "messages": {
+        "report": "笔记规则命中偏财：更偏项目型机会、临时订单、人脉资源、投资消费和外部市场变化，宜快进快出但要控风险。",
+        "flow": "偏财重流动，机会来得快，也要防波动。"
+      }
+    },
+    {
+      "id": "scribd-output-produces-wealth",
+      "topic": "财运",
+      "sourceRefs": ["scribd-821935726"],
+      "confidence": 0.6,
+      "priority": 86,
+      "when": {
+        "tenGodIncludes": ["食", "伤"]
+      },
+      "scoreAdjust": 4,
+      "tags": ["食伤生财", "先出后入"],
+      "messages": {
+        "report": "笔记规则命中食伤生财：财不是凭空来，往往先通过技术、表达、方案、内容、销售展示把价值放出去，再形成订单、回款或客户转化。",
+        "flow": "食伤生财，先展示价值，再承接成交。"
+      }
+    },
+    {
+      "id": "scribd-wealth-meets-combine",
+      "topic": "财运",
+      "sourceRefs": ["scribd-821935726"],
+      "confidence": 0.56,
+      "priority": 78,
+      "when": {
+        "tenGodIncludes": ["财"],
+        "effectIncludes": ["合"]
+      },
+      "scoreAdjust": 2,
+      "tags": ["财逢合", "合作取财"],
+      "messages": {
+        "report": "笔记规则命中财逢合：钱财机会多经由合作、介绍、客户牵线或旧关系而来，利谈合作，但必须提前确认分账、权责和交付期限。",
+        "flow": "财逢合，利合作牵线，也要先定分账边界。"
+      }
+    },
+    {
+      "id": "scribd-wealth-meets-clash",
+      "topic": "财运",
+      "sourceRefs": ["scribd-821935726"],
+      "confidence": 0.56,
+      "priority": 80,
+      "when": {
+        "tenGodIncludes": ["财"],
+        "effectIncludes": ["冲"]
+      },
+      "scoreAdjust": -3,
+      "tags": ["财逢冲", "财动不稳"],
+      "messages": {
+        "report": "笔记规则命中财逢冲：客户、价格、付款、库存或合作条件容易变动，机会虽动但不稳，宜留缓冲期、备选方案和书面确认。",
+        "flow": "财逢冲，钱财事项易动，先稳合同和回款。"
+      }
+    },
+    {
+      "id": "scribd-peer-divides-wealth",
+      "topic": "财运",
+      "sourceRefs": ["scribd-821935726"],
+      "confidence": 0.58,
+      "priority": 77,
+      "when": {
+        "tenGodIncludes": ["比", "劫"]
+      },
+      "scoreAdjust": -3,
+      "tags": ["比劫分财", "竞争分利"],
+      "messages": {
+        "report": "笔记规则命中比劫分财：同业竞争、朋友合伙、人情往来和资源被分走的信号增强，涉及钱财时先算贡献、成本、库存和分成。",
+        "flow": "比劫分财，合作和人情账要先算清。"
+      }
+    },
+    {
+      "id": "scribd-balanced-elements-steady",
+      "topic": "综合",
+      "sourceRefs": ["scribd-821935726"],
+      "confidence": 0.55,
+      "priority": 52,
+      "when": {
+        "balance": ["balanced"]
+      },
+      "scoreAdjust": 2,
+      "tags": ["五行较平衡", "稳中求进"],
+      "messages": {
+        "report": "笔记规则提示五行平衡：盘面不宜过度偏向单一方向，适合稳步推进、按节奏取财，少做极端决策。",
+        "flow": "五行较平衡时，稳扎稳打比猛冲更有利。"
+      }
+    },
+    {
+      "id": "scribd-elements-too-biased",
+      "topic": "综合",
+      "sourceRefs": ["scribd-821935726"],
+      "confidence": 0.55,
+      "priority": 56,
+      "when": {
+        "balance": ["biased"]
+      },
+      "scoreAdjust": -2,
+      "tags": ["五行偏枯", "先调后取"],
+      "messages": {
+        "report": "笔记规则提示五行偏枯：某一气过强或过弱时，预测要先看调候与平衡，事情容易表现为过热、过冷、过燥或阻滞。",
+        "flow": "五行偏枯，先调平衡，再看吉凶。"
+      }
+    },
+    {
+      "id": "local-pattern-eight-structure",
+      "topic": "八字格局",
+      "sourceRefs": ["local-doc-365-notes-6"],
+      "confidence": 0.72,
+      "priority": 84,
+      "when": {
+        "balance": ["balanced", "normal", "biased"]
+      },
+      "scoreAdjust": 0,
+      "tags": ["正八格", "月令取格"],
+      "messages": {
+        "report": "本地笔记提示正八格：先看月令本气、中气、余气是否透干；未透时再取日元外天干力量较明显者为格，用格局看性格追求和人生发力点。",
+        "flow": "格局判断以月令透干为先，再看旺衰喜忌。"
+      }
+    },
+    {
+      "id": "local-dynamic-strength",
+      "topic": "旺衰喜忌",
+      "sourceRefs": ["local-doc-365-notes-6"],
+      "confidence": 0.72,
+      "priority": 92,
+      "when": {
+        "dayStrength": ["从强", "从弱"]
+      },
+      "scoreAdjust": -1,
+      "tags": ["从格", "破格风险"],
+      "messages": {
+        "report": "本地笔记提示从强从弱：从格不按普通强弱取用，最怕大运流年合化破格；一旦喜忌转换，事业、财运、健康和六亲关系容易出现明显转折。",
+        "flow": "从格遇合化破格时，事情波动会放大。"
+      }
+    },
+    {
+      "id": "local-punishment-risk",
+      "topic": "灾害健康",
+      "sourceRefs": ["local-doc-365-notes-6"],
+      "confidence": 0.7,
+      "priority": 88,
+      "when": {
+        "effectIncludes": ["刑"]
+      },
+      "scoreAdjust": -4,
+      "tags": ["地支相刑", "灾病口舌"],
+      "messages": {
+        "report": "本地笔记命中地支刑：刑多主伤病、官非、口舌、内耗或亲属关系压力，遇流年流日补齐三刑、自刑时要减少冒险。",
+        "flow": "见刑宜保守，防伤病、官非、口舌和内耗。"
+      }
+    },
+    {
+      "id": "local-disaster-sha-risk",
+      "topic": "灾害健康",
+      "sourceRefs": ["local-doc-365-notes-6"],
+      "confidence": 0.68,
+      "priority": 90,
+      "when": {
+        "starsIncludes": ["灾煞"]
+      },
+      "scoreAdjust": -5,
+      "tags": ["灾煞", "突发风险"],
+      "messages": {
+        "report": "本地笔记命中灾煞：灾煞主疾病、官司、牢狱、破财或突发血光风险；若无贵人护身，重要事项宜保守处理。",
+        "flow": "灾煞被引动，防突发病灾、破财、官非和交通风险。"
+      }
+    },
+    {
+      "id": "local-killing-health-pressure",
+      "topic": "健康",
+      "sourceRefs": ["local-doc-365-notes-6"],
+      "confidence": 0.66,
+      "priority": 82,
+      "when": {
+        "tenGodIncludes": ["杀"]
+      },
+      "scoreAdjust": -2,
+      "tags": ["七杀病痛", "压力"],
+      "messages": {
+        "report": "本地笔记提示七杀主实际病痛和压力，若同时见冲刑害或忌神五行过旺，要特别关注对应五脏和身体部位。",
+        "flow": "七杀引动时，压力、病痛和冲突信号更明显。"
+      }
+    },
+    {
+      "id": "local-resource-channel-health",
+      "topic": "健康",
+      "sourceRefs": ["local-doc-365-notes-6"],
+      "confidence": 0.62,
+      "priority": 72,
+      "when": {
+        "tenGodIncludes": ["印"]
+      },
+      "scoreAdjust": 1,
+      "tags": ["偏印经络", "修复"],
+      "messages": {
+        "report": "本地笔记提示偏印与经络淤堵、资料学习、修复系统有关；印星为喜时利恢复和学习，为忌时易想多、堵滞或行动不足。",
+        "flow": "印星引动，注意修复、资料、学习与身体恢复。"
+      }
+    }
+  ],
+  "updateGuide": {
+    "addSource": "新增视频或笔记时，在 sources 中追加一条来源，设置唯一 id。",
+    "addRule": "把可执行的理论整理成 rules：when 写命中条件，scoreAdjust 写评分修正，messages 写报告文案。",
+    "transcript": "如有字幕，可另建 transcripts/source-id.txt 保存原文摘要或时间点，不建议把整段课程逐字塞进网页。"
+  }
+}
