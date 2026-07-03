@@ -1,3 +1,4 @@
+import { getStore } from "@netlify/blobs";
 import { pbkdf2Sync, randomBytes, timingSafeEqual } from "node:crypto";
 
 const JSON_HEADERS = {
@@ -49,17 +50,16 @@ function normalizeState(value) {
   return state;
 }
 
-async function getBlobStore() {
+function getBlobStore() {
   try {
-    const { getStore } = await import("@netlify/blobs");
     return getStore(STORE_NAME);
   } catch (error) {
-    throw new Error(`Netlify Blobs 未安装或未启用：${error.message}`);
+    throw new Error(`Netlify Blobs 未启用：${error.message}`);
   }
 }
 
 async function readState() {
-  const store = await getBlobStore();
+  const store = getBlobStore();
   try {
     const state = await store.get(STATE_KEY, { type: "json" });
     return normalizeState(state);
@@ -69,7 +69,7 @@ async function readState() {
 }
 
 async function writeState(state) {
-  const store = await getBlobStore();
+  const store = getBlobStore();
   try {
     if (typeof store.setJSON === "function") {
       await store.setJSON(STATE_KEY, state);
