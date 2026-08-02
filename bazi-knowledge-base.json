@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-06-29",
+  "updatedAt": "2026-07-08",
   "description": "八字预测理论知识库。后续可以继续追加视频、笔记、规则和案例，用于提升网页预测的评分与解释精度。",
   "sources": [
     {
@@ -54,26 +54,26 @@
     {
       "id": "local-doc-365-notes-6",
       "type": "word-document",
-      "url": "C:\\Users\\Eric\\xwechat_files\\wxid_0lnbrdv86g7z12_e112\\msg\\file\\2026-06\\九龙道长365集笔记(6).doc",
+      "url": "D:\\BaiduNetdiskDownload\\04.九龙道长文字资料(6 0 0-60 0.co m )\\九龙道长365集笔记(6).doc",
       "title": "九龙道长365集笔记(6)",
       "channel": "本地Word资料",
-      "publishedAt": "2026-06-29",
+      "publishedAt": "2026-07-08",
       "topic": "八字基础、神煞、格局、疾病、合冲刑害",
-      "status": "text-extracted",
-      "transcriptStatus": "partial-text-extracted",
-      "notes": "已从传统 Word 二进制文档中抽取可读中文文本，确认包含日元强弱、喜用忌凶、大运流年分管、神煞、三刑六冲、正八格、疾病五行等规则。"
+      "status": "full-text-extracted",
+      "transcriptStatus": "full-text-extracted",
+      "notes": "已从传统 Word 二进制文档中抽取全文到 bazi-source-extract/jiulong-365-notes-doc.txt，确认包含日元强弱七态、喜用忌凶、大运流年分管、神煞、三刑六冲、合化、正八格、疾病五行等规则。"
     },
     {
       "id": "local-pdf-essential",
       "type": "pdf",
-      "url": "C:\\Users\\Eric\\xwechat_files\\wxid_0lnbrdv86g7z12_e112\\msg\\file\\2026-06\\九龙道长八字必备知识点.pdf",
+      "url": "D:\\BaiduNetdiskDownload\\04.九龙道长文字资料(6 0 0-60 0.co m )\\九龙道长八字必备知识点.pdf",
       "title": "九龙道长八字必备知识点",
       "channel": "本地PDF资料",
-      "publishedAt": "2026-06-29",
+      "publishedAt": "2026-07-08",
       "topic": "八字必备知识点",
-      "status": "scanned-needs-ocr",
-      "transcriptStatus": "not-imported",
-      "notes": "该 PDF 检测到大量图片流，直接文本抽取为乱码，疑似扫描版或图片版；需后续 OCR 后再导入规则，当前不据此新增断语。"
+      "status": "page-text-extracted",
+      "transcriptStatus": "page-text-extracted",
+      "notes": "已逐页提取 52 页文字到 bazi-source-extract/jiulong-essential-pdf-pages.txt，内容覆盖发财条件、五行燥湿阴阳平衡、天干五合四冲、地支三会三合六合、三刑六冲六破六害、日元强弱七态、疾病和常见格局。"
     }
   ],
   "rules": [
@@ -482,6 +482,134 @@
       "messages": {
         "report": "本地笔记提示偏印与经络淤堵、资料学习、修复系统有关；印星为喜时利恢复和学习，为忌时易想多、堵滞或行动不足。",
         "flow": "印星引动，注意修复、资料、学习与身体恢复。"
+      }
+    },
+    {
+      "id": "jiulong-full-reading-sequence",
+      "topic": "综合分析",
+      "sourceRefs": ["local-doc-365-notes-6", "local-pdf-essential"],
+      "confidence": 0.78,
+      "priority": 96,
+      "when": {
+        "balance": ["balanced", "normal", "biased"]
+      },
+      "scoreAdjust": 0,
+      "tags": ["综合分析"],
+      "messages": {
+        "report": "完整判断顺序为先分清日元强弱、取喜用忌凶、定格局层次，再看空亡墓库、六亲病症、财官夫妻、大运流年和十神缺失。",
+        "flow": "先强弱喜忌，再格局层次，最后落到六亲、病症、财官和大运流年。"
+      }
+    },
+    {
+      "id": "jiulong-wealth-four-cases",
+      "topic": "财运",
+      "sourceRefs": ["local-pdf-essential"],
+      "confidence": 0.78,
+      "priority": 99,
+      "when": {
+        "tenGodIncludes": ["财"]
+      },
+      "scoreAdjust": 2,
+      "tags": ["发财四型", "身财同看"],
+      "messages": {
+        "report": "财星出现时先分身财：身强财旺见食伤财为大财，身强财弱为中财；身弱财旺或财弱见印比帮身后才容易拿到大财或中财。",
+        "flow": "看财先看身强身弱，身强见财食伤可取财，身弱先看印比帮身。"
+      }
+    },
+    {
+      "id": "jiulong-transform-before-strength",
+      "topic": "合化旺衰",
+      "sourceRefs": ["local-doc-365-notes-6", "local-pdf-essential"],
+      "confidence": 0.82,
+      "priority": 101,
+      "when": {
+        "effectIncludes": ["合"]
+      },
+      "scoreAdjust": 1,
+      "tags": ["先合化后强弱", "引化"],
+      "messages": {
+        "report": "合化要先于强弱计算：相邻且得引化、得月令或大运流年补透时，原五行会转成合化之气；日元被合多按合化之物为命主所用。",
+        "flow": "先判断合而化或合而不化，再重新计算日主强弱和十神应事。"
+      }
+    },
+    {
+      "id": "jiulong-three-meeting-combination",
+      "topic": "三会三合",
+      "sourceRefs": ["local-doc-365-notes-6", "local-pdf-essential"],
+      "confidence": 0.76,
+      "priority": 94,
+      "when": {
+        "effectIncludes": ["三合", "三会"]
+      },
+      "scoreAdjust": 2,
+      "tags": ["三会三合", "成局"],
+      "messages": {
+        "report": "三会力量大于三合，三合大于六合；大运流年补齐局势时不必紧挨，成局之五行会改变能量主线，喜用则成事，忌凶则出波动。",
+        "flow": "三会三合补齐时，成局五行会成为本期主线。"
+      }
+    },
+    {
+      "id": "jiulong-excess-god-turns-risk",
+      "topic": "十神过量",
+      "sourceRefs": ["local-pdf-essential"],
+      "confidence": 0.72,
+      "priority": 87,
+      "when": {
+        "balance": ["biased"]
+      },
+      "scoreAdjust": -2,
+      "tags": ["一真二争三假", "过量成病"],
+      "messages": {
+        "report": "同类十神过多会变质：正官过多变七杀，食神过多变伤官，正印过多变偏印，正财过多变偏财，超过三处时事件容易从机会变成压力。",
+        "flow": "喜用忌凶都怕过量，过量后会转成压力和病点。"
+      }
+    },
+    {
+      "id": "jiulong-seven-killing-and-partial-resource-health",
+      "topic": "健康六亲",
+      "sourceRefs": ["local-pdf-essential", "local-doc-365-notes-6"],
+      "confidence": 0.8,
+      "priority": 93,
+      "when": {
+        "tenGodIncludes": ["杀", "印"]
+      },
+      "scoreAdjust": -2,
+      "tags": ["七杀偏印"],
+      "messages": {
+        "report": "疾病定位以五脏、宫位和十神同看：偏印多应经络淤堵和恢复系统，七杀多应实际病痛；落在哪个宫位，就牵动自己或对应六亲。",
+        "flow": "偏印看淤堵修复，七杀看实际痛点，再按宫位落到自己或亲人。"
+      }
+    },
+    {
+      "id": "jiulong-tian-yue-de-buffer",
+      "topic": "神煞",
+      "sourceRefs": ["local-doc-365-notes-6"],
+      "confidence": 0.72,
+      "priority": 86,
+      "when": {
+        "starsIncludes": ["天德贵人", "月德贵人"]
+      },
+      "scoreAdjust": 4,
+      "tags": ["天德月德", "逢凶缓冲"],
+      "messages": {
+        "report": "天德月德同看为护身缓冲，遇刑冲灾煞时，事情仍有波动，但更容易出现贵人、规则保护或临门化解。",
+        "flow": "天德月德被引动时，凶象有缓冲，贵人与保护信号增强。"
+      }
+    },
+    {
+      "id": "jiulong-blood-blade-risk",
+      "topic": "灾害健康",
+      "sourceRefs": ["local-doc-365-notes-6"],
+      "confidence": 0.72,
+      "priority": 92,
+      "when": {
+        "starsIncludes": ["血刃"]
+      },
+      "scoreAdjust": -5,
+      "tags": ["血刃", "血光开刀"],
+      "messages": {
+        "report": "血刃被引动时，流血、开刀、磕碰、尖锐器具、运动损伤和交通擦碰信号增强；若再见羊刃驿马，突发性更强。",
+        "flow": "血刃见动，血光、开刀、磕碰和交通擦碰信号增强。"
       }
     }
   ],

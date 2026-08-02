@@ -1,0 +1,850 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-07-08",
+  "name": "数字算命与手机号算命数据库",
+  "scope": ["数字算命", "手机号算命"],
+  "principles": [
+    "手机号码以后四位为主，前段多为运营商或地域共性，后四位代表使用者独有且变化最强的磁场。",
+    "号码使用期间会持续影响社交、业务、情感、健康和财运，同一号码要结合使用时间与当下时空变化判断。",
+    "数字断事以五行旺衰、位置、相生相克、刑冲合害和纯五行过旺为核心，预测重点是会发生什么事。",
+    "八星数字用于快速看吉凶、性格、财运和健康概况，奇门数字用于细化事件、应期、工资、环境和流年。",
+    "选号和断事不能只看单个数字，要同时看流年、格局、生克、宫位、三合三会、刑冲破害和实际使用场景。"
+  ],
+  "sources": [
+    {
+      "id": "baxing-qimen-basic-1",
+      "title": "八星奇门数字初级实战班第1集",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/八星奇门数字【初级实战班】第1集【60+0-6+0+0.C+O+m+】_笔记.docx",
+      "extractTextPath": "number-source-extract/baxing-qimen-basic-1.txt",
+      "extractJsonPath": "number-source-extract/baxing-qimen-basic-1.json",
+      "type": "docx",
+      "characters": 2795
+    },
+    {
+      "id": "baxing-qimen-basic-1-download-revised",
+      "title": "八星奇门数字初级实战班第1集下载补充版",
+      "originalPath": "C:/Users/Eric/Downloads/八星奇门数字【初级实战班】第1集【60+0+-60+0.COm】_笔记(1).docx",
+      "extractTextPath": "number-source-extract/baxing-qimen-basic-1-download-revised.txt",
+      "extractJsonPath": "number-source-extract/baxing-qimen-basic-1-download-revised.json",
+      "type": "docx",
+      "characters": 3046,
+      "note": "补充八星与奇门分工、13项秒断方向、固定工资估算、5813959案例、性格人缘和环境实断。"
+    },
+    {
+      "id": "baxing-qimen-quick-2",
+      "title": "八星奇门数字秒断实战第2集",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/八星奇门数字【秒断实战】第2集【+60+0-+6+0+0+.CO+M】_笔记.docx",
+      "extractTextPath": "number-source-extract/baxing-qimen-quick-2.txt",
+      "extractJsonPath": "number-source-extract/baxing-qimen-quick-2.json",
+      "type": "docx",
+      "characters": 0,
+      "note": "该DOCX正文为空，仅保留来源记录，后续如有有效文本可继续更新。"
+    },
+    {
+      "id": "baxing-qimen-quick-2-revised",
+      "title": "八星奇门数字秒断实战第2集补充版",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/八星奇门数字【秒断实战】第2集【+60+0-+6+0+0+.CO+M】_笔记(1).docx",
+      "extractTextPath": "number-source-extract/baxing-qimen-quick-2-revised.txt",
+      "extractJsonPath": "number-source-extract/baxing-qimen-quick-2-revised.json",
+      "type": "docx",
+      "characters": 2073,
+      "note": "补充了后七位奇门位置、数字1遁甲用法、流产数组和身体部位应事。"
+    },
+    {
+      "id": "baxing-qimen-quick-2-download-revised",
+      "title": "八星奇门数字秒断实战第2集下载补充版",
+      "originalPath": "C:/Users/Eric/Downloads/八星奇门数字【秒断实战】第2集【60+0+-+6+00+.+coM+】_笔记.docx",
+      "extractTextPath": "number-source-extract/baxing-qimen-quick-2-download-revised.txt",
+      "extractJsonPath": "number-source-extract/baxing-qimen-quick-2-download-revised.json",
+      "type": "docx",
+      "characters": 1840,
+      "note": "再次补充后七位奇门框架、数字1遁甲、流产数组、身体部位和寅申冲应期。"
+    },
+    {
+      "id": "phone-lesson-1-a",
+      "title": "第一课上",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/第一课上.pdf",
+      "extractTextPath": "number-source-extract/lesson-1-a.txt",
+      "extractJsonPath": "number-source-extract/lesson-1-a.json",
+      "type": "pdf",
+      "pages": 2
+    },
+    {
+      "id": "phone-lesson-1-b",
+      "title": "第一课下",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/第一课下.pdf",
+      "extractTextPath": "number-source-extract/lesson-1-b.txt",
+      "extractJsonPath": "number-source-extract/lesson-1-b.json",
+      "type": "pdf",
+      "pages": 8
+    },
+    {
+      "id": "phone-lesson-2",
+      "title": "第二课",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/第二课.pdf",
+      "extractTextPath": "number-source-extract/lesson-2.txt",
+      "extractJsonPath": "number-source-extract/lesson-2.json",
+      "type": "pdf",
+      "pages": 3
+    },
+    {
+      "id": "phone-lesson-3",
+      "title": "第三课",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/第三课.pdf",
+      "extractTextPath": "number-source-extract/lesson-3.txt",
+      "extractJsonPath": "number-source-extract/lesson-3.json",
+      "type": "pdf",
+      "pages": 3
+    },
+    {
+      "id": "phone-lesson-4",
+      "title": "第四课",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/第四课.pdf",
+      "extractTextPath": "number-source-extract/lesson-4.txt",
+      "extractJsonPath": "number-source-extract/lesson-4.json",
+      "type": "pdf",
+      "pages": 4
+    },
+    {
+      "id": "phone-lesson-5",
+      "title": "第五课",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/第五课.docx",
+      "extractTextPath": "number-source-extract/lesson-5.txt",
+      "extractJsonPath": "number-source-extract/lesson-5.json",
+      "type": "docx",
+      "characters": 2248
+    },
+    {
+      "id": "phone-lesson-6",
+      "title": "第六课",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/第六课.docx",
+      "extractTextPath": "number-source-extract/lesson-6.txt",
+      "extractJsonPath": "number-source-extract/lesson-6.json",
+      "type": "docx",
+      "characters": 2316
+    },
+    {
+      "id": "phone-lesson-8",
+      "title": "第八课",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/第八课.docx",
+      "extractTextPath": "number-source-extract/lesson-8.txt",
+      "extractJsonPath": "number-source-extract/lesson-8.json",
+      "type": "docx",
+      "characters": 4969
+    },
+    {
+      "id": "phone-lesson-9",
+      "title": "第九课",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/第九课.docx",
+      "extractTextPath": "number-source-extract/lesson-9.txt",
+      "extractJsonPath": "number-source-extract/lesson-9.json",
+      "type": "docx",
+      "characters": 4740
+    },
+    {
+      "id": "phone-lesson-10",
+      "title": "第十课",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/第十课.docx",
+      "extractTextPath": "number-source-extract/lesson-10.txt",
+      "extractJsonPath": "number-source-extract/lesson-10.json",
+      "type": "docx",
+      "characters": 1567
+    },
+    {
+      "id": "phone-lesson-11",
+      "title": "第十一课",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/第十一课.docx",
+      "extractTextPath": "number-source-extract/lesson-11.txt",
+      "extractJsonPath": "number-source-extract/lesson-11.json",
+      "type": "docx",
+      "characters": 1701
+    },
+    {
+      "id": "phone-lesson-12",
+      "title": "第十二课",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/第十二课.docx",
+      "extractTextPath": "number-source-extract/lesson-12.txt",
+      "extractJsonPath": "number-source-extract/lesson-12.json",
+      "type": "docx",
+      "characters": 1951,
+      "note": "补充地支环境象、三合半合应期、财动、合中有克、流年冲合应事。"
+    },
+    {
+      "id": "phone-lesson-13",
+      "title": "第十三课",
+      "originalPath": "D:/BaiduNetdiskDownload/手机号/第十三课.docx",
+      "extractTextPath": "number-source-extract/lesson-13.txt",
+      "extractJsonPath": "number-source-extract/lesson-13.json",
+      "type": "docx",
+      "characters": 4934,
+      "note": "补充天罗地网、空亡、用爻、坟墓医院象、破财数字和6444/1711等案例。"
+    },
+    {
+      "id": "qimen-number-personality-8",
+      "title": "第8集【进阶】奇门数字预测性格笔记",
+      "originalPath": "C:/Users/Eric/Downloads/第8集+【进阶】奇门数字预测性格_笔记.docx",
+      "extractTextPath": "number-source-extract/qimen-number-personality-8.txt",
+      "extractJsonPath": "number-source-extract/qimen-number-personality-8.json",
+      "type": "docx",
+      "characters": 6211,
+      "note": "补充奇门数字性格分析：倒二用神天干、倒三八门、倒四九星、倒五八神。"
+    },
+    {
+      "id": "qimen-number-health-9",
+      "title": "第9集【进阶】奇门数字预测疾病健康笔记",
+      "originalPath": "C:/Users/Eric/Downloads/第9集+【进阶】奇门数字预测疾病健康_笔记.docx",
+      "extractTextPath": "number-source-extract/qimen-number-health-9.txt",
+      "extractJsonPath": "number-source-extract/qimen-number-health-9.json",
+      "type": "docx",
+      "characters": 3108,
+      "note": "补充奇门数字疾病健康：倒七九宫定位身体部位、倒三八门看病势、倒四九星看病种、倒五八神看病情特征。"
+    }
+  ],
+  "digitMap": {
+    "0": { "element": "水", "branch": "亥", "yinYang": "阴", "direction": "北", "keywords": ["流动", "远方", "信息", "泌尿", "隐性压力"] },
+    "1": { "element": "水", "branch": "子", "yinYang": "阳", "direction": "北", "keywords": ["资金流", "智慧", "流动", "肾水", "情绪波动"] },
+    "2": { "element": "土", "branch": "丑", "yinYang": "阴", "direction": "中", "keywords": ["脾胃", "承载", "固定资产", "慢性问题", "子宫"] },
+    "3": { "element": "木", "branch": "寅", "yinYang": "阳", "direction": "东", "keywords": ["肝胆", "神经", "生发", "口才", "阻碍突破"] },
+    "4": { "element": "木", "branch": "卯", "yinYang": "阴", "direction": "东", "keywords": ["人脉", "学习", "眼睛", "桃花", "扩张"] },
+    "5": { "element": "土", "branch": "辰", "yinYang": "阳", "direction": "中", "keywords": ["仓库", "房产", "脾胃", "积压", "责任"] },
+    "6": { "element": "火", "branch": "巳", "yinYang": "阴", "direction": "南", "keywords": ["心火", "女性", "曝光", "惊吓", "口舌"] },
+    "7": { "element": "火", "branch": "午", "yinYang": "阳", "direction": "南", "keywords": ["行动", "名气", "脾气", "领导力", "血光"] },
+    "8": { "element": "土", "branch": "未", "yinYang": "阴", "direction": "中", "keywords": ["田宅", "脾胃", "慢性病", "库存", "家庭责任"] },
+    "9": { "element": "金", "branch": "申", "yinYang": "阳", "direction": "西", "keywords": ["规则", "口舌", "呼吸", "器械", "执行力"] }
+  },
+  "positions": [
+    {
+      "index": 0,
+      "name": "祖位",
+      "phonePlace": "倒数第四位",
+      "people": ["祖辈", "大领导", "一把手"],
+      "space": ["前庭", "前院", "车头", "最外面"],
+      "body": "头部",
+      "predictionUse": "看上级、长辈、外部环境和事情开端。"
+    },
+    {
+      "index": 1,
+      "name": "父位",
+      "phonePlace": "倒数第三位",
+      "people": ["父母", "直接领导", "配偶宫外侧"],
+      "space": ["庭院", "车前门"],
+      "body": "胸部",
+      "predictionUse": "看父母、领导、职场压力和夫妻互动的外部一方。"
+    },
+    {
+      "index": 2,
+      "name": "本位/妻位/财位",
+      "phonePlace": "倒数第二位",
+      "people": ["自己", "配偶", "财位"],
+      "space": ["主房", "车后门"],
+      "body": "腹部",
+      "predictionUse": "看自己承受力、赚钱能力、配偶状态和核心结果。"
+    },
+    {
+      "index": 3,
+      "name": "子位",
+      "phonePlace": "倒数第一位",
+      "people": ["子女", "下属", "后代"],
+      "space": ["后房", "车尾", "最后面"],
+      "body": "下肢",
+      "predictionUse": "看资产落点、子女下属、下肢和事情收尾。"
+    }
+  ],
+  "qimenSevenPositions": [
+    {
+      "reverseIndex": 7,
+      "name": "九宫",
+      "phonePlace": "倒数第七位",
+      "layer": "环境层",
+      "predictionUse": "看家庭环境、大环境、所处宫位和长期底色。"
+    },
+    {
+      "reverseIndex": 6,
+      "name": "隐干",
+      "phonePlace": "倒数第六位",
+      "layer": "隐患层",
+      "predictionUse": "看潜在想法、隐性病灶、暗中压力和多年后才爆发的事。"
+    },
+    {
+      "reverseIndex": 5,
+      "name": "八神",
+      "phonePlace": "倒数第五位",
+      "layer": "神助层",
+      "predictionUse": "看贵人、神秘助力、突发气场和事情背后的推动力。"
+    },
+    {
+      "reverseIndex": 4,
+      "name": "九星",
+      "phonePlace": "倒数第四位",
+      "layer": "平台层",
+      "predictionUse": "看工作平台、天时机遇、能否抓住机会。"
+    },
+    {
+      "reverseIndex": 3,
+      "name": "八门",
+      "phonePlace": "倒数第三位",
+      "layer": "能力层",
+      "predictionUse": "看人际关系、工作能力、对外沟通和执行方式。"
+    },
+    {
+      "reverseIndex": 2,
+      "name": "天盘干/用神",
+      "phonePlace": "倒数第二位",
+      "layer": "自身层",
+      "predictionUse": "看自己、旺衰核心、财位承接、生育腹部和结果。"
+    },
+    {
+      "reverseIndex": 1,
+      "name": "地盘干",
+      "phonePlace": "倒数第一位",
+      "layer": "落点层",
+      "predictionUse": "看身边人事、财运、工作、六亲关系和事情落点。"
+    }
+  ],
+  "qimenSpecialRules": [
+    "数字1在倒数第1位、倒数第2位、倒数第6位时，按80%戊土加20%甲木解读，用于判断身边事、自身旺衰和隐患。",
+    "倒数第1位应腿脚和事情收尾，倒数第2位应腹部、子宫和自身承接，倒数第3位应胸部、人际和能力，倒数第4位应头部、平台和机会。",
+    "倒数第6位为隐干，出现被克、空亡、0水或过旺五行时，要提示暗病、暗线关系、隐性债务或迟发性事件。"
+  ],
+  "fertilityRules": [
+    {
+      "condition": "倒数第2位为0",
+      "probability": "70-80%",
+      "prediction": "女性号码重点提示流产、妇科、子宫、腹部和子女健康风险。"
+    },
+    {
+      "condition": "203或302结尾",
+      "probability": "99%",
+      "prediction": "祸害夹0，流产、生育损耗、妇科和子女健康信号极重。"
+    },
+    {
+      "condition": "2003等中间夹0",
+      "probability": "按夹0数量推次数",
+      "prediction": "中间夹几个0，可按几次流产、生育中断或子女关口辅助判断。"
+    },
+    {
+      "condition": "204结尾",
+      "probability": "80%",
+      "prediction": "腹部、妇科、子宫、子女健康和生产不顺信号增强。"
+    },
+    {
+      "condition": "122结尾",
+      "probability": "80%",
+      "prediction": "绝命数组，丑土克子水，肾水、生殖和流产风险增强。"
+    },
+    {
+      "condition": "221结尾",
+      "probability": "85-90%",
+      "prediction": "双丑土压子水，妇科、生殖、肾水和子女关口较重。"
+    },
+    {
+      "condition": "123结尾",
+      "probability": "95%以上",
+      "prediction": "子丑寅连动，女性生育、腹部和子女事项容易被冲动引发。"
+    }
+  ],
+  "environmentBranchSymbols": {
+    "子": ["河流", "坑洼", "低处", "图书馆", "水产市场"],
+    "丑": ["土坡", "礼堂", "银行", "坟墓", "桥梁"],
+    "寅": ["大树", "学校", "公园"],
+    "卯": ["花草盆栽", "商店", "车辆", "菜市场", "停车场"],
+    "辰": ["土坡山丘", "寺院", "水池水库", "监狱"],
+    "巳": ["厨房", "电线", "文化娱乐场所", "电影院", "手机店", "电器店"],
+    "午": ["学校", "电线杆", "高压线", "高地势", "高楼"],
+    "未": ["土坡", "寺院", "饭店", "停车场"],
+    "申": ["道路", "大石头"],
+    "酉": ["小路", "KTV"],
+    "戌": ["山丘", "垃圾堆", "寺院"],
+    "亥": ["池塘", "厕所"]
+  },
+  "graveEnvironmentRules": [
+    {
+      "condition": "申金见辰土或戌土",
+      "prediction": "多主坟墓、医院、旧病伤、重大纠纷或环境阴重。"
+    },
+    {
+      "condition": "95组合",
+      "prediction": "95在中间多应住宅周围原有坟地，在下方多应宅基地下方有旧坟、医院或阴性环境。"
+    },
+    {
+      "condition": "申金冲寅木",
+      "prediction": "道路、车祸、破财、男性长辈健康或腿脚伤更容易应事。"
+    }
+  ],
+  "tianluodiwangRules": [
+    {
+      "condition": "56或辰巳紧挨",
+      "prediction": "辰土与巳火紧挨为天罗地网，主被困住、官司纠纷、合同卡住、家庭矛盾缠绕。"
+    },
+    {
+      "condition": "56再见亥水0",
+      "prediction": "天罗地网遇亥水，牢狱、处罚、诉讼、长期纠纷风险明显增加。"
+    },
+    {
+      "condition": "亥年辰月、辰年亥月或2019己亥年、2024甲辰年亥月",
+      "prediction": "天罗地网容易在辰亥互见的年份月份应官司、纠纷或被困之事。"
+    }
+  ],
+  "wealthBreakRules": [
+    {
+      "condition": "69或96组合",
+      "prediction": "破财数字，常按6或9相关金额、次数、月份应破财、维修、罚款或资金外流。"
+    },
+    {
+      "condition": "倒数第2位克倒数第3位",
+      "prediction": "为财动，不一定是破财；遇水年、水月或三合局成时，可能出现两笔财务流动。"
+    },
+    {
+      "condition": "土旺生金外泄",
+      "prediction": "三土旺极遇申酉金年后容易由旺转泄，财运下滑、钱往外走。"
+    }
+  ],
+  "voidRules": {
+    "tenDayVoid": {
+      "甲子旬": "戌亥空",
+      "甲戌旬": "申酉空",
+      "甲申旬": "午未空",
+      "甲午旬": "辰巳空",
+      "甲辰旬": "寅卯空",
+      "甲寅旬": "子丑空"
+    },
+    "prediction": [
+      "按当日日柱查旬空，空亡状态持续十天。",
+      "田宅宫空亡，多应无房产、无存款、无子女或固定资产落空。",
+      "财帛宫空亡，多应现金流紧张、钱不到账、财务计划悬空。",
+      "官禄宫空亡，多应工作迷茫、岗位不稳、失业或职业方向空转。",
+      "倒二、倒三空亡且中间冲克时，婚姻分离概率很高。"
+    ]
+  },
+  "useGodRules": [
+    "通常以倒数第2位妻位/本位/财位为用爻。",
+    "祖位和子位阴阳不同时，仍以妻位为用。",
+    "三阴一阳以阳为用，三阳一阴以阴为用，二阴二阳以妻位为用。"
+  ],
+  "practicalPredictionRules": [
+    {
+      "topic": "八星与奇门分工",
+      "prediction": "八星数字先快速看吉凶、性格、财运和健康概况；奇门数字用于细化流产年份月份、离婚时间、伤灾车祸、工资金额、环境方位等具体事项。"
+    },
+    {
+      "topic": "固定工资估算",
+      "prediction": "固定工资人群可用号码关键数字估算收入区间，课程案例中误差常在400-1000元，特别吻合时可缩小到百元级；浮动收入者准确率会下降。"
+    },
+    {
+      "topic": "13项秒断方向",
+      "prediction": "健康看流产、近视、高血压；感情看异性缘、婚姻问题、好色；运势看小人、投资倾向、流产年份，具体仍需回到五行、位置和流年冲合。"
+    },
+    {
+      "topic": "数字磁场稳定度",
+      "prediction": "218为绝命加五鬼，磁场衰败快；718次之；314相对稳定，课程用橘子实验验证数字组合对物质状态的影响。"
+    },
+    {
+      "topic": "5813959案例",
+      "prediction": "5813959案例主偏财旺、老板象、易经玄学缘分强、待人热情、常思考赚钱；也见赚钱后懒散、熬夜、手机故障、西南环境潮湿破损、河流小路等信号。"
+    }
+  ],
+  "phoneNumberTricks": [
+    {
+      "id": "trick-01",
+      "name": "绝招一 流产技巧",
+      "basis": ["倒数第二位为0", "203/302结尾", "2和3之间夹0", "204/122/221/123", "13/14/79/92食伤尾号", "258/279/458/296奇门数组"],
+      "prediction": "命中时女性号码重点看流产、妇科、子宫腹部恢复、剖腹产或子女健康关口；夹0数量可辅助看生育中断次数。"
+    },
+    {
+      "id": "trick-02",
+      "name": "绝招二 异性缘",
+      "basis": ["子午卯酉桃花集中", "火旺", "木旺或39人缘", "倒三八门见9景门"],
+      "prediction": "命中时异性缘、人缘、邀约、暧昧、客户介绍和圈层破冰会增加；若同时冲破，容易转为烂桃花或感情纠纷。"
+    },
+    {
+      "id": "trick-03",
+      "name": "绝招三 婚姻问题",
+      "basis": ["倒三倒二夫妻位生克", "合冲刑害破绝", "中间同五行", "配偶位与外部相合", "两头与中间重克"],
+      "prediction": "重克、冲害、外合时主争吵冷战、外情牵动、分居离散或合作破裂；相生时仍有现实利益或感情牵回。"
+    },
+    {
+      "id": "trick-04",
+      "name": "绝招四 眼睛近视",
+      "basis": ["子午冲", "水克火", "火处死囚", "93/49金木冲", "午火受伤"],
+      "prediction": "命中时容易眼疲劳、近视加深、干涩、心火不足、睡眠不稳，严重时连带心脑血管压力。"
+    },
+    {
+      "id": "trick-05",
+      "name": "绝招五 好色桃花",
+      "basis": ["桃花支集中", "火旺水动", "子午卯酉冲破", "1711案例型桃花"],
+      "prediction": "命中时桃花欲望偏强，容易出现暧昧、外情、冲动邀约、情绪化关系或小三纠纷。"
+    },
+    {
+      "id": "trick-06",
+      "name": "绝招六 小人",
+      "basis": ["六害", "18子未害", "金木相见", "倒三倒二相害", "外克内"],
+      "prediction": "命中时容易被下属、客户、同事、领导、伴侣或合作方暗中牵制，表现为陷害、口舌、规则卡点、合同压力和破财被骗。"
+    },
+    {
+      "id": "trick-07",
+      "name": "绝招七 投资",
+      "basis": ["本位生子位", "土重", "59偏财", "73财必来", "69/96破财", "房产库存固定资产"],
+      "prediction": "命中时会把钱和精力投向项目、房产、库存、子女、下属或扩张，常见大额占款、资源变现和投资后回款压力。"
+    },
+    {
+      "id": "trick-08",
+      "name": "绝招八 高血压",
+      "basis": ["火旺", "子午冲", "水火冲克", "心脑血管位受伤", "1711/6444案例型信号"],
+      "prediction": "命中时容易血压波动、心火急躁、睡眠浅、头晕眼胀、心律不齐和心脑血管压力。"
+    },
+    {
+      "id": "trick-09",
+      "name": "绝招九 收入工资",
+      "basis": ["固定工资区间估算", "1949072工资案例", "59偏财", "813脑力财", "财位旺衰"],
+      "prediction": "固定工资人群可估算收入区间；销售、老板、项目收入者要分开看固定工资、偏财、资源变现和项目款。"
+    },
+    {
+      "id": "trick-10",
+      "name": "绝招十 伤灾车祸手术",
+      "basis": ["寅申冲", "卯酉冲", "巳亥冲", "火克金", "79/69/296", "绝命和血光器械象"],
+      "prediction": "命中时容易出现车祸、磕碰、手术、剖腹产、刀金器械、呼吸系统、车辆道路或发动机类问题。"
+    },
+    {
+      "id": "trick-11",
+      "name": "绝招十一 官司纠纷",
+      "basis": ["木克土", "56/65天罗地网", "五五自刑", "丑未戌三刑", "旺木克土", "结尾带8"],
+      "prediction": "命中时容易被合同、官司、处罚、家庭矛盾、历史纠纷或现实压力困住；旺木克土时官非风险更重。"
+    },
+    {
+      "id": "trick-12",
+      "name": "绝招十二 环境设备",
+      "basis": ["后七位九宫环境", "95坟墓医院旧场地", "5辰土空亡", "坤宫2配5/8/9", "5813959设备案例"],
+      "prediction": "命中时住宅或工作环境容易见坟地医院、旧场地、道路石头、潮湿破损、河流小路、墙面问题，手机和设备也易故障。"
+    },
+    {
+      "id": "trick-13",
+      "name": "绝招十三 流产具体年份",
+      "basis": ["寅申冲", "子午冲", "巳亥冲", "巳酉丑三合", "申酉丑巳关键年份", "流年流月冲到腹部和子位"],
+      "prediction": "命中流产数组后，用流年流月冲克、补齐三合、冲到倒二腹部位或子位来定年份月份，重点看申、酉、丑、巳、子、午等年份。"
+    }
+  ],
+  "qimenPersonalityRules": {
+    "stem": {
+      "0": { "name": "癸水", "prediction": "聪明细腻、反应快，思想流动大，容易多想多变，也有经济头脑。" },
+      "1": { "name": "甲木", "prediction": "仁慈心软、容易被感动，与佛道玄学有缘，同时有领导心态和主导欲。" },
+      "2": { "name": "乙木", "prediction": "仁慈柔和、心软敏感，容易替别人着想；男性用号时胆量和决断会偏弱。" },
+      "3": { "name": "丙火", "prediction": "急躁活跃、做事迅速，重礼貌和面子，爱表现，也容易虚荣讲排场。" },
+      "4": { "name": "丁火", "prediction": "细腻重礼、爱美重打扮，有同情心，但情绪热度和好面子也明显。" },
+      "5": { "name": "戊土", "prediction": "沉稳守信、喜静不喜动，耐性强、有度量，但反应慢半拍，容易固执己见。" },
+      "6": { "name": "己土", "prediction": "厚重谨慎、能忍耐，重现实和稳定，做事偏慢，容易把压力憋在心里。" },
+      "7": { "name": "庚金", "prediction": "重义轻财、讲义气，宁愿自己吃亏也要守规则；口才好，说话硬朗直接。" },
+      "8": { "name": "辛金", "prediction": "讲原则、重分寸，表达能力不错，外表或审美较细，遇事容易挑细节。" },
+      "9": { "name": "壬水", "prediction": "聪明、有经济头脑，反应快、喜动，想法变化迅速，适合靠信息和判断做事。" }
+    },
+    "door": {
+      "1": { "name": "休门", "prediction": "善于调整状态和利用人际关系，容易吸引同事、领导、老板类贵人；低迷时会消极、懒散、缺闯劲。" },
+      "2": { "name": "死门", "prediction": "极端执着，决定后很难改变，容易先看到负面可能；也与玄学、房地产、神佛类事物有缘。" },
+      "3": { "name": "伤门", "prediction": "能力强、竞争意识重，追求第一，说话直接犀利，适合市场、销售和冲锋型工作。" },
+      "4": { "name": "杜门", "prediction": "内向寡言，不主动社交，需要别人带动交流；技术、专业、高科技、宗教易经类能力较强。" },
+      "5": { "name": "开门", "prediction": "健谈外向，自来熟，藏不住秘密，事业心强，适合创业、开公司、开店和主动开拓。" },
+      "7": { "name": "惊门", "prediction": "口才突出，善用语言解决问题，适合销售、翻译、外语、教育培训；也容易唠叨和口舌。" },
+      "8": { "name": "生门", "prediction": "乐观好动、精力旺，心态豁达，适合经商；组合好且能量旺时财运表现更明显。" },
+      "9": { "name": "景门", "prediction": "生活有条理，爱做计划，注重外表和形象，女性更爱化妆打扮；关联旅游、餐饮、电子设备。" }
+    },
+    "star": {
+      "1": { "name": "天蓬星", "prediction": "有冒险和赌性，敢在把握不足时拼一把，喜欢风险投资，格局好能赚大钱，格局差易亏。" },
+      "2": { "name": "天芮星", "prediction": "问题意识强、学习能力强，同情心重，但抵抗力较弱，容易接触医务、维修或麻烦事。" },
+      "3": { "name": "天冲星", "prediction": "闯劲强、效率高，讨厌拖拉，适合销售和市场；容易感情用事、急着推进。" },
+      "4": { "name": "天辅星", "prediction": "博学、有涵养，擅长辅导、教化、做思想工作，适合教师、顾问、二把手位置。" },
+      "5": { "name": "天禽星", "prediction": "忠厚老实、中正稳重，擅长平衡关系，忍耐力强，能默默积累后突然发力。" },
+      "6": { "name": "天心星", "prediction": "有管理才能和策略能力，容易成为管理层或创业骨干；组合太阴时城府更深。" },
+      "7": { "name": "天柱星", "prediction": "创新、敢破旧局，能独当一面，是团队骨干；做事不按套路，有时带破坏性。" },
+      "8": { "name": "天任星", "prediction": "憨厚踏实、任劳任怨，忠诚度高，决定后不易改变，做事慢但能持久。" },
+      "9": { "name": "天英星", "prediction": "热情、重礼节和形象，做事风风火火，但容易三分钟热度，开始快结束也快。" }
+    },
+    "spirit": {
+      "1": { "name": "值符", "prediction": "天然领导力强，主见强，喜欢为别人做决定；过重时会自我、自负。" },
+      "2": { "name": "腾蛇", "prediction": "聪明、思维跳跃、善变，工作、想法、收入和事业容易持续变化。" },
+      "3": { "name": "太阴", "prediction": "喜欢深度思考，分析细致，容易遇暗中贵人，也容易招小人或灰色收入红包。" },
+      "4": { "name": "六合", "prediction": "人缘好，擅长维护关系，合作多，交际圈广，容易赚大众钱或出现多份收入。" },
+      "5": { "name": "白虎", "prediction": "能力强、效率高，压力也大；女性更显职场强势，喜欢挑战性任务。" },
+      "6": { "name": "玄武", "prediction": "聪明且善于掩饰，忽悠能力强；能量强时会说服别人，组合差时容易被人忽悠或犯小人。" },
+      "7": { "name": "九地", "prediction": "踏实稳重、守财，重稳定和长期积累，行动慢但能守住资源。" },
+      "8": { "name": "九天", "prediction": "好动、外出多，有远见，喜欢速战速决、快速成功，也容易出现异地恋或远方关系。" }
+    }
+  },
+  "qimenHealthRules": {
+    "palace": {
+      "1": { "name": "坎宫", "prediction": "疾病部位先看肾、膀胱、泌尿系统、生殖系统、血液和内分泌。" },
+      "2": { "name": "坤宫", "prediction": "疾病部位先看腹部、脾胃、右肩、女性生殖器和消化系统。" },
+      "3": { "name": "震宫", "prediction": "疾病部位先看足部、肝胆、左肋和左肩。" },
+      "4": { "name": "巽宫", "prediction": "疾病部位先看左肩、肝胆、神经和木气相关筋络。" },
+      "5": { "name": "中宫归坤", "prediction": "疾病部位多落腹部、脾胃、消化、中焦积滞和慢性堵塞。" },
+      "6": { "name": "乾宫", "prediction": "疾病部位先看头部、前额、腿部和筋骨压力。" },
+      "7": { "name": "兑宫", "prediction": "疾病部位先看腹部区域、口腔、咽喉和呼吸入口。" },
+      "8": { "name": "艮宫", "prediction": "疾病部位先看腿脚、鼻部、男性生殖系统和慢性阻滞。" },
+      "9": { "name": "离宫", "prediction": "疾病部位先看眼睛、头部、心脏、血压和血液系统。" }
+    },
+    "door": {
+      "1": { "name": "休门", "prediction": "病势偏休眠或修复期，身体容易倦怠、懒散，恢复靠休息调养。" },
+      "2": { "name": "死门", "prediction": "病势偏难治，容易拖成顽固问题、留疤、功能下降或性质转变。" },
+      "3": { "name": "伤门", "prediction": "病势带伤灾、开刀、破损和消耗，容易有手术、外伤或急性损害。" },
+      "4": { "name": "杜门", "prediction": "病势隐蔽难查，容易应血栓、梗塞、痴呆、堵塞或久查不明。" },
+      "5": { "name": "开门", "prediction": "病情相对明朗，检查结果容易显现，问题比杜门更容易定位。" },
+      "7": { "name": "惊门", "prediction": "病势容易应心慌、心律不齐、惊悸、呼吸系统和口腔咽喉问题。" },
+      "8": { "name": "生门", "prediction": "恢复力较强、修复快，但若天芮星同动，也可能表示病情继续生长发展。" },
+      "9": { "name": "景门", "prediction": "病势容易应发烧、炎症、心脑血管、血压波动，衰时也看烫伤烧伤。" }
+    },
+    "star": {
+      "1": { "name": "天蓬星", "prediction": "疾病类型偏流动变化，常看肝肾、糖尿病、代谢和病情反复。" },
+      "2": { "name": "天芮星", "prediction": "天芮为疾病主星，重点定位病灶和病根，健康信号会被明显放大。" },
+      "3": { "name": "天冲星", "prediction": "疾病类型偏突发、发展快，容易突然发作，需要看急症、外伤和快速变化。" },
+      "4": { "name": "天辅星", "prediction": "疾病类型偏传染、感染、神经类、风湿感冒和反复外感。" },
+      "5": { "name": "天禽星", "prediction": "疾病类型偏中焦和综合问题，也要看呼吸、脑部和全身性牵连。" },
+      "6": { "name": "天心星", "prediction": "疾病类型偏西医检查、脑部、头部、神经系统和需要器械检查的问题。" },
+      "7": { "name": "天柱星", "prediction": "疾病类型偏咽喉、支气管、呼吸通道、声音和口舌相关。" },
+      "8": { "name": "天任星", "prediction": "疾病类型偏慢性稳定发展，常由长期劳累、拖延和积压形成。" },
+      "9": { "name": "天英星", "prediction": "疾病类型偏高血压、虚症、心火、发热和情绪急躁引起的波动。" }
+    },
+    "spirit": {
+      "1": { "name": "值符", "prediction": "病情容易需要名医、权威医生或大医院介入；同见天芮时头部重病信号加重。" },
+      "2": { "name": "腾蛇", "prediction": "病情容易反复缠绕，常看精神紊乱、失眠、多梦和磁场扰动。" },
+      "3": { "name": "太阴", "prediction": "病情偏隐疾，难一次查清，也看呼吸系统、暗病和体内阴性问题。" },
+      "4": { "name": "六合", "prediction": "病情容易多病共存、并发症、综合症，治疗花费和牵连事项也会增多。" },
+      "5": { "name": "白虎", "prediction": "病情带伤灾、开刀、肿瘤或大病信号，但要结合门星和数组综合判断。" },
+      "6": { "name": "玄武", "prediction": "病情诊断不明，常看血液、泌尿、肾水、生殖和隐性病灶。" },
+      "7": { "name": "九地", "prediction": "病情偏慢性、先天、低血压、长期体弱和恢复慢。" },
+      "8": { "name": "九天", "prediction": "病情偏急症、上冲、高血压、多动、突发和发展快。" }
+    }
+  },
+  "casePatternRules": [
+    {
+      "digits": "6444",
+      "prediction": "木生火极旺，心脑血管、睡眠多梦、肝火、近视和免疫力压力明显；钱财外流、搬家频繁，但谋官、贵人、教育传播类机会较强。"
+    },
+    {
+      "digits": "1711",
+      "prediction": "子水旺克午火，外向但婚姻差、桃花旺、脾气急又压着；心脏、近视、车祸、口舌、被盗和流动酒水行业信号明显，2021丑土克水后可好转。"
+    },
+    {
+      "digits": "3135",
+      "prediction": "寅木多可结合时空四柱断兄妹数量，申子辰三合水局可推恋爱见面、秋季申月和子年应期。"
+    },
+    {
+      "digits": "8343",
+      "prediction": "一个土三个木为特殊旺极号，常规金克木未必合适，要结合行业；木相关行业反而可能喜生助。"
+    }
+  ],
+  "elementCycles": {
+    "generates": { "木": "火", "火": "土", "土": "金", "金": "水", "水": "木" },
+    "controls": { "木": "土", "土": "水", "水": "火", "火": "金", "金": "木" },
+    "statusRules": {
+      "旺": "能量最强，事情最先显现。",
+      "相": "被旺气生助，事情容易被带起来。",
+      "休": "生旺者消耗，付出多、恢复慢。",
+      "囚": "克旺但克不动，容易受困、压抑或反受其累。",
+      "死": "被旺气克制，对应人事容易出问题。"
+    },
+    "strengthPriority": ["多者为旺", "受生者为旺", "克他者为旺", "不受克者为旺"]
+  },
+  "branchRelations": {
+    "clash": ["子午", "丑未", "寅申", "卯酉", "辰戌", "巳亥"],
+    "harm": ["子未", "丑午", "寅巳", "卯辰", "申亥", "酉戌"],
+    "break": ["卯午", "巳申", "丑辰", "子酉", "寅亥", "未戌"],
+    "combine": {
+      "子丑": "土",
+      "寅亥": "木",
+      "卯戌": "火",
+      "辰酉": "金",
+      "巳申": "水",
+      "午未": "火"
+    },
+    "punishment": ["寅巳申", "丑未戌", "子卯", "辰辰", "午午", "酉酉", "亥亥"],
+    "threeHarmony": {
+      "寅午戌": "火",
+      "申子辰": "水",
+      "巳酉丑": "金",
+      "亥卯未": "木"
+    },
+    "threeMeeting": {
+      "寅卯辰": "木",
+      "巳午未": "火",
+      "申酉戌": "金",
+      "亥子丑": "水"
+    }
+  },
+  "overControlEvents": {
+    "木克土": {
+      "body": "脾胃、消化、肌肉、肿块、慢性积压",
+      "events": ["胃肠不适", "家庭责任压身", "项目被规章卡住", "严重时有牢狱或处罚风险"],
+      "examples": ["35", "38", "332"]
+    },
+    "水克火": {
+      "body": "心脏、血压、睡眠、眼睛、女性灾厄",
+      "events": ["心火受压", "情绪忽冷忽热", "感情热度被浇灭", "女性长辈或伴侣易有惊吓灾厄"],
+      "examples": ["17", "16", "071"]
+    },
+    "土克水": {
+      "body": "肾、泌尿、生殖、糖尿病、腰腿",
+      "events": ["资金流被压住", "田产或房屋纠纷", "感情推进慢", "肾水和代谢压力加重"],
+      "examples": ["80"]
+    },
+    "金克木": {
+      "body": "肝胆、神经、眼睛、筋骨",
+      "events": ["口舌是非", "合同规则压住发展", "肝胆神经紧绷", "近视或眼部问题更明显"],
+      "examples": ["49", "93"]
+    },
+    "火克金": {
+      "body": "肺、呼吸道、咽喉、皮肤、刀金血光",
+      "events": ["呼吸系统不适", "剖腹产信息", "成人血光磕碰", "家中易有武职、公务、执法或工具器械相关人事"],
+      "examples": ["79", "69"]
+    }
+  },
+  "pureElementRules": {
+    "土": ["成事缓慢", "脾胃肠道问题", "肿块、结节、囊肿类信号", "库存和房产压力堆积"],
+    "火": ["火灾隐患", "心脏血压和睡眠问题", "易受惊吓", "脾气暴躁、虚荣、桃花过旺"],
+    "水": ["水厄", "肾病或泌尿系统问题", "资金流反复", "情绪和关系流动不定"],
+    "木": ["肝胆神经系统问题", "做事多阻碍", "扩张过快导致计划折损"],
+    "金": ["伤残不顺", "呼吸系统和咽喉问题", "规则冲突", "刀具器械磕碰"]
+  },
+  "structureRules": [
+    {
+      "id": "harmony-center",
+      "name": "和局相生",
+      "condition": "祖位生父位，子位生本位，即倒四生倒三、倒一生倒二。",
+      "prediction": "能量向中间聚集，主富贵和顺、客户量增加、财位能承接资源；若火旺，学历、名气、表达力强，但也有虚惊、桃花和花钱快。"
+    },
+    {
+      "id": "middle-same",
+      "name": "中间同气",
+      "condition": "倒三和倒二同五行。",
+      "prediction": "夫妻或合作双方各持己见，理念冲突明显；双火多争吵但未必离散，双土多沉闷拖延，双水多反复流动。"
+    },
+    {
+      "id": "double-control-break",
+      "name": "重克离散",
+      "condition": "中间两位相克且两头也相克。",
+      "prediction": "婚姻合作容易出现重压、分歧、第三方或分开信息，课程经验中离婚号特征明显，但仍需结合旺衰。"
+    },
+    {
+      "id": "three-same-element",
+      "name": "三见成势",
+      "condition": "后四位有三个以上同五行。",
+      "prediction": "多者自然称旺，对应事项集中爆发；若过旺则成病，健康、人事和财务都会向该五行象义偏斜。"
+    },
+    {
+      "id": "wealth-position-strong",
+      "name": "财位旺相",
+      "condition": "倒数第二位本位/财位处于旺或相。",
+      "prediction": "赚钱能力、客户承接和结果兑现力增强；若被克、死、囚，则自己压力大，钱到手慢或被家庭、合同、疾病牵制。"
+    }
+  ],
+  "flowPatternRules": [
+    {
+      "id": "split-generating",
+      "name": "分局相生",
+      "condition": "父位生祖位，本位/妻位生子位，即中间生两头。",
+      "prediction": "能量向外发散，主人大气舍得、朋友多、在外办事有人应，但钱和精力容易外流，感情上也有离散或一次不成再来的信号。"
+    },
+    {
+      "id": "harmony-controlling",
+      "name": "和局相克",
+      "condition": "两头克中间，能量向中间走但形成围克。",
+      "prediction": "和中不和，办事先喜后忧，容易内外受迫、破财损官、家长伤病、夫妻紧张；若道二道三冲克且道一/道四相克，离婚信号很重。"
+    },
+    {
+      "id": "split-controlling",
+      "name": "分局相克",
+      "condition": "中间两位克两头，能量向外解体。",
+      "prediction": "事情一分为二，对外事务和家庭关系都容易凶象；普通人多应官非纠纷、家宅不安、头胃心眼腿脚等多点受压。"
+    },
+    {
+      "id": "chain-generating",
+      "name": "连环相生/通关",
+      "condition": "连续三位以上相生，或原本相克但中间有通关五行。",
+      "prediction": "能量逐层传递，被生处转旺；主外财、客源、贵人、家族助力和财库聚集，同时要看被生位置是否变成过旺成病。"
+    }
+  ],
+  "relationshipDirectionRules": [
+    { "condition": "倒二生倒一", "prediction": "自己更主动喜欢对方，也愿意付出资源。", "use": "未婚感情、人际合作" },
+    { "condition": "倒一生倒二", "prediction": "对方更主动靠近自己，成功概率更大。", "use": "未婚感情、人际合作" },
+    { "condition": "倒二克倒一", "prediction": "自己看不上对方、管控对方，关系有压制感。", "use": "未婚感情、人际合作" },
+    { "condition": "倒一克倒二", "prediction": "对方看不上自己或反过来压制自己，感情和合作承接难。", "use": "未婚感情、人际合作" },
+    { "condition": "倒三与倒四合", "prediction": "配偶或合作对象容易被外部人事牵走，有外情或外部合作过重信号。", "use": "婚姻合作" },
+    { "condition": "倒三与倒一合", "prediction": "子女、下属或收尾事项过度牵扯配偶/合作对象精力。", "use": "家庭合作" }
+  ],
+  "specialPatternRules": [
+    { "id": "218", "match": "contains", "digits": "218", "topic": "八星磁场", "prediction": "218为绝命加五鬼的重风险组合，磁场衰败快，容易熬夜、情绪阴暗、物品损坏、健康和运势走低。" },
+    { "id": "718-soft", "match": "contains", "digits": "718", "topic": "八星磁场", "prediction": "718在课程实验中表现为部分变黄变软，主状态变动、稳定性下降、事情有拖软和走弱迹象。" },
+    { "id": "314", "match": "contains", "digits": "314", "topic": "稳定磁场", "prediction": "314在案例中保持状态最好，主相对稳定、保存力强，适合把事情稳住。" },
+    { "id": "13-justice", "match": "contains", "digits": "13", "topic": "性格", "prediction": "13组合有正义感和原则意识，容易看不惯不公平的事，也会因讲原则而得罪人。" },
+    { "id": "39-popularity", "match": "contains", "digits": "39", "topic": "人缘", "prediction": "39组合人缘较好，社交热度和对外吸引力增强，适合靠沟通、介绍、圈层资源打开局面。" },
+    { "id": "813-brain-money", "match": "contains", "digits": "813", "topic": "脑力赚钱", "prediction": "813组合主靠脑力、知识、策划、技术和判断赚钱，适合顾问、研究、玄学、方案和信息类收入。" },
+    { "id": "3959-lazy-after-wealth", "match": "contains", "digits": "3959", "topic": "赚钱后懒散", "prediction": "3959组合显示赚钱后容易懒散或节奏放慢，财富动力阶段性强，赚到后会想休息或转向享受。" },
+    { "id": "big-wugui-stay-up", "match": "containsAny", "digits": ["18", "81"], "topic": "五鬼熬夜", "prediction": "18/81带大五鬼熬夜信号，晚上想事多、睡眠不稳、灵感多但精神消耗也重。" },
+    { "id": "59-wealth", "match": "endsWith", "digits": "59", "topic": "偏财", "prediction": "59结尾构成旺相偏财，常想赚钱、资源变现、房产投入或大额资金流动。" },
+    { "id": "5813959-case", "match": "contains", "digits": "5813959", "topic": "案例号", "prediction": "5813959为课程老板案例，偏财旺、常思考赚钱，适合易经玄学或顾问类破冰；也应熬夜、赚钱后懒散、手机故障和西南方潮湿破损、河流小路环境象。" },
+    { "id": "1949072-salary", "match": "contains", "digits": "1949072", "topic": "工资估算", "prediction": "1949072为课程工资案例，固定工资可先看6100-6600附近区间；浮动收入者误差会放大。" },
+    { "id": "73-wealth", "match": "endsWith", "digits": "73", "topic": "财必来", "prediction": "73结尾为财必来信号，木火引财，遇木火流年流月更容易进财和客户上门。" },
+    { "id": "fertility-13-14", "match": "endsWithAny", "digits": ["13", "14"], "topic": "流产/食伤", "prediction": "13/14结尾为食伤数组，遇死门、杜门或流年冲克时，女性生育、流产、子女健康信号增强。" },
+    { "id": "fertility-79", "match": "endsWith", "digits": "79", "topic": "流产/食伤", "prediction": "79结尾带食伤与火金冲克，易应剖腹产、血光、呼吸系统或子女生产不顺。" },
+    { "id": "fertility-92", "match": "endsWith", "digits": "92", "topic": "流产/食伤", "prediction": "92结尾以子女宫和食伤看，遇冲刑年份要注意流产、剖腹产或孩子健康。" },
+    { "id": "huohai-zero-203-302", "match": "endsWithAny", "digits": ["203", "302"], "topic": "祸害加零", "prediction": "203/302结尾为祸害夹0，资料按99%流产数组看，女性生育、妇科、子女健康需重点提示。" },
+    { "id": "fertility-204", "match": "endsWith", "digits": "204", "topic": "流产/子宫", "prediction": "204结尾流产和妇科概率约80%，腹部、子宫、子女健康和生产不顺信号增强。" },
+    { "id": "fertility-123", "match": "endsWith", "digits": "123", "topic": "流产/子宫", "prediction": "123结尾流产概率按95%以上看，子丑寅连动，遇申年申月冲寅时更容易应生育中断或子女关口。" },
+    { "id": "jueming-122-221", "match": "containsAny", "digits": ["122", "221"], "topic": "绝命数组", "prediction": "122约80%、221约85-90%为绝命数组，丑土克子水，主子女、生育、肾水和流产风险；子水强时会减轻。" },
+    { "id": "fertility-qimen", "match": "containsAny", "digits": ["258", "279", "458"], "topic": "奇门流产数组", "prediction": "258/279/458为课程列出的奇门流产数组，需结合女性年龄、流年和倒三门象判断。" },
+    { "id": "296-child-risk", "match": "contains", "digits": "296", "topic": "孩子绝命", "prediction": "296中二九为孩子宫位、九六为绝命组合，可直断流产、剖腹产或孩子生产健康压力。" },
+    { "id": "tianluodiwang-56", "match": "containsAny", "digits": ["56", "65"], "topic": "天罗地网", "prediction": "56/65为辰巳紧挨，主天罗地网，被官司、合同、家庭矛盾或现实压力困住；同号再见0亥水时，牢狱处罚风险更重。" },
+    { "id": "grave-95", "match": "contains", "digits": "95", "topic": "坟墓/医院", "prediction": "95为申金见辰土，环境上多应坟地、医院、旧病伤或阴性场所；在后段越靠近落点，对住宅和宅基地影响越明显。" },
+    { "id": "wealth-break-69-96", "match": "containsAny", "digits": ["69", "96"], "topic": "破财数字", "prediction": "69/96为破财数组，常按6或9相关金额、次数、月份应破财、维修、罚款、投资损失或钱财外流。" },
+    { "id": "sequence-business", "match": "sequence", "digits": ["123", "456", "678", "789"], "topic": "连号/层级模式", "prediction": "123/456/678/789等连号象征层级推进、分销、直销、微商、拉人头或链条式业务。" },
+    { "id": "marriage-5500-8800", "match": "endsWithAny", "digits": ["5500", "8800"], "topic": "相合婚姻", "prediction": "5500/8800一类尾号有半合或入库信息，婚姻不一定散，但容易出现被配偶掌控、钱和情绪被管住。" },
+    { "id": "case-6444", "match": "endsWith", "digits": "6444", "topic": "案例号", "prediction": "6444木生火极旺，心脑血管、肝火、睡眠多梦、泌尿肾水和免疫力压力明显；事业有谋官、贵人和传播教育机会，但钱财外流、搬家频繁。" },
+    { "id": "case-1711", "match": "endsWith", "digits": "1711", "topic": "案例号", "prediction": "1711子水旺克午火，外向但婚姻差、桃花旺、脾气急又隐忍；心脏、近视、车祸、口舌、被盗和流动酒水行业信号明显。" },
+    { "id": "four-same-bomb", "match": "fourSame", "digits": "", "topic": "炸弹号", "prediction": "四个相同数字为炸弹号，能量极端；四1主领导欲，四2主手术伤灾，四3主口舌急躁，四7主心眼口才，四8主房产肠胃，四0主空亡呼吸。" }
+  ],
+  "propertyRules": [
+    "土旺直接看房产和库存，一个旺土可应一套房或一处固定资产，两个旺土常断两套或2-3处资产。",
+    "子位为田宅宫，子位旺相主房产、存款、固定资产；如果土死或无土，再重点看子位的五行状态。",
+    "丑土为金库，常应银行、储蓄、医院、会计金融；未土在子位受生，常应存款、子女支出或西南方资产。"
+  ],
+  "lawsuitRules": [
+    "木克土代表纠纷、官司、历史问题，旺木克土或木克旺土都会放大官非风险。",
+    "父位克祖位，官司或争议中主动性较强，有胜诉或占理信号；祖位克父位，则外部压过自己，败诉和被动风险更高。",
+    "结尾带8、五五自刑、丑未戌三刑、流年木来克土时，诉讼、公安、医院、处罚信号会加重。",
+    "弱者克不动强者时，虽然表面有克，实际仍容易输；强者被弱克时，反而能扛住压力。"
+  ],
+  "timingRules": [
+    "三合局已有两个地支、缺一个时，缺的地支对应年份或月份容易应事，可用于婚期、生子、添物、迁动等判断。",
+    "流年冲到号码中的关键位会引发变化，冲事业则事业变动，冲婚姻则结婚或离婚，冲子位则子女和资产动。",
+    "火年或火月容易进财、曝光、学习、文化教育，但火过旺也应心眼血光、火灾、妇科和惊吓。",
+    "水年容易引动流动、资金、情绪、肾水；水旺克火时，心脑血管、眼睛、交通发动机、流产信号要看重。",
+    "木年木月会引动生发、客户和官司；土旺号码遇木年，纠纷、官司、脾胃和房产压力更明显。"
+  ],
+  "careerAndEnvironmentRules": [
+    "财位或官禄位属火，常应教育、文化、讲师、互联网、传播、学校和名气。",
+    "土旺常应餐饮食品、房地产、库存、银行储蓄、医院、会计金融。",
+    "木旺常应交易、木材建材、花卉绿化、口才、人脉、带团队。",
+    "金旺或金木冲常应规则、执法、武职、公务、工具器械、道路车辆、合同口舌。",
+    "水旺常应流动行业、物流、远方客户、信息渠道、智慧谋划和资金周转。",
+    "申金常应西方道路，卯木可应树木或小路，午火可应学校和发动机，未土可应西南方学校、坟地或固定资产。"
+  ],
+  "personalityAppearanceRules": {
+    "taste": { "木": "酸", "火": "苦", "土": "甜", "金": "辣", "水": "咸" },
+    "complexion": { "木": "青", "火": "红", "土": "黄", "金": "白", "水": "黑" },
+    "personality": {
+      "木": "旺则耿直随和、爱交朋友；衰则固执、挑剔、情商低。",
+      "火": "旺则热情乐观、外向有冲劲；衰或过旺则虚荣、情绪化、易生闷气。",
+      "土": "旺则包容守信、有责任心；过旺则行动慢、精明算计、脾胃积压。",
+      "金": "旺则讲义气、目标强、果断高效；衰则自以为是、背后是非。",
+      "水": "旺则聪明灵活、适应力强；衰则敏感胆小、烂桃花和是非增多。"
+    },
+    "bodyShape": [
+      "木火旺多主身材偏高，木旺偏直高瘦，火旺可又高又壮。",
+      "土旺、水旺多主易胖或中等偏胖，土旺尤其应脾胃和饮食循环。",
+      "判断身高只作辅助，需结合地域和性别，课程给出的准确率约六七成。"
+    ]
+  },
+  "focusPredictions": {
+    "overall": "综合看后四位的主旺五行、财位状态和刑冲合害，先断近期最容易发生的事情。",
+    "career": "重点看祖位、父位和财位，断领导、客户、合同、回款、升迁和项目推进。",
+    "love": "重点看倒三与倒二的夫妻宫互动，断争吵、第三方、外遇、复合和分离概率。",
+    "health": "重点看被克五行、纯五行过旺和位置身体部位，断疾病伤灾、手术、剖腹产、血光和慢性问题。"
+  }
+}
