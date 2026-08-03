@@ -1,5 +1,6 @@
 -- 八字网页账号记录表
--- 在 Supabase 项目的 SQL Editor 里运行一次。
+-- 当前方案：在 HAPPY FARM Supabase 项目的 SQL Editor 里运行一次。
+-- 该脚本只创建/更新 public.bazi_query_records，不会修改农场原有数据表。
 
 create extension if not exists pgcrypto;
 
