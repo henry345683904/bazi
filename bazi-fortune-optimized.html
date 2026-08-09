@@ -196,13 +196,21 @@
       justify-self: end;
     }
 
+    .primary-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 8px;
+      margin: -4px 0 14px;
+    }
+
     .tool-switch {
       display: inline-grid;
       grid-template-columns: repeat(3, minmax(104px, 1fr));
       gap: 5px;
       width: min(100%, 520px);
       padding: 5px;
-      margin: -4px 0 14px;
+      margin: 0;
       border: 1px solid #d7e1dd;
       border-radius: 8px;
       background: rgba(255, 255, 255, .86);
@@ -312,7 +320,14 @@
       margin-bottom: 13px;
     }
 
-    .switch input { position: absolute; opacity: 0; pointer-events: none; }
+    .switch input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
 
     .switch label {
       display: grid;
@@ -380,17 +395,78 @@
       color: var(--jade-deep);
     }
 
-    .account-box {
-      margin-top: 16px;
-      padding: 10px;
-      border: 1px solid #ead0d6;
+    .top-account {
+      flex: 0 0 auto;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid #d7e1dd;
       border-radius: 8px;
-      background: rgba(255, 255, 255, .76);
+      background: rgba(255, 255, 255, .9);
+      box-shadow: 0 10px 22px rgba(23, 49, 44, .08);
     }
 
-    .top-account {
-      margin: 0 0 14px;
+    .top-account.is-open {
+      flex: 1 0 100%;
+    }
+
+    .account-toggle {
+      width: 100%;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 0;
+      padding: 0 12px;
+      background: transparent;
+      color: var(--jade-deep);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .account-toggle:hover,
+    .account-toggle[aria-expanded="true"] {
+      background: #f7ecef;
+    }
+
+    .account-toggle-label,
+    .account-toggle-meta {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .account-toggle-meta {
+      max-width: 180px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .account-caret {
+      width: 7px;
+      height: 7px;
+      flex: 0 0 auto;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: translateY(-2px) rotate(45deg);
+      transition: transform .18s ease;
+    }
+
+    .account-toggle[aria-expanded="true"] .account-caret {
+      transform: translateY(2px) rotate(225deg);
+    }
+
+    .account-content {
       padding: 10px 12px;
+      border-top: 1px solid #eadde1;
+    }
+
+    .account-content[hidden] {
+      display: none !important;
     }
 
     .top-account #loginArea:not([hidden]) {
@@ -1479,9 +1555,15 @@
       .top-tools .source-note {
         justify-self: start;
       }
-      .top-account #loginArea:not([hidden]),
-      .top-account #accountArea:not([hidden]) {
-        grid-template-columns: 1fr;
+      .primary-controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+      }
+      .tool-switch {
+        width: auto;
+      }
+      .top-account.is-open {
+        grid-column: 1 / -1;
       }
       .top-account .history-list {
         max-height: none;
@@ -1575,6 +1657,14 @@
         margin-bottom: 10px;
       }
 
+      .primary-controls {
+        margin-bottom: 10px;
+      }
+
+      .primary-controls .tool-switch {
+        margin-bottom: 0;
+      }
+
       .top-tools {
         gap: 6px;
       }
@@ -1593,11 +1683,24 @@
       }
 
       .top-account {
+        min-width: 72px;
+      }
+
+      .account-toggle {
+        min-height: 46px;
+        padding: 0 10px;
+      }
+
+      .account-toggle-meta {
+        display: none;
+      }
+
+      .account-content {
         padding: 9px;
-        margin-bottom: 10px;
       }
 
       .top-account #loginArea:not([hidden]) {
+        grid-template-columns: 1fr;
         gap: 7px;
       }
 
@@ -1614,6 +1717,7 @@
       }
 
       .top-account #accountArea:not([hidden]) {
+        grid-template-columns: 1fr;
         gap: 7px;
       }
 
@@ -1752,7 +1856,15 @@
         padding: 4px 7px;
       }
       .tool-switch {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 3px;
+        padding: 3px;
+      }
+      .tool-switch button {
+        min-height: 40px;
+        padding: 4px;
+        font-size: 11px;
+        line-height: 1.25;
       }
       .qimen-palace {
         min-height: 88px;
@@ -1808,45 +1920,54 @@
       </div>
     </header>
 
-    <nav class="tool-switch" id="toolSwitch" aria-label="测算类型">
-      <button type="button" data-tool-choice="bazi" class="active">八字算命</button>
-      <button type="button" data-tool-choice="phone">数字/手机号算命</button>
-      <button type="button" data-tool-choice="qimen">奇门遁甲</button>
-    </nav>
+    <div class="primary-controls">
+      <nav class="tool-switch" id="toolSwitch" aria-label="测算类型">
+        <button type="button" data-tool-choice="bazi" class="active">八字算命</button>
+        <button type="button" data-tool-choice="phone">数字/手机号算命</button>
+        <button type="button" data-tool-choice="qimen">奇门遁甲</button>
+      </nav>
 
-    <section class="panel account-box top-account" aria-label="账号与查询记录">
-      <div id="loginArea">
-        <span class="tag" id="accountStatus">未登录</span>
-        <div class="field">
-          <label for="accountName">邮箱</label>
-          <input id="accountName" type="email" autocomplete="email" placeholder="输入邮箱">
+      <section class="top-account" aria-label="账号与查询记录">
+        <button class="account-toggle" type="button" id="accountToggle" aria-expanded="false" aria-controls="accountContent" title="账号与查询记录">
+          <span class="account-toggle-label" id="accountToggleLabel">账号</span>
+          <span class="account-toggle-meta no-translate" id="accountToggleMeta">未登录</span>
+          <span class="account-caret" aria-hidden="true"></span>
+        </button>
+        <div class="account-content" id="accountContent" hidden>
+          <div id="loginArea">
+            <span class="tag no-translate" id="accountStatus">未登录</span>
+            <div class="field">
+              <label for="accountName">邮箱</label>
+              <input id="accountName" type="email" autocomplete="email" placeholder="输入邮箱">
+            </div>
+            <div class="field">
+              <label for="accountPassword">密码</label>
+              <input id="accountPassword" type="password" autocomplete="current-password" placeholder="输入密码">
+            </div>
+            <div class="account-actions">
+              <button class="btn" type="button" id="loginBtn" title="邮箱密码登录">登录</button>
+              <button class="btn secondary" type="button" id="registerBtn" title="没有账号时自动注册">注册/登录</button>
+              <button class="btn secondary google-btn" type="button" id="googleLoginBtn" title="使用 Google 登录">Google</button>
+            </div>
+          </div>
+          <div id="accountArea" hidden>
+            <p class="account-current">当前账号：<strong class="no-translate" id="currentAccountName">--</strong></p>
+            <span class="tag no-translate" id="accountStatusLogged">未登录</span>
+            <div class="account-actions">
+              <button class="btn secondary" type="button" id="logoutBtn" title="退出账号">退出</button>
+              <button class="btn secondary" type="button" id="clearHistoryBtn" title="清空查询记录">清空记录</button>
+            </div>
+            <div class="history-head">
+              <strong>查询记录</strong>
+              <span class="tag" id="historyCount">0条</span>
+            </div>
+            <div class="history-list" id="historyList">
+              <div class="empty-state">登录后自动保存记录。</div>
+            </div>
+          </div>
         </div>
-        <div class="field">
-          <label for="accountPassword">密码</label>
-          <input id="accountPassword" type="password" autocomplete="current-password" placeholder="输入密码">
-        </div>
-        <div class="account-actions">
-          <button class="btn" type="button" id="loginBtn" title="邮箱密码登录">登录</button>
-          <button class="btn secondary" type="button" id="registerBtn" title="没有账号时自动注册">注册/登录</button>
-          <button class="btn secondary google-btn" type="button" id="googleLoginBtn" title="使用 Google 登录">Google</button>
-        </div>
-      </div>
-      <div id="accountArea" hidden>
-        <p class="account-current">当前账号：<strong id="currentAccountName">--</strong></p>
-        <span class="tag" id="accountStatusLogged">未登录</span>
-        <div class="account-actions">
-          <button class="btn secondary" type="button" id="logoutBtn" title="退出账号">退出</button>
-          <button class="btn secondary" type="button" id="clearHistoryBtn" title="清空查询记录">清空记录</button>
-        </div>
-        <div class="history-head">
-          <strong>查询记录</strong>
-          <span class="tag" id="historyCount">0条</span>
-        </div>
-        <div class="history-list" id="historyList">
-          <div class="empty-state">登录后自动保存记录。</div>
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>
 
     <section class="tool-panel" id="baziTool">
     <div class="layout">
@@ -3295,6 +3416,7 @@
       currentLanguage = language === "en" ? "en" : "zh";
       localStorage.setItem(languageStorageKey, currentLanguage);
       localizePage();
+      renderAccountUI();
     }
 
     function refreshLanguage(scope = document.body) {
@@ -8910,6 +9032,20 @@
       refreshLanguage(count.parentElement);
     }
 
+    function setAccountPanelOpen(isOpen, focusFirstField = false) {
+      const panel = document.querySelector(".top-account");
+      const toggle = document.getElementById("accountToggle");
+      const content = document.getElementById("accountContent");
+      if (!panel || !toggle || !content) return;
+      const open = Boolean(isOpen);
+      panel.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      content.hidden = !open;
+      if (open && focusFirstField && !currentAccount()) {
+        requestAnimationFrame(() => document.getElementById("accountName")?.focus());
+      }
+    }
+
     function renderAccountUI() {
       if (!accountFeatureEnabled) {
         const accountPanel = document.querySelector(".top-account");
@@ -8921,9 +9057,12 @@
       document.getElementById("loginArea").hidden = loggedIn;
       document.getElementById("accountArea").hidden = !loggedIn;
       const statusText = loggedIn ? "云端登录" : (getSupabaseClient() ? "未登录" : "Supabase 未连接");
-      document.getElementById("accountStatus").textContent = statusText;
-      document.getElementById("accountStatusLogged").textContent = statusText;
+      const visibleStatusText = currentLanguage === "en" ? translateToEnglish(statusText) : statusText;
+      document.getElementById("accountStatus").textContent = visibleStatusText;
+      document.getElementById("accountStatusLogged").textContent = visibleStatusText;
       document.getElementById("currentAccountName").textContent = loggedIn ? sessionUser.name : "--";
+      const toggleMeta = document.getElementById("accountToggleMeta");
+      toggleMeta.textContent = loggedIn ? sessionUser.name : visibleStatusText;
       renderHistoryList();
       refreshLanguage(document.querySelector(".top-account"));
     }
@@ -9008,6 +9147,7 @@
         if (error) throw error;
         await handleSupabaseSession(data.session);
         document.getElementById("accountPassword").value = "";
+        setAccountPanelOpen(false);
         showToast("已云端登录");
       } catch (error) {
         showToast(supabaseAuthErrorMessage(error));
@@ -9049,6 +9189,7 @@
         if (data?.session) {
           await handleSupabaseSession(data.session);
           document.getElementById("accountPassword").value = "";
+          setAccountPanelOpen(false);
           showToast("云端注册成功");
         } else {
           renderAccountUI();
@@ -9090,6 +9231,7 @@
       } finally {
         clearRemoteSession();
         renderAccountUI();
+        setAccountPanelOpen(false);
         setAccountBusy(false);
       }
       showToast("已退出云端账号");
@@ -9168,6 +9310,7 @@
       }
       const accountPanel = document.querySelector(".top-account");
       if (accountPanel) accountPanel.hidden = false;
+      setAccountPanelOpen(false);
       const client = getSupabaseClient();
       if (!client) {
         clearRemoteSession();
@@ -9356,6 +9499,11 @@
       generate();
     });
 
+    document.getElementById("accountToggle").addEventListener("click", () => {
+      const toggle = document.getElementById("accountToggle");
+      const willOpen = toggle.getAttribute("aria-expanded") !== "true";
+      setAccountPanelOpen(willOpen, willOpen);
+    });
     document.getElementById("loginBtn").addEventListener("click", loginAccount);
     document.getElementById("registerBtn").addEventListener("click", registerAccount);
     document.getElementById("googleLoginBtn").addEventListener("click", googleLoginAccount);
@@ -9371,7 +9519,17 @@
         return;
       }
       const loadBtn = event.target.closest(".history-load");
-      if (loadBtn) loadHistoryRecord(loadBtn.dataset.recordId);
+      if (loadBtn) {
+        setAccountPanelOpen(false);
+        loadHistoryRecord(loadBtn.dataset.recordId);
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && document.getElementById("accountToggle").getAttribute("aria-expanded") === "true") {
+        setAccountPanelOpen(false);
+        document.getElementById("accountToggle").focus();
+      }
     });
 
     document.getElementById("copyBtn").addEventListener("click", async () => {
