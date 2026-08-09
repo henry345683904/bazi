@@ -973,6 +973,103 @@
       line-height: 1.45;
     }
 
+    .xipan-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .xipan-chip {
+      min-width: 0;
+      border: 1px solid #dfe9e5;
+      border-radius: 8px;
+      background: #fff;
+      padding: 8px 9px;
+    }
+
+    .xipan-chip span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .xipan-chip strong {
+      display: block;
+      margin-top: 3px;
+      color: var(--jade-deep);
+      font-size: 14px;
+      line-height: 1.28;
+      overflow-wrap: anywhere;
+    }
+
+    .xipan-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid #dfe9e5;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .xipan-table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      color: #263437;
+      font-size: 12px;
+      table-layout: fixed;
+    }
+
+    .xipan-table th,
+    .xipan-table td {
+      border: 1px solid #e3ebe8;
+      padding: 6px 5px;
+      text-align: center;
+      vertical-align: top;
+      line-height: 1.35;
+    }
+
+    .xipan-table th {
+      background: #f7ecef;
+      color: var(--jade-deep);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .xipan-table .label {
+      width: 64px;
+      background: #f3f7f5;
+      color: #465457;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .xipan-table .gz-big {
+      display: block;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .xipan-table .small {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.2;
+      white-space: normal;
+    }
+
+    .xipan-attention {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .xipan-attention .detail-box {
+      min-width: 0;
+    }
+
     .timeline {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
@@ -1530,6 +1627,8 @@
       .special-grid,
       .phone-summary-grid,
       .mingpan-grid,
+      .xipan-summary,
+      .xipan-attention,
       .flow-layout,
       .share,
       .account-actions,
@@ -1872,7 +1971,13 @@
             </div>
             <p>生成后显示格局对应的应事方向。</p>
           </div>
+          <div class="xipan-summary" id="xipanSummary"></div>
+          <div class="xipan-table-wrap" id="xipanMainTable"></div>
+          <div class="xipan-attention" id="xipanAttention"></div>
+          <div class="xipan-table-wrap" id="xipanFineTable"></div>
           <div class="mingpan-grid" id="mingpanGrid"></div>
+          <div class="xipan-table-wrap" id="xipanLuckTable"></div>
+          <div class="xipan-table-wrap" id="xipanSmallLuckTable"></div>
           <div>
             <div class="small-title">大运</div>
             <div class="timeline" id="luckTimeline"></div>
@@ -8071,6 +8176,233 @@
       });
     }
 
+    const pillarLabels = ["年柱", "月柱", "日柱", "时柱"];
+    const tenGodShortMap = {
+      比肩: "比", 劫财: "劫", 食神: "食", 伤官: "伤", 偏财: "才", 正财: "财",
+      七杀: "杀", 正官: "官", 偏印: "枭", 正印: "印", 日主: "元"
+    };
+    const lifeStageNames = ["长生", "沐浴", "冠带", "临官", "帝旺", "衰", "病", "死", "墓", "绝", "胎", "养"];
+    const lifeStageStart = { 甲: "亥", 乙: "午", 丙: "寅", 丁: "酉", 戊: "寅", 己: "酉", 庚: "巳", 辛: "子", 壬: "申", 癸: "卯" };
+
+    function tenGodShort(god) {
+      return tenGodShortMap[god] || god;
+    }
+
+    function hiddenStemDetails(ctx, branch, compact = false) {
+      return (hiddenStems[branch] || []).map((stem) => {
+        const god = tenGod(ctx.pillars[2].stem, stem);
+        return compact ? `${stem}${tenGodShort(god)}` : `${stem}（${god}）`;
+      });
+    }
+
+    function lifeStage(dayStem, branch) {
+      const startBranch = lifeStageStart[dayStem] || "寅";
+      const startIndex = branches.indexOf(startBranch);
+      const branchIndex = branches.indexOf(branch);
+      const forward = stems.indexOf(dayStem) % 2 === 0;
+      const offset = forward ? (branchIndex - startIndex + 12) % 12 : (startIndex - branchIndex + 12) % 12;
+      return lifeStageNames[offset] || "";
+    }
+
+    function fetalPillar(ctx) {
+      const month = ctx.pillars[1];
+      const stem = stems[(stems.indexOf(month.stem) + 1) % 10];
+      const branch = branches[(branches.indexOf(month.branch) + 3) % 12];
+      return { stem, branch, text: stem + branch, index: cycleIndex(stem, branch) };
+    }
+
+    function compactStars(stars) {
+      return (stars || []).filter((star) => star && star !== "无明显常用神煞").slice(0, 6);
+    }
+
+    function stemAttention(ctx) {
+      const items = [];
+      ctx.pillars.forEach((left, i) => {
+        ctx.pillars.slice(i + 1).forEach((right, offset) => {
+          const j = i + offset + 1;
+          const leftLabel = pillarLabels[i].replace("柱", "");
+          const rightLabel = pillarLabels[j].replace("柱", "");
+          if (stemCombinePairs[left.stem] === right.stem) {
+            const key = left.stem + right.stem;
+            const element = stemCombineElements[key] || stemCombineElements[right.stem + left.stem] || "";
+            items.push(`${leftLabel}${left.stem}与${rightLabel}${right.stem}天干合${element ? `化${element}` : ""}`);
+          }
+          if (stemClashPairs[left.stem] === right.stem) {
+            items.push(`${leftLabel}${left.stem}与${rightLabel}${right.stem}天干冲`);
+          }
+        });
+      });
+      return items.length ? items : ["天干无明显合冲"];
+    }
+
+    function branchAttention(ctx) {
+      const items = [];
+      ctx.pillars.forEach((left, i) => {
+        ctx.pillars.slice(i + 1).forEach((right, offset) => {
+          const j = i + offset + 1;
+          const leftLabel = pillarLabels[i].replace("柱", "");
+          const rightLabel = pillarLabels[j].replace("柱", "");
+          branchRelationObjects(left.branch, right.branch).forEach((item) => {
+            if (item.type === "同") return;
+            items.push(`${leftLabel}${left.branch}与${rightLabel}${right.branch}${item.type}${relationElementSuffix(item)}`);
+          });
+        });
+      });
+      return items.length ? items : ["地支无明显冲合刑破害"];
+    }
+
+    function xipanCellBig(pillar, small = "") {
+      return `<span class="gz-big">${escapeHtml(pillar.stem)}${escapeHtml(pillar.branch)}</span>${small ? `<span class="small">${escapeHtml(small)}</span>` : ""}`;
+    }
+
+    function xipanStemCell(ctx, pillar, index) {
+      const god = index === 2 ? (ctx.state.gender === "女" ? "元女" : "元男") : tenGod(ctx.pillars[2].stem, pillar.stem);
+      return `<span class="gz-big">${escapeHtml(pillar.stem)}</span><span class="small">${escapeHtml(tenGodShort(god.replace("元女", "日主").replace("元男", "日主")))}</span>`;
+    }
+
+    function xipanBranchCell(ctx, pillar) {
+      return `<span class="gz-big">${escapeHtml(pillar.branch)}</span><span class="small">${escapeHtml(hiddenStemDetails(ctx, pillar.branch, true).join(""))}</span>`;
+    }
+
+    function renderXipanSummary(ctx) {
+      const target = document.getElementById("xipanSummary");
+      if (!target) return;
+      const birthText = `${ctx.state.birthDate || "--"} ${ctx.state.birthTime || "--"}`;
+      const fetal = fetalPillar(ctx);
+      const firstLuck = ctx.lucks?.[0];
+      const luckText = firstLuck ? `${firstLuck.startAge}岁起，${firstLuck.startYear}年入${firstLuck.pillar.text}` : "待排";
+      const chips = [
+        ["姓名", ctx.state.name || "命主"],
+        ["性别", ctx.state.gender || "未填"],
+        ["公历", birthText],
+        ["生肖", `${ctx.pillars[0].branch}年生`],
+        ["胎元", `${fetal.text}（${pillarNayin(fetal)}）`],
+        ["排盘方式", ctx.state.calendar === "solar" ? "公历排盘" : "农历近似"],
+        ["起运交运", luckText],
+        ["格局强弱", `${ctx.pattern?.name || "未定"}｜${ctx.strength.label}`]
+      ];
+      target.innerHTML = chips.map(([label, value]) => `
+        <div class="xipan-chip"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>
+      `).join("");
+      colorizeGanzhi(target);
+    }
+
+    function renderXipanMainTable(ctx) {
+      const target = document.getElementById("xipanMainTable");
+      if (!target) return;
+      const dayStem = ctx.pillars[2].stem;
+      const rows = [
+        ["十神", ctx.pillars.map((p, i) => i === 2 ? (ctx.state.gender === "女" ? "元女" : "元男") : tenGod(dayStem, p.stem))],
+        ["天干", ctx.pillars.map((p, i) => xipanStemCell(ctx, p, i))],
+        ["地支", ctx.pillars.map((p) => xipanBranchCell(ctx, p))],
+        ["藏干", ctx.pillars.map((p) => hiddenStemDetails(ctx, p.branch).join("<br>"))],
+        ["纳音", ctx.pillars.map((p) => pillarNayin(p))],
+        ["空亡", ctx.pillars.map((p) => emptyBranches(p))],
+        ["十二长生", ctx.pillars.map((p) => lifeStage(dayStem, p.branch))],
+        ["神煞", ctx.pillars.map((p) => compactStars(symbolicStars(ctx, p)).join("<br>") || "无明显")]
+      ];
+      target.innerHTML = `<table class="xipan-table">
+        <tr><th class="label">四柱</th>${pillarLabels.map((label) => `<th>${escapeHtml(label)}</th>`).join("")}</tr>
+        ${rows.map(([label, cells]) => `<tr><td class="label">${escapeHtml(label)}</td>${cells.map((cell) => `<td>${cell}</td>`).join("")}</tr>`).join("")}
+      </table>`;
+      colorizeGanzhi(target);
+    }
+
+    function renderXipanAttention(ctx) {
+      const target = document.getElementById("xipanAttention");
+      if (!target) return;
+      const allStars = uniqueList(ctx.pillars.flatMap((pillar) => compactStars(symbolicStars(ctx, pillar))));
+      target.innerHTML = `
+        <div class="detail-box">
+          <div class="detail-title"><h3>天干留意</h3><span class="tag">${escapeHtml(stemAttention(ctx).length)}条</span></div>
+          <p>${escapeHtml(stemAttention(ctx).join("；"))}</p>
+        </div>
+        <div class="detail-box">
+          <div class="detail-title"><h3>地支留意</h3><span class="tag">${escapeHtml(branchAttention(ctx).length)}条</span></div>
+          <p>${escapeHtml(branchAttention(ctx).join("；"))}</p>
+        </div>
+        <div class="detail-box">
+          <div class="detail-title"><h3>神煞重点</h3><span class="tag">${escapeHtml(allStars.length || 0)}项</span></div>
+          <p>${escapeHtml(allStars.length ? allStars.join("、") : "常用神煞不突出")}</p>
+        </div>
+        <div class="detail-box">
+          <div class="detail-title"><h3>细盘提示</h3><span class="tag">专业排盘</span></div>
+          <p>${escapeHtml(`当前以${ctx.flowYears?.[selectedYear]?.pillar?.text || "流年"}、${ctx.flowMonths?.[selectedMonth]?.pillar?.text || "流月"}、${ctx.flowDays?.[selectedDay]?.pillar?.text || "流日"}同看大运和原局。`)}</p>
+        </div>
+      `;
+      colorizeGanzhi(target);
+    }
+
+    function renderXipanFineTable(ctx) {
+      const target = document.getElementById("xipanFineTable");
+      if (!target) return;
+      const luck = ctx.lucks[selectedLuck] || ctx.lucks[0];
+      const years = buildFlowYears(ctx, luck);
+      const yearItem = years[Math.max(0, Math.min(selectedYear, years.length - 1))];
+      const months = buildFlowMonths(yearItem);
+      const monthItem = months[Math.max(0, Math.min(selectedMonth, months.length - 1))];
+      const days = buildFlowDays(yearItem, monthItem);
+      const dayItem = days[Math.max(0, Math.min(selectedDay, days.length - 1))];
+      const columns = [
+        { name: "流日", item: dayItem, age: `${dayItem.date.getMonth() + 1}/${dayItem.date.getDate()}` },
+        { name: "流月", item: monthItem, age: `${monthItem.month}月` },
+        { name: "流年", item: yearItem, age: `${yearItem.year}` },
+        { name: "大运", item: luck, age: `${luck.startAge}岁<br>${luck.startYear}` },
+        ...ctx.pillars.map((pillar, i) => ({ name: pillarLabels[i], item: { pillar }, age: "*" }))
+      ];
+      const row = (label, getter) => `<tr><td class="label">${escapeHtml(label)}</td>${columns.map((col) => `<td>${getter(col)}</td>`).join("")}</tr>`;
+      target.innerHTML = `<table class="xipan-table">
+        <tr><th class="label">日期</th>${columns.map((col) => `<th>${escapeHtml(col.name)}</th>`).join("")}</tr>
+        ${row("岁年", (col) => col.age)}
+        ${row("天干", (col) => xipanStemCell(ctx, col.item.pillar, col.name === "日柱" ? 2 : -1))}
+        ${row("地支", (col) => xipanBranchCell(ctx, col.item.pillar))}
+        ${row("空亡", (col) => escapeHtml(emptyBranches(col.item.pillar)))}
+        ${row("神煞", (col) => escapeHtml(compactStars(symbolicStars(ctx, col.item.pillar)).join("、") || "无明显"))}
+      </table>`;
+      colorizeGanzhi(target);
+    }
+
+    function renderXipanLuckTables(ctx) {
+      const target = document.getElementById("xipanLuckTable");
+      const smallTarget = document.getElementById("xipanSmallLuckTable");
+      if (!target || !smallTarget) return;
+      const dayStem = ctx.pillars[2].stem;
+      const lucks = ctx.lucks || [];
+      const luckRow = (label, getter) => `<tr><td class="label">${escapeHtml(label)}</td>${lucks.map((luck) => `<td>${getter(luck)}</td>`).join("")}</tr>`;
+      target.innerHTML = `<table class="xipan-table">
+        <tr><th class="label">大运表</th>${lucks.map((luck) => `<th>${luck.startAge}岁<br>${luck.startYear}</th>`).join("")}</tr>
+        ${luckRow("天干十神", (luck) => escapeHtml(tenGod(dayStem, luck.pillar.stem)))}
+        ${luckRow("大运", (luck) => xipanCellBig(luck.pillar))}
+        ${luckRow("地支十神", (luck) => hiddenStemDetails(ctx, luck.pillar.branch).join("<br>"))}
+        ${luckRow("十二长生", (luck) => escapeHtml(lifeStage(dayStem, luck.pillar.branch)))}
+        ${luckRow("大运止于", (luck) => `${luck.endAge}岁<br>${luck.endYear}`)}
+      </table>`;
+
+      const yearStemYang = stems.indexOf(ctx.pillars[0].stem) % 2 === 0;
+      const forward = (ctx.state.gender === "男" && yearStemYang) || (ctx.state.gender === "女" && !yearStemYang);
+      const smallLucks = Array.from({ length: 9 }, (_, i) => {
+        const offset = forward ? i + 1 : -(i + 1);
+        return { age: i + 1, pillar: ganzhi(ctx.pillars[3].index + offset) };
+      });
+      const smallRow = (label, getter) => `<tr><td class="label">${escapeHtml(label)}</td>${smallLucks.map((luck) => `<td>${getter(luck)}</td>`).join("")}</tr>`;
+      smallTarget.innerHTML = `<table class="xipan-table">
+        <tr><th class="label">小运表</th>${smallLucks.map((luck) => `<th>${luck.age}岁</th>`).join("")}</tr>
+        ${smallRow("小运十神", (luck) => escapeHtml(tenGod(dayStem, luck.pillar.stem)))}
+        ${smallRow("小运", (luck) => xipanCellBig(luck.pillar))}
+        ${smallRow("地支十神", (luck) => escapeHtml(hiddenStemDetails(ctx, luck.pillar.branch, true).join("")))}
+      </table>`;
+      colorizeGanzhi(target);
+      colorizeGanzhi(smallTarget);
+    }
+
+    function renderXipan(ctx) {
+      renderXipanSummary(ctx);
+      renderXipanMainTable(ctx);
+      renderXipanFineTable(ctx);
+      renderXipanAttention(ctx);
+      renderXipanLuckTables(ctx);
+    }
+
     function renderMingpan(ctx) {
       const labels = ["年柱", "月柱", "日柱", "时柱"];
       const grid = document.getElementById("mingpanGrid");
@@ -8112,6 +8444,7 @@
       chartContext = ctx;
       selectCurrentFlow(new Date());
       renderPatternBox(ctx);
+      renderXipan(ctx);
       renderMingpan(ctx);
       renderLuckTimeline();
       renderFlowYears();
@@ -8183,6 +8516,8 @@
       `).join("");
       colorizeGanzhi(yearFlow);
       renderFlowMonths();
+      renderXipanFineTable(chartContext);
+      renderXipanAttention(chartContext);
       const day = chartContext.flowDays[selectedDay];
       showFlowDetail("流日", day.pillar, `${day.date.getFullYear()}-${pad(day.date.getMonth() + 1)}-${pad(day.date.getDate())}`);
       requestAnimationFrame(scrollActiveFlowIntoView);
@@ -8200,6 +8535,8 @@
       `).join("");
       colorizeGanzhi(monthFlow);
       renderFlowDays();
+      renderXipanFineTable(chartContext);
+      renderXipanAttention(chartContext);
     }
 
     function renderFlowDays() {
@@ -8213,6 +8550,8 @@
         </button>
       `).join("");
       colorizeGanzhi(dayFlow);
+      renderXipanFineTable(chartContext);
+      renderXipanAttention(chartContext);
     }
 
     function scrollActiveFlowIntoView() {
@@ -9126,6 +9465,8 @@
       btn.classList.add("active");
       selectedDay = Number(btn.dataset.day);
       const item = chartContext.flowDays[selectedDay];
+      renderXipanFineTable(chartContext);
+      renderXipanAttention(chartContext);
       showFlowDetail("流日", item.pillar, `${item.date.getFullYear()}-${pad(item.date.getMonth() + 1)}-${pad(item.date.getDate())}`);
     });
 
