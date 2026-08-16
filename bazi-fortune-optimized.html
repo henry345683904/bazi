@@ -309,6 +309,24 @@
       gap: 10px;
     }
 
+    .calibration-fields {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .calibration-fields[hidden],
+    .field[hidden] {
+      display: none;
+    }
+
+    .field-note {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+      margin-top: -2px;
+    }
+
     .switch {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1726,6 +1744,7 @@
       }
 
       .grid-two,
+      .calibration-fields,
       .insight-grid,
       .report-grid,
       .special-grid,
@@ -2006,23 +2025,81 @@
               <label for="calendar">历法</label>
               <select id="calendar" name="calendar">
                 <option value="solar">公历</option>
-                <option value="lunar">农历（按公历近似）</option>
+                <option value="lunar">农历</option>
               </select>
             </div>
-            <div class="field">
-              <label for="city">出生地</label>
-              <input id="city" name="city" placeholder="例如：奥克兰">
+            <div class="field" id="lunarLeapField" hidden>
+              <label for="lunarLeap">农历月份</label>
+              <select id="lunarLeap" name="lunarLeap">
+                <option value="normal">普通月</option>
+                <option value="leap">闰月</option>
+              </select>
             </div>
           </div>
 
-          <div class="field">
-            <label for="focus">重点关注</label>
-            <select id="focus" name="focus">
-              <option value="overall">整体运势</option>
-              <option value="career">事业财运</option>
-              <option value="love">感情人际</option>
-              <option value="health">健康状态</option>
-            </select>
+          <div class="grid-two">
+            <div class="field">
+              <label for="city">出生地</label>
+              <input id="city" name="city" list="cityOptions" placeholder="例如：北京、奥克兰">
+              <datalist id="cityOptions">
+                <option value="北京"></option>
+                <option value="上海"></option>
+                <option value="广州"></option>
+                <option value="深圳"></option>
+                <option value="香港"></option>
+                <option value="台北"></option>
+                <option value="奥克兰"></option>
+                <option value="惠灵顿"></option>
+                <option value="基督城"></option>
+                <option value="悉尼"></option>
+                <option value="墨尔本"></option>
+                <option value="新加坡"></option>
+              </datalist>
+            </div>
+            <div class="field">
+              <label for="timeStandard">出生时间口径</label>
+              <select id="timeStandard" name="timeStandard">
+                <option value="clock">当地钟表时间</option>
+                <option value="trueSolar">真太阳时</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="calibration-fields" id="calibrationFields" hidden>
+            <div class="field">
+              <label for="timezoneOffset">出生地时区（UTC）</label>
+              <input id="timezoneOffset" name="timezoneOffset" type="number" min="-12" max="14" step="0.5" value="8" inputmode="decimal">
+            </div>
+            <div class="field">
+              <label for="longitude">出生地经度</label>
+              <input id="longitude" name="longitude" type="number" min="-180" max="180" step="0.01" value="116.41" inputmode="decimal">
+            </div>
+            <div class="field">
+              <label for="daylightSaving">夏令时</label>
+              <select id="daylightSaving" name="daylightSaving">
+                <option value="no">未实行</option>
+                <option value="yes">当时实行</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-two">
+            <div class="field">
+              <label for="dayBoundary">换日规则</label>
+              <select id="dayBoundary" name="dayBoundary">
+                <option value="midnight">零点换日</option>
+                <option value="zi">子初换日（23:00）</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="focus">重点关注</label>
+              <select id="focus" name="focus">
+                <option value="overall">整体运势</option>
+                <option value="career">事业财运</option>
+                <option value="love">感情人际</option>
+                <option value="health">健康状态</option>
+              </select>
+            </div>
           </div>
 
           <div class="actions">
@@ -2041,7 +2118,7 @@
           </div>
         </form>
 
-          <p class="hint" id="calibrationNote">出生时间请使用24小时制。</p>
+          <p class="hint" id="calibrationNote">出生时间请使用24小时制；年柱按立春、月柱按节气换月。</p>
       </section>
 
       <section class="result" id="result">
@@ -2346,6 +2423,28 @@
     const monthBranches = ["寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥", "子", "丑"];
     const startStemForTigerMonth = { 0: 2, 5: 2, 1: 4, 6: 4, 2: 6, 7: 6, 3: 8, 8: 8, 4: 0, 9: 0 };
     const startStemForZiHour = { 0: 0, 5: 0, 1: 2, 6: 2, 2: 4, 7: 4, 3: 6, 8: 6, 4: 8, 9: 8 };
+    const solarTermNames = ["小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪", "冬至"];
+    const solarTermMinuteOffsets = [0, 21208, 42467, 63836, 85337, 107014, 128867, 150921, 173149, 195551, 218072, 240693, 263343, 285989, 308563, 331033, 353350, 375494, 397447, 419210, 440795, 462224, 483532, 504758];
+    const birthCityPresets = {
+      "北京": { longitude: 116.41, timezoneOffset: 8 }, "beijing": { longitude: 116.41, timezoneOffset: 8 },
+      "上海": { longitude: 121.47, timezoneOffset: 8 }, "shanghai": { longitude: 121.47, timezoneOffset: 8 },
+      "广州": { longitude: 113.26, timezoneOffset: 8 }, "guangzhou": { longitude: 113.26, timezoneOffset: 8 },
+      "深圳": { longitude: 114.06, timezoneOffset: 8 }, "shenzhen": { longitude: 114.06, timezoneOffset: 8 },
+      "成都": { longitude: 104.07, timezoneOffset: 8 }, "chengdu": { longitude: 104.07, timezoneOffset: 8 },
+      "重庆": { longitude: 106.55, timezoneOffset: 8 }, "chongqing": { longitude: 106.55, timezoneOffset: 8 },
+      "西安": { longitude: 108.94, timezoneOffset: 8 }, "xi'an": { longitude: 108.94, timezoneOffset: 8 },
+      "武汉": { longitude: 114.31, timezoneOffset: 8 }, "wuhan": { longitude: 114.31, timezoneOffset: 8 },
+      "南京": { longitude: 118.80, timezoneOffset: 8 }, "nanjing": { longitude: 118.80, timezoneOffset: 8 },
+      "杭州": { longitude: 120.16, timezoneOffset: 8 }, "hangzhou": { longitude: 120.16, timezoneOffset: 8 },
+      "香港": { longitude: 114.17, timezoneOffset: 8 }, "hong kong": { longitude: 114.17, timezoneOffset: 8 },
+      "台北": { longitude: 121.57, timezoneOffset: 8 }, "taipei": { longitude: 121.57, timezoneOffset: 8 },
+      "奥克兰": { longitude: 174.76, timezoneOffset: 12 }, "auckland": { longitude: 174.76, timezoneOffset: 12 },
+      "惠灵顿": { longitude: 174.78, timezoneOffset: 12 }, "wellington": { longitude: 174.78, timezoneOffset: 12 },
+      "基督城": { longitude: 172.64, timezoneOffset: 12 }, "christchurch": { longitude: 172.64, timezoneOffset: 12 },
+      "悉尼": { longitude: 151.21, timezoneOffset: 10 }, "sydney": { longitude: 151.21, timezoneOffset: 10 },
+      "墨尔本": { longitude: 144.96, timezoneOffset: 10 }, "melbourne": { longitude: 144.96, timezoneOffset: 10 },
+      "新加坡": { longitude: 103.82, timezoneOffset: 8 }, "singapore": { longitude: 103.82, timezoneOffset: 8 }
+    };
     const hiddenStems = {
       子: ["癸"], 丑: ["己", "癸", "辛"], 寅: ["甲", "丙", "戊"], 卯: ["乙"],
       辰: ["戊", "乙", "癸"], 巳: ["丙", "戊", "庚"], 午: ["丁", "己"], 未: ["己", "丁", "乙"],
@@ -2399,6 +2498,8 @@
     let currentLanguage = localStorage.getItem(languageStorageKey) || "zh";
     let currentDisplayMode = localStorage.getItem(displayModeStorageKey) || "pro";
     let lastBaziReports = [];
+    let chineseLunarFormatter = null;
+    const solarTermUtcCache = new Map();
 
     const copy = {
       木: {
@@ -2490,12 +2591,28 @@
       "姓名或称呼": "Name",
       "男": "Male",
       "女": "Female",
+      "性别": "Gender",
       "出生日期": "Birth Date",
       "出生时间（24小时制）": "Birth Time (24-hour)",
       "历法": "Calendar",
       "公历": "Solar",
+      "农历": "Lunar",
       "农历（按公历近似）": "Lunar (approx.)",
+      "农历月份": "Lunar Month",
+      "普通月": "Regular Month",
+      "闰月": "Leap Month",
       "出生地": "Birth Place",
+      "出生时间口径": "Time Standard",
+      "当地钟表时间": "Local Clock Time",
+      "真太阳时": "True Solar Time",
+      "出生地时区（UTC）": "Birth Time Zone (UTC)",
+      "出生地经度": "Birth Longitude",
+      "夏令时": "Daylight Saving Time",
+      "未实行": "Not Used",
+      "当时实行": "Used at Birth",
+      "换日规则": "Day Boundary",
+      "零点换日": "Change Day at 00:00",
+      "子初换日（23:00）": "Change Day at 23:00",
       "重点关注": "Focus",
       "整体运势": "Overall",
       "事业财运": "Career and Wealth",
@@ -2503,6 +2620,11 @@
       "健康状态": "Health",
       "生成报告": "Generate Report",
       "出生时间请使用24小时制。": "Use 24-hour birth time.",
+      "出生时间请使用24小时制；年柱按立春、月柱按节气换月。": "Use 24-hour birth time. The year changes at Li Chun and the month changes at solar terms.",
+      "公历直接排盘；年柱按立春、月柱按精确节气换月；零点换日。": "The solar date is used directly. The year changes at Li Chun, months at exact solar terms, and days at midnight.",
+      "公历直接排盘；年柱按立春、月柱按精确节气换月；23:00起计入次日。": "The solar date is used directly. The year changes at Li Chun, months at exact solar terms, and 23:00 belongs to the next day.",
+      "农历会先转换为公历；年柱按立春、月柱按精确节气换月；零点换日。": "The lunar date is converted to solar first. The year changes at Li Chun, months at exact solar terms, and days at midnight.",
+      "农历会先转换为公历；年柱按立春、月柱按精确节气换月；23:00起计入次日。": "The lunar date is converted to solar first. The year changes at Li Chun, months at exact solar terms, and 23:00 belongs to the next day.",
       "请先生成八字报告": "Generate a Bazi report first",
       "生成后显示命盘重点和具体应事。": "After generating, key chart signals and concrete events will appear here.",
       "年柱": "Year Pillar",
@@ -2608,6 +2730,39 @@
       "例如：张三": "Example: John",
       "例如 08:30 或 23:15": "e.g. 08:30 or 23:15",
       "例如：奥克兰": "Example: Auckland",
+      "例如：北京、奥克兰": "Example: Beijing or Auckland",
+      "例如：1990-02-30": "Example: 1990-02-30",
+      "填入今天": "Use Current Date and Time",
+      "北京": "Beijing",
+      "上海": "Shanghai",
+      "广州": "Guangzhou",
+      "深圳": "Shenzhen",
+      "香港": "Hong Kong",
+      "台北": "Taipei",
+      "奥克兰": "Auckland",
+      "惠灵顿": "Wellington",
+      "基督城": "Christchurch",
+      "悉尼": "Sydney",
+      "墨尔本": "Melbourne",
+      "新加坡": "Singapore",
+      "农历日期格式应为YYYY-MM-DD": "Use YYYY-MM-DD for the lunar date",
+      "当前浏览器不支持农历转换": "This browser does not support lunar-date conversion",
+      "该年没有这个农历闰月日期": "That leap-month date does not exist in this lunar year",
+      "农历日期不存在，请检查月份和日期": "That lunar date does not exist. Check the month and day.",
+      "请选择有效的出生日期": "Select a valid birth date",
+      "请选择有效的出生日期和时间": "Select a valid birth date and time",
+      "真太阳时需要填写有效的出生地经度": "True solar time requires a valid birth longitude",
+      "出生资料无法换算": "Birth details could not be converted",
+      "农历已转换": "Lunar Converted",
+      "公历排盘": "Solar-date Chart",
+      "农历转换公历排盘": "Lunar-to-Solar Chart",
+      "校时": "Time Correction",
+      "换月换日": "Month / Day Boundary",
+      "精确节气": "Exact Solar Terms",
+      "子初换日": "23:00 Day Boundary",
+      "排盘方式": "Chart Method",
+      "起运交运": "Luck Start",
+      "起运依据": "Luck-start Basis",
       "测算类型": "Analysis Type",
       "八字算命": "Bazi Analysis",
       "手机号算命": "Phone Number Analysis",
@@ -2807,6 +2962,23 @@
       "增加": "increase", "变得": "becomes", "遇到": "meet", "处理": "handle", "再出现": "reappear", "同类": "similar", "触发": "triggered by", "近期": "near term", "升温": "heats up", "摇摆": "wavers", "偏枯": "skewed", "财星逢冲": "wealth star meets clash", "临时改期": "sudden rescheduling",
       "属于先输出再生财信号": "is a signal of output first, wealth generation after", "内容推广": "content promotion", "手艺经验": "craft experience", "报价转化": "pricing conversion", "财机常被": "wealth opportunities are often held by", "牵住": "held by", "能否": "whether it can", "财机能否承接": "whether the wealth opportunity can be carried", "增多": "increase", "只准备不成交": "only preparing without closing deals", "同业": "industry peers", "信号不偏单一": "signals are not one-sided", "现实事项": "real-world matters", "交叉应事": "manifest as overlapping events",
       "出生时间请使用24小时制": "Use 24-hour birth time", "出生时间用24小时制": "Use 24-hour birth time", "日柱已校准": "day pillar calibrated", "日柱校验": "day-pillar check", "日柱": "day pillar", "年柱": "year pillar", "月柱": "month pillar", "时柱": "hour pillar", "当前为": "current is", "丙寅": "Bing Yin", "中文": "Chinese", "切换到英文": "Switch to English", "比助": "peer support", "官星": "officer star", "受": "affected by", "承接决定结果": "capacity to carry determines the result"
+    });
+
+    Object.assign(phraseEnglish, {
+      "农历会先转换为公历": "the lunar date is converted to solar first",
+      "公历直接排盘": "the solar date is used directly",
+      "年柱按立春、月柱按精确节气换月": "the year changes at Li Chun and months at exact solar terms",
+      "23:00起计入次日": "23:00 belongs to the next day",
+      "零点换日": "the day changes at midnight",
+      "经度、时区和夏令时会参与真太阳时校正": "longitude, time zone and daylight saving time are included in true-solar-time correction",
+      "当地钟表时间": "local clock time", "真太阳时": "true solar time", "校正": "correction", "分钟": "minutes",
+      "精确节气": "exact solar terms", "子初换日": "23:00 day boundary", "农历已转换": "lunar date converted",
+      "农历转换公历排盘": "lunar-to-solar chart", "公历排盘": "solar-date chart", "顺排": "forward", "逆排": "reverse",
+      "起运": "luck starts", "交运": "luck transition", "出生至": "birth to", "个月": " months",
+      "小寒": "Minor Cold", "大寒": "Major Cold", "立春": "Li Chun", "雨水": "Rain Water", "惊蛰": "Awakening of Insects", "春分": "Spring Equinox",
+      "清明": "Pure Brightness", "谷雨": "Grain Rain", "立夏": "Li Xia", "小满": "Grain Full", "芒种": "Grain in Ear", "夏至": "Summer Solstice",
+      "小暑": "Minor Heat", "大暑": "Major Heat", "立秋": "Li Qiu", "处暑": "End of Heat", "白露": "White Dew", "秋分": "Autumn Equinox",
+      "寒露": "Cold Dew", "霜降": "Frost Descent", "立冬": "Li Dong", "小雪": "Minor Snow", "大雪": "Major Snow", "冬至": "Winter Solstice"
     });
 
     Object.assign(phraseEnglish, {
@@ -3494,10 +3666,166 @@
       });
     }
 
+    function parseDateParts(dateText) {
+      const match = String(dateText || "").trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+      if (!match) return null;
+      const parts = { year: Number(match[1]), month: Number(match[2]), day: Number(match[3]) };
+      if (parts.year < 1900 || parts.year > 2100 || parts.month < 1 || parts.month > 12 || parts.day < 1 || parts.day > 31) return null;
+      return parts;
+    }
+
+    function dateTextFromParts(parts) {
+      return `${parts.year}-${pad(parts.month)}-${pad(parts.day)}`;
+    }
+
     function parseLocalDate(dateText, timeText) {
-      const [year, month, day] = dateText.split("-").map(Number);
-      const [hour, minute] = timeText.split(":").map(Number);
-      return new Date(year, month - 1, day, hour, minute || 0, 0);
+      const parts = parseDateParts(dateText);
+      const timeMatch = String(timeText || "").match(/^(\d{1,2}):(\d{2})$/);
+      if (!parts || !timeMatch) return new Date(NaN);
+      const hour = Number(timeMatch[1]);
+      const minute = Number(timeMatch[2]);
+      if (hour > 23 || minute > 59) return new Date(NaN);
+      return new Date(parts.year, parts.month - 1, parts.day, hour, minute, 0);
+    }
+
+    function formatLocalDate(date) {
+      return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+    }
+
+    function formatLocalDateTime(date) {
+      return `${formatLocalDate(date)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+
+    function lunarPartsForSolarDate(date) {
+      const probe = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0));
+      if (!chineseLunarFormatter) {
+        chineseLunarFormatter = new Intl.DateTimeFormat("en-u-ca-chinese", {
+          year: "numeric", month: "numeric", day: "numeric", timeZone: "UTC"
+        });
+      }
+      const parts = chineseLunarFormatter.formatToParts(probe);
+      const values = Object.fromEntries(parts.filter((item) => item.type !== "literal").map((item) => [item.type, item.value]));
+      const monthText = String(values.month || "");
+      return {
+        year: Number(values.relatedYear || values.year),
+        month: Number(monthText.replace(/\D/g, "")),
+        day: Number(values.day),
+        leap: /bis/i.test(monthText)
+      };
+    }
+
+    function lunarToSolarDateText(dateText, leapMonth = false) {
+      const target = parseDateParts(dateText);
+      if (!target) throw new Error("农历日期格式应为YYYY-MM-DD");
+      if (typeof Intl === "undefined" || typeof Intl.DateTimeFormat !== "function") throw new Error("当前浏览器不支持农历转换");
+      const start = new Date(target.year, 0, 1, 12, 0, 0);
+      const end = new Date(target.year + 1, 2, 1, 12, 0, 0);
+      for (const cursor = new Date(start); cursor <= end; cursor.setDate(cursor.getDate() + 1)) {
+        const lunar = lunarPartsForSolarDate(cursor);
+        if (lunar.year === target.year && lunar.month === target.month && lunar.day === target.day && lunar.leap === leapMonth) {
+          return formatLocalDate(cursor);
+        }
+      }
+      throw new Error(leapMonth ? "该年没有这个农历闰月日期" : "农历日期不存在，请检查月份和日期");
+    }
+
+    function browserTimezoneOffset(date = new Date()) {
+      return -date.getTimezoneOffset() / 60;
+    }
+
+    function timezoneOffsetForState(state, date = new Date()) {
+      const value = Number(state?.timezoneOffset);
+      return Number.isFinite(value) ? Math.max(-12, Math.min(14, value)) : browserTimezoneOffset(date);
+    }
+
+    function apparentSolarLongitude(utcMillis) {
+      const julianDate = utcMillis / 86400000 + 2440587.5;
+      const centuries = (julianDate - 2451545) / 36525;
+      const radians = Math.PI / 180;
+      const meanLongitude = 280.46646 + centuries * (36000.76983 + centuries * 0.0003032);
+      const meanAnomaly = 357.52911 + centuries * (35999.05029 - 0.0001537 * centuries);
+      const equation = Math.sin(meanAnomaly * radians) * (1.914602 - centuries * (0.004817 + 0.000014 * centuries)) +
+        Math.sin(2 * meanAnomaly * radians) * (0.019993 - 0.000101 * centuries) +
+        Math.sin(3 * meanAnomaly * radians) * 0.000289;
+      const omega = 125.04 - 1934.136 * centuries;
+      return ((meanLongitude + equation - 0.00569 - 0.00478 * Math.sin(omega * radians)) % 360 + 360) % 360;
+    }
+
+    function signedAngleDifference(value, target) {
+      return ((value - target + 540) % 360) - 180;
+    }
+
+    function solarTermUtcMillis(year, termIndex) {
+      const cacheKey = `${year}-${termIndex}`;
+      if (solarTermUtcCache.has(cacheKey)) return solarTermUtcCache.get(cacheKey);
+      const rough = Date.UTC(1900, 0, 6, 2, 5, 0) + 31556925974.7 * (year - 1900) + solarTermMinuteOffsets[termIndex] * 60000;
+      const targetLongitude = (285 + termIndex * 15) % 360;
+      let lower = rough - 2 * 86400000;
+      let upper = rough + 2 * 86400000;
+      for (let i = 0; i < 48; i++) {
+        const middle = (lower + upper) / 2;
+        if (signedAngleDifference(apparentSolarLongitude(middle), targetLongitude) < 0) lower = middle;
+        else upper = middle;
+      }
+      const utcMillis = Math.round((lower + upper) / 2);
+      solarTermUtcCache.set(cacheKey, utcMillis);
+      return utcMillis;
+    }
+
+    function solarTermDate(year, termIndex, timezoneOffset = browserTimezoneOffset()) {
+      const utcMillis = solarTermUtcMillis(year, termIndex);
+      const wallTime = new Date(utcMillis + timezoneOffset * 3600000);
+      return new Date(
+        wallTime.getUTCFullYear(), wallTime.getUTCMonth(), wallTime.getUTCDate(),
+        wallTime.getUTCHours(), wallTime.getUTCMinutes(), wallTime.getUTCSeconds()
+      );
+    }
+
+    function dayOfYear(date) {
+      const start = new Date(date.getFullYear(), 0, 0, 12, 0, 0);
+      const current = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12, 0, 0);
+      return Math.floor((current - start) / 86400000);
+    }
+
+    function equationOfTimeMinutes(date) {
+      const angle = (2 * Math.PI * (dayOfYear(date) - 81)) / 364;
+      return 9.87 * Math.sin(2 * angle) - 7.53 * Math.cos(angle) - 1.5 * Math.sin(angle);
+    }
+
+    function resolveBirthDate(state) {
+      const inputParts = parseDateParts(state.birthDate);
+      if (!inputParts) throw new Error(state.calendar === "lunar" ? "农历日期格式应为YYYY-MM-DD" : "请选择有效的出生日期");
+      const solarDateText = state.calendar === "lunar"
+        ? lunarToSolarDateText(state.birthDate, state.lunarLeap === "leap")
+        : dateTextFromParts(inputParts);
+      const clockDate = parseLocalDate(solarDateText, state.birthTime);
+      if (Number.isNaN(clockDate.getTime()) || formatLocalDate(clockDate) !== solarDateText) throw new Error("请选择有效的出生日期和时间");
+
+      const timezoneOffset = timezoneOffsetForState(state, clockDate);
+      const longitude = Number(state.longitude);
+      const adjustedDate = new Date(clockDate);
+      let correctionMinutes = 0;
+      if (state.timeStandard === "trueSolar") {
+        if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) throw new Error("真太阳时需要填写有效的出生地经度");
+        const daylightCorrection = state.daylightSaving === "yes" ? -60 : 0;
+        const longitudeCorrection = 4 * (longitude - timezoneOffset * 15);
+        const equationCorrection = equationOfTimeMinutes(clockDate);
+        correctionMinutes = daylightCorrection + longitudeCorrection + equationCorrection;
+        adjustedDate.setMinutes(adjustedDate.getMinutes() + correctionMinutes);
+      }
+
+      return {
+        date: adjustedDate,
+        clockDate,
+        solarDateText,
+        timezoneOffset,
+        longitude: Number.isFinite(longitude) ? longitude : null,
+        correctionMinutes,
+        calendarLabel: state.calendar === "lunar" ? `农历${state.lunarLeap === "leap" ? "闰" : ""}${state.birthDate}` : `公历${solarDateText}`,
+        timeLabel: state.timeStandard === "trueSolar"
+          ? `真太阳时${formatLocalDateTime(adjustedDate)}（校正${correctionMinutes >= 0 ? "+" : ""}${Math.round(correctionMinutes)}分钟）`
+          : `当地钟表时间${formatLocalDateTime(clockDate)}`
+      };
     }
 
     function julianDay(date) {
@@ -3530,37 +3858,41 @@
       return 0;
     }
 
-    function yearPillar(date) {
+    function yearPillar(date, timezoneOffset = browserTimezoneOffset(date)) {
       let y = date.getFullYear();
-      const liChun = new Date(y, 1, 4, 12, 0, 0);
+      const liChun = solarTermDate(y, 2, timezoneOffset);
       if (date < liChun) y -= 1;
       return ganzhi(y - 1984);
     }
 
-    function monthIndexBySolarTerm(date) {
+    function monthIndexBySolarTerm(date, timezoneOffset = browserTimezoneOffset(date)) {
       const y = date.getFullYear();
-      const boundaries = [
-        new Date(y, 1, 4, 12), new Date(y, 2, 6, 12), new Date(y, 3, 5, 12),
-        new Date(y, 4, 6, 12), new Date(y, 5, 6, 12), new Date(y, 6, 7, 12),
-        new Date(y, 7, 8, 12), new Date(y, 8, 8, 12), new Date(y, 9, 8, 12),
-        new Date(y, 10, 7, 12), new Date(y, 11, 7, 12), new Date(y + 1, 0, 6, 12)
-      ];
-      for (let i = boundaries.length - 1; i >= 0; i--) {
-        if (date >= boundaries[i]) return i;
-      }
-      return 11;
+      const boundaries = [];
+      [y - 1, y].forEach((year) => {
+        for (let termIndex = 0; termIndex < 24; termIndex += 2) {
+          boundaries.push({
+            date: solarTermDate(year, termIndex, timezoneOffset),
+            monthIndex: termIndex === 0 ? 11 : termIndex / 2 - 1
+          });
+        }
+      });
+      boundaries.sort((a, b) => a.date - b.date);
+      const active = boundaries.filter((item) => date >= item.date).pop();
+      return active?.monthIndex ?? 11;
     }
 
-    function monthPillar(date, yearStemIndex) {
-      const mIndex = monthIndexBySolarTerm(date);
+    function monthPillar(date, yearStemIndex, timezoneOffset = browserTimezoneOffset(date)) {
+      const mIndex = monthIndexBySolarTerm(date, timezoneOffset);
       const stemStart = startStemForTigerMonth[yearStemIndex];
       const stem = stems[(stemStart + mIndex) % 10];
       const branch = monthBranches[mIndex];
       return { stem, branch, text: stem + branch, index: cycleIndex(stem, branch) };
     }
 
-    function dayPillar(date) {
-      return ganzhi(julianDay(date) + 49);
+    function dayPillar(date, dayBoundary = "midnight") {
+      const adjusted = new Date(date);
+      if (dayBoundary === "zi" && adjusted.getHours() >= 23) adjusted.setDate(adjusted.getDate() + 1);
+      return ganzhi(julianDay(adjusted) + 49);
     }
 
     function runCalibrationCheck() {
@@ -3568,7 +3900,7 @@
       const result = dayPillar(sample).text;
       const note = document.getElementById("calibrationNote");
       const status = result === "丙寅" ? "已校准" : `当前日柱为${result}`;
-      note.textContent = `出生时间请使用24小时制。日柱${status}。`;
+      note.textContent = `出生时间请使用24小时制；年柱按立春、月柱按节气换月。日柱${status}。`;
       if (result !== "丙寅") {
         console.error(`日柱校验失败：1999-01-14 16:30 应为丙寅，当前为${result}`);
       }
@@ -5142,8 +5474,8 @@
     }
 
     function qimenPillars(date) {
-      const year = yearPillar(date);
-      const month = monthPillar(date, stems.indexOf(year.stem));
+      const year = yearPillar(date, 8);
+      const month = monthPillar(date, stems.indexOf(year.stem), 8);
       const day = dayPillar(date);
       const hour = hourPillar(date, stems.indexOf(day.stem));
       return { year, month, day, hour };
@@ -5162,7 +5494,7 @@
     }
 
     function qimenJu(date, dun, yuan) {
-      const termIndex = monthIndexBySolarTerm(date);
+      const termIndex = monthIndexBySolarTerm(date, 8);
       const yangBase = [8, 9, 1, 4, 5, 6, 7, 8, 9, 1, 2, 3];
       const yinBase = [2, 1, 9, 6, 5, 4, 3, 2, 1, 9, 8, 7];
       const base = (dun === "阳遁" ? yangBase : yinBase)[termIndex] || 1;
@@ -6021,21 +6353,13 @@
       return { luck: "大运", year: "流年", month: "流月", day: "流日" }[key] || "流动";
     }
 
-    function solarBoundaryDates(year) {
-      return [
-        { name: "立春", date: new Date(year, 1, 4, 12) },
-        { name: "惊蛰", date: new Date(year, 2, 6, 12) },
-        { name: "清明", date: new Date(year, 3, 5, 12) },
-        { name: "立夏", date: new Date(year, 4, 6, 12) },
-        { name: "芒种", date: new Date(year, 5, 6, 12) },
-        { name: "小暑", date: new Date(year, 6, 7, 12) },
-        { name: "立秋", date: new Date(year, 7, 8, 12) },
-        { name: "白露", date: new Date(year, 8, 8, 12) },
-        { name: "寒露", date: new Date(year, 9, 8, 12) },
-        { name: "立冬", date: new Date(year, 10, 7, 12) },
-        { name: "大雪", date: new Date(year, 11, 7, 12) },
-        { name: "小寒", date: new Date(year + 1, 0, 6, 12) }
-      ];
+    function solarBoundaryDates(year, timezoneOffset = browserTimezoneOffset()) {
+      const boundaries = [];
+      for (let termIndex = 2; termIndex < 24; termIndex += 2) {
+        boundaries.push({ name: solarTermNames[termIndex], date: solarTermDate(year, termIndex, timezoneOffset) });
+      }
+      boundaries.push({ name: solarTermNames[0], date: solarTermDate(year + 1, 0, timezoneOffset) });
+      return boundaries;
     }
 
     function solarTransitionText(date, periodKey) {
@@ -6079,9 +6403,9 @@
       const transition = solarTransitionText(date, periodKey);
       if (periodKey === "luck") {
         const lucks = ctx.lucks || buildLuckCycles(ctx);
-        const active = lucks.find((luck) => luck.pillar.text === pillar.text && date.getFullYear() >= luck.startYear && date.getFullYear() <= luck.endYear);
+        const active = lucks.find((luck) => luck.pillar.text === pillar.text && date >= luck.startDate && date <= luck.endDate);
         if (active) {
-          const yearIndex = date.getFullYear() - active.startYear + 1;
+          const yearIndex = Math.max(1, Math.min(10, Math.floor((date - active.startDate) / (365.2422 * 86400000)) + 1));
           const stemLead = yearIndex <= 5;
           return `大运第${yearIndex}年，${stemLead ? stemText : branchText}主事约70%，${stemLead ? branchText : stemText}保留30%并参与合冲刑破害。`;
         }
@@ -7245,16 +7569,16 @@
 
     function luckForDate(ctx, date) {
       if (!ctx.lucks || !ctx.lucks.length) ctx.lucks = buildLuckCycles(ctx);
-      const year = date.getFullYear();
-      const active = ctx.lucks.find((luck) => year >= luck.startYear && year <= luck.endYear);
+      const active = ctx.lucks.find((luck) => date >= luck.startDate && date <= luck.endDate);
       if (active) return active;
-      return year < ctx.lucks[0].startYear ? ctx.lucks[0] : ctx.lucks[ctx.lucks.length - 1];
+      return date < ctx.lucks[0].startDate ? ctx.lucks[0] : ctx.lucks[ctx.lucks.length - 1];
     }
 
     function flowStackForDate(ctx, date) {
       const luck = luckForDate(ctx, date);
-      const flowYear = yearPillar(date);
-      const flowMonth = monthPillar(date, (flowYear.index % 10 + 10) % 10);
+      const timezoneOffset = ctx.birthMeta?.timezoneOffset ?? browserTimezoneOffset(date);
+      const flowYear = yearPillar(date, timezoneOffset);
+      const flowMonth = monthPillar(date, (flowYear.index % 10 + 10) % 10, timezoneOffset);
       const flowDay = dayPillar(date);
       const layers = [
         { key: "luck", label: "大运", pillar: luck.pillar, weight: 1.25 },
@@ -8251,24 +8575,81 @@
       document.getElementById("specialTag").textContent = "点击查看";
     }
 
+    function formatLuckAge(ageDecimal) {
+      const safeAge = Math.max(0, ageDecimal);
+      let years = Math.floor(safeAge);
+      let months = Math.floor((safeAge - years) * 12);
+      let days = Math.round((((safeAge - years) * 12) - months) * 30);
+      if (days >= 30) {
+        months += 1;
+        days = 0;
+      }
+      if (months >= 12) {
+        years += 1;
+        months = 0;
+      }
+      return `${years}岁${months ? `${months}个月` : ""}${days ? `${days}天` : ""}`;
+    }
+
+    function luckBoundaryInfo(ctx, forward) {
+      const timezoneOffset = ctx.birthMeta?.timezoneOffset ?? timezoneOffsetForState(ctx.state, ctx.birthDate);
+      const boundaries = [];
+      const year = ctx.birthDate.getFullYear();
+      for (let targetYear = year - 1; targetYear <= year + 1; targetYear++) {
+        for (let termIndex = 0; termIndex < 24; termIndex += 2) {
+          boundaries.push({
+            date: solarTermDate(targetYear, termIndex, timezoneOffset),
+            name: solarTermNames[termIndex]
+          });
+        }
+      }
+      boundaries.sort((a, b) => a.date - b.date);
+      const boundary = forward
+        ? boundaries.find((item) => item.date > ctx.birthDate)
+        : boundaries.filter((item) => item.date <= ctx.birthDate).pop();
+      const spanDays = Math.abs(boundary.date - ctx.birthDate) / 86400000;
+      const ageDecimal = spanDays / 3;
+      const startDate = new Date(ctx.birthDate.getTime() + ageDecimal * 365.2422 * 86400000);
+      return { ...boundary, spanDays, ageDecimal, startDate };
+    }
+
     function buildLuckCycles(ctx) {
       const birthYearStem = ctx.pillars[0].stem;
       const isYangYear = stems.indexOf(birthYearStem) % 2 === 0;
       const forward = (ctx.state.gender === "男" && isYangYear) || (ctx.state.gender === "女" && !isYangYear);
-      const startAge = 6;
+      const startInfo = luckBoundaryInfo(ctx, forward);
       return Array.from({ length: 8 }, (_, i) => {
         const offset = forward ? i + 1 : -(i + 1);
         const stemIndex = (stems.indexOf(ctx.pillars[1].stem) + offset + 10) % 10;
         const branchIndex = (branches.indexOf(ctx.pillars[1].branch) + offset + 12) % 12;
         const stem = stems[stemIndex];
         const branch = branches[branchIndex];
-        const start = startAge + i * 10;
+        const startAgeDecimal = startInfo.ageDecimal + i * 10;
+        const endAgeDecimal = startInfo.ageDecimal + (i + 1) * 10;
+        const startDate = new Date(startInfo.startDate);
+        startDate.setFullYear(startDate.getFullYear() + i * 10);
+        const nextDate = new Date(startInfo.startDate);
+        nextDate.setFullYear(nextDate.getFullYear() + (i + 1) * 10);
+        const endDate = new Date(nextDate);
+        endDate.setDate(endDate.getDate() - 1);
         return {
           pillar: { stem, branch, text: stem + branch, index: cycleIndex(stem, branch) },
-          startAge: start,
-          endAge: start + 9,
-          startYear: ctx.birthDate.getFullYear() + start,
-          endYear: ctx.birthDate.getFullYear() + start + 9
+          startAge: Math.floor(startAgeDecimal),
+          endAge: Math.max(Math.floor(startAgeDecimal), Math.ceil(endAgeDecimal) - 1),
+          startAgeDecimal,
+          endAgeDecimal,
+          startAgeText: formatLuckAge(startAgeDecimal),
+          endAgeText: formatLuckAge(endAgeDecimal),
+          startDate,
+          endDate,
+          startDateText: formatLocalDate(startDate),
+          endDateText: formatLocalDate(endDate),
+          startYear: startDate.getFullYear(),
+          endYear: endDate.getFullYear(),
+          direction: forward ? "顺排" : "逆排",
+          boundaryName: startInfo.name,
+          boundaryDateText: formatLocalDateTime(startInfo.date),
+          boundaryDays: startInfo.spanDays
         };
       });
     }
@@ -8280,22 +8661,48 @@
       });
     }
 
-    function buildFlowMonths(yearItem) {
+    function buildFlowMonths(yearItem, ctx = chartContext) {
       const yearStemIndex = (yearItem.pillar.index % 10 + 10) % 10;
+      const timezoneOffset = ctx?.birthMeta?.timezoneOffset ?? browserTimezoneOffset();
       return monthBranches.map((branch, i) => {
         const stem = stems[(startStemForTigerMonth[yearStemIndex] + i) % 10];
-        return { month: i + 1, pillar: { stem, branch, text: stem + branch, index: cycleIndex(stem, branch) } };
+        const startTerm = i === 11 ? { year: yearItem.year + 1, index: 0 } : { year: yearItem.year, index: i * 2 + 2 };
+        const endTerm = i === 10
+          ? { year: yearItem.year + 1, index: 0 }
+          : i === 11
+            ? { year: yearItem.year + 1, index: 2 }
+            : { year: yearItem.year, index: i * 2 + 4 };
+        const startDate = solarTermDate(startTerm.year, startTerm.index, timezoneOffset);
+        const endDate = solarTermDate(endTerm.year, endTerm.index, timezoneOffset);
+        return {
+          month: i + 1,
+          label: `${startDate.getMonth() + 1}/${startDate.getDate()}-${endDate.getMonth() + 1}/${endDate.getDate()}`,
+          startDate,
+          endDate,
+          pillar: { stem, branch, text: stem + branch, index: cycleIndex(stem, branch) }
+        };
       });
     }
 
     function buildFlowDays(yearItem, monthItem) {
-      const base = new Date(yearItem.year, monthItem.month - 1, 1, 12, 0, 0);
-      const daysInMonth = new Date(yearItem.year, monthItem.month, 0).getDate();
-      return Array.from({ length: daysInMonth }, (_, i) => {
-        const date = new Date(base);
-        date.setDate(base.getDate() + i);
-        return { date, pillar: dayPillar(date) };
-      });
+      if (!monthItem.startDate || !monthItem.endDate) {
+        const base = new Date(yearItem.year, monthItem.month - 1, 1, 12, 0, 0);
+        const daysInMonth = new Date(yearItem.year, monthItem.month, 0).getDate();
+        return Array.from({ length: daysInMonth }, (_, i) => {
+          const date = new Date(base);
+          date.setDate(base.getDate() + i);
+          return { date, pillar: dayPillar(date) };
+        });
+      }
+      const cursor = new Date(monthItem.startDate.getFullYear(), monthItem.startDate.getMonth(), monthItem.startDate.getDate(), 12, 0, 0);
+      const end = new Date(monthItem.endDate.getFullYear(), monthItem.endDate.getMonth(), monthItem.endDate.getDate(), 12, 0, 0);
+      const days = [];
+      while (cursor < end) {
+        const date = new Date(cursor);
+        days.push({ date, pillar: dayPillar(date) });
+        cursor.setDate(cursor.getDate() + 1);
+      }
+      return days;
     }
 
     const pillarLabels = ["年柱", "月柱", "日柱", "时柱"];
@@ -8389,18 +8796,22 @@
     function renderXipanSummary(ctx) {
       const target = document.getElementById("xipanSummary");
       if (!target) return;
-      const birthText = `${ctx.state.birthDate || "--"} ${ctx.state.birthTime || "--"}`;
+      const birthText = `${ctx.birthMeta?.solarDateText || ctx.state.birthDate || "--"} ${ctx.state.birthTime || "--"}`;
       const fetal = fetalPillar(ctx);
       const firstLuck = ctx.lucks?.[0];
-      const luckText = firstLuck ? `${firstLuck.startAge}岁起，${firstLuck.startYear}年入${firstLuck.pillar.text}` : "待排";
+      const luckText = firstLuck ? `${firstLuck.startAgeText}起运，${firstLuck.startDateText}交${firstLuck.pillar.text}` : "待排";
       const chips = [
         ["姓名", ctx.state.name || "命主"],
         ["性别", ctx.state.gender || "未填"],
         ["公历", birthText],
+        ...(ctx.state.calendar === "lunar" ? [["农历", `${ctx.state.birthDate}${ctx.state.lunarLeap === "leap" ? "（闰月）" : ""}`]] : []),
+        ["校时", ctx.birthMeta?.timeLabel || "当地钟表时间"],
+        ["换月换日", `精确节气｜${ctx.state.dayBoundary === "zi" ? "子初换日" : "零点换日"}`],
         ["生肖", `${ctx.pillars[0].branch}年生`],
         ["胎元", `${fetal.text}（${pillarNayin(fetal)}）`],
-        ["排盘方式", ctx.state.calendar === "solar" ? "公历排盘" : "农历近似"],
+        ["排盘方式", ctx.state.calendar === "solar" ? "公历排盘" : "农历转换公历排盘"],
         ["起运交运", luckText],
+        ...(firstLuck ? [["起运依据", `${firstLuck.direction}｜出生至${firstLuck.boundaryName}${firstLuck.boundaryDays.toFixed(2)}天`]] : []),
         ["格局强弱", `${ctx.pattern?.name || "未定"}｜${ctx.strength.label}`]
       ];
       target.innerHTML = chips.map(([label, value]) => `
@@ -8461,15 +8872,15 @@
       const luck = ctx.lucks[selectedLuck] || ctx.lucks[0];
       const years = buildFlowYears(ctx, luck);
       const yearItem = years[Math.max(0, Math.min(selectedYear, years.length - 1))];
-      const months = buildFlowMonths(yearItem);
+      const months = buildFlowMonths(yearItem, ctx);
       const monthItem = months[Math.max(0, Math.min(selectedMonth, months.length - 1))];
       const days = buildFlowDays(yearItem, monthItem);
       const dayItem = days[Math.max(0, Math.min(selectedDay, days.length - 1))];
       const columns = [
         { name: "流日", item: dayItem, age: `${dayItem.date.getMonth() + 1}/${dayItem.date.getDate()}` },
-        { name: "流月", item: monthItem, age: `${monthItem.month}月` },
+        { name: "流月", item: monthItem, age: escapeHtml(monthItem.label || `${monthItem.month}月`) },
         { name: "流年", item: yearItem, age: `${yearItem.year}` },
-        { name: "大运", item: luck, age: `${luck.startAge}岁<br>${luck.startYear}` },
+        { name: "大运", item: luck, age: `${escapeHtml(luck.startAgeText)}<br>${luck.startYear}` },
         ...ctx.pillars.map((pillar, i) => ({ name: pillarLabels[i], item: { pillar }, age: "*" }))
       ];
       const row = (label, getter) => `<tr><td class="label">${escapeHtml(label)}</td>${columns.map((col) => `<td>${getter(col)}</td>`).join("")}</tr>`;
@@ -8492,12 +8903,12 @@
       const lucks = ctx.lucks || [];
       const luckRow = (label, getter) => `<tr><td class="label">${escapeHtml(label)}</td>${lucks.map((luck) => `<td>${getter(luck)}</td>`).join("")}</tr>`;
       target.innerHTML = `<table class="xipan-table">
-        <tr><th class="label">大运表</th>${lucks.map((luck) => `<th>${luck.startAge}岁<br>${luck.startYear}</th>`).join("")}</tr>
+        <tr><th class="label">大运表</th>${lucks.map((luck) => `<th>${escapeHtml(luck.startAgeText)}<br>${luck.startYear}</th>`).join("")}</tr>
         ${luckRow("天干十神", (luck) => escapeHtml(tenGod(dayStem, luck.pillar.stem)))}
         ${luckRow("大运", (luck) => xipanCellBig(luck.pillar))}
         ${luckRow("地支十神", (luck) => hiddenStemDetails(ctx, luck.pillar.branch).join("<br>"))}
         ${luckRow("十二长生", (luck) => escapeHtml(lifeStage(dayStem, luck.pillar.branch)))}
-        ${luckRow("大运止于", (luck) => `${luck.endAge}岁<br>${luck.endYear}`)}
+        ${luckRow("大运止于", (luck) => `${escapeHtml(luck.endDateText)}<br>${luck.endYear}`)}
       </table>`;
 
       const yearStemYang = stems.indexOf(ctx.pillars[0].stem) % 2 === 0;
@@ -8602,15 +9013,22 @@
 
     function selectCurrentFlow(today) {
       const currentYear = today.getFullYear();
-      const currentMonth = today.getMonth() + 1;
-      selectedLuck = chartContext.lucks.findIndex((luck) => currentYear >= luck.startYear && currentYear <= luck.endYear);
+      selectedLuck = chartContext.lucks.findIndex((luck) => today >= luck.startDate && today <= luck.endDate);
       if (selectedLuck < 0) {
-        selectedLuck = currentYear < chartContext.lucks[0].startYear ? 0 : chartContext.lucks.length - 1;
+        selectedLuck = today < chartContext.lucks[0].startDate ? 0 : chartContext.lucks.length - 1;
       }
       const luck = chartContext.lucks[selectedLuck];
-      selectedYear = Math.max(0, Math.min(9, currentYear - luck.startYear));
-      selectedMonth = Math.max(0, Math.min(11, currentMonth - 1));
-      selectedDay = today.getDate() - 1;
+      const timezoneOffset = chartContext.birthMeta?.timezoneOffset ?? browserTimezoneOffset(today);
+      const flowYear = today < solarTermDate(currentYear, 2, timezoneOffset) ? currentYear - 1 : currentYear;
+      const years = buildFlowYears(chartContext, luck);
+      selectedYear = years.findIndex((item) => item.year === flowYear);
+      if (selectedYear < 0) selectedYear = Math.max(0, Math.min(9, flowYear - luck.startYear));
+      const months = buildFlowMonths(years[selectedYear], chartContext);
+      selectedMonth = months.findIndex((item) => today >= item.startDate && today < item.endDate);
+      if (selectedMonth < 0) selectedMonth = 0;
+      const days = buildFlowDays(years[selectedYear], months[selectedMonth]);
+      selectedDay = days.findIndex((item) => formatLocalDate(item.date) === formatLocalDate(today));
+      if (selectedDay < 0) selectedDay = 0;
     }
 
     function renderLuckTimeline() {
@@ -8619,7 +9037,7 @@
       timeline.innerHTML = lucks.map((l, i) => `
         <button class="pick ${i === selectedLuck ? "active" : ""}" type="button" data-luck="${i}">
           <strong>${l.pillar.text}</strong>
-          <span>${l.startAge}-${l.endAge}岁</span>
+          <span>${escapeHtml(l.startAgeText)}</span>
           <span>${l.startYear}-${l.endYear}</span>
         </button>
       `).join("");
@@ -8646,13 +9064,13 @@
     }
 
     function renderFlowMonths() {
-      const months = buildFlowMonths(chartContext.flowYears[selectedYear]);
+      const months = buildFlowMonths(chartContext.flowYears[selectedYear], chartContext);
       chartContext.flowMonths = months;
       selectedMonth = Math.min(selectedMonth, months.length - 1);
       const monthFlow = document.getElementById("monthFlow");
       monthFlow.innerHTML = months.map((m, i) => `
         <button class="pick ${i === selectedMonth ? "active" : ""}" type="button" data-month="${i}">
-          <strong>${m.pillar.text}</strong><span>${m.month}月</span>
+          <strong>${m.pillar.text}</strong><span>${escapeHtml(m.label || `${m.month}月`)}</span>
         </button>
       `).join("");
       colorizeGanzhi(monthFlow);
@@ -8744,6 +9162,47 @@
       }
     }
 
+    function cityPreset(value) {
+      const key = String(value || "").trim().toLowerCase();
+      return birthCityPresets[key] || null;
+    }
+
+    function applyCityPreset() {
+      const preset = cityPreset(document.getElementById("city").value);
+      if (!preset) return false;
+      document.getElementById("longitude").value = String(preset.longitude);
+      document.getElementById("timezoneOffset").value = String(preset.timezoneOffset);
+      return true;
+    }
+
+    function updateCalibrationNote() {
+      const calendar = document.getElementById("calendar").value;
+      const timeStandard = document.getElementById("timeStandard").value;
+      const dayBoundary = document.getElementById("dayBoundary").value;
+      const parts = [
+        calendar === "lunar" ? "农历会先转换为公历" : "公历直接排盘",
+        "年柱按立春、月柱按精确节气换月",
+        dayBoundary === "zi" ? "23:00起计入次日" : "零点换日"
+      ];
+      if (timeStandard === "trueSolar") parts.push("经度、时区和夏令时会参与真太阳时校正");
+      const note = document.getElementById("calibrationNote");
+      note.textContent = `${parts.join("；")}。`;
+      refreshLanguage(note);
+    }
+
+    function syncBirthParameterUI() {
+      const calendar = document.getElementById("calendar").value;
+      const timeStandard = document.getElementById("timeStandard").value;
+      const birthDate = document.getElementById("birthDate");
+      const currentValue = birthDate.value;
+      document.getElementById("lunarLeapField").hidden = calendar !== "lunar";
+      document.getElementById("calibrationFields").hidden = timeStandard !== "trueSolar";
+      birthDate.type = calendar === "lunar" ? "text" : "date";
+      birthDate.placeholder = calendar === "lunar" ? "例如：1990-02-30" : "";
+      if (currentValue) birthDate.value = currentValue;
+      updateCalibrationNote();
+    }
+
     function formState() {
       const form = document.getElementById("baziForm");
       return {
@@ -8752,7 +9211,13 @@
         birthDate: form.birthDate.value,
         birthTime: form.birthTime.value,
         calendar: form.calendar.value,
+        lunarLeap: form.lunarLeap.value,
         city: form.city.value.trim(),
+        timeStandard: form.timeStandard.value,
+        timezoneOffset: form.timezoneOffset.value,
+        longitude: form.longitude.value,
+        daylightSaving: form.daylightSaving.value,
+        dayBoundary: form.dayBoundary.value,
         focus: form.focus.value
       };
     }
@@ -8761,11 +9226,19 @@
       if (!state) return;
       const form = document.getElementById("baziForm");
       form.name.value = state.name || "";
+      form.calendar.value = state.calendar || "solar";
+      form.lunarLeap.value = state.lunarLeap || "normal";
+      form.city.value = state.city || "";
+      form.timeStandard.value = state.timeStandard || "clock";
+      form.timezoneOffset.value = state.timezoneOffset ?? "8";
+      form.longitude.value = state.longitude ?? "116.41";
+      form.daylightSaving.value = state.daylightSaving || "no";
+      form.dayBoundary.value = state.dayBoundary || "midnight";
+      form.focus.value = state.focus || "overall";
+      if (state.timezoneOffset == null && state.longitude == null) applyCityPreset();
+      syncBirthParameterUI();
       form.birthDate.value = state.birthDate || "";
       form.birthTime.value = state.birthTime || "";
-      form.calendar.value = state.calendar || "solar";
-      form.city.value = state.city || "";
-      form.focus.value = state.focus || "overall";
       if (state.gender === "女") document.getElementById("female").checked = true;
       else document.getElementById("male").checked = true;
     }
@@ -8942,7 +9415,13 @@
         state.birthDate || "",
         state.birthTime || "",
         state.calendar || "",
+        state.lunarLeap || "normal",
         state.city || "",
+        state.timeStandard || "clock",
+        state.timezoneOffset || "",
+        state.longitude || "",
+        state.daylightSaving || "no",
+        state.dayBoundary || "midnight",
         state.focus || ""
       ]);
     }
@@ -9354,10 +9833,17 @@
     function generate(options = {}) {
       const state = formState();
       if (!state.birthDate || !state.birthTime) return;
-      const date = parseLocalDate(state.birthDate, state.birthTime);
-      const y = yearPillar(date);
-      const m = monthPillar(date, y.index % 10);
-      const d = dayPillar(date);
+      let birthMeta;
+      try {
+        birthMeta = resolveBirthDate(state);
+      } catch (error) {
+        showToast(error?.message || "出生资料无法换算");
+        return;
+      }
+      const date = birthMeta.date;
+      const y = yearPillar(date, birthMeta.timezoneOffset);
+      const m = monthPillar(date, y.index % 10, birthMeta.timezoneOffset);
+      const d = dayPillar(date, state.dayBoundary);
       const h = hourPillar(date, d.index % 10);
       const pillars = [y, m, d, h];
       const counts = countElements(pillars);
@@ -9380,7 +9866,8 @@
       document.getElementById("metaTags").innerHTML = [
         state.gender,
         state.city || "未填出生地",
-        state.calendar === "solar" ? "公历" : "农历近似",
+        state.calendar === "solar" ? "公历" : "农历已转换",
+        state.timeStandard === "trueSolar" ? "真太阳时" : "当地钟表时间",
         focusLabels[state.focus] || "整体运势",
         `日主：${dayElement}`,
         `喜用：${baseFavorable.join("、")}`
@@ -9389,6 +9876,7 @@
       const ctx = {
         state,
         birthDate: date,
+        birthMeta,
         pillars,
         counts,
         dayElement,
@@ -9396,8 +9884,9 @@
         baseStrength,
         strength: baseStrength,
         favorable: baseFavorable,
-        lucks: buildLuckCycles({ state, birthDate: date, pillars })
+        lucks: []
       };
+      ctx.lucks = buildLuckCycles(ctx);
       ctx.dynamicStrength = dynamicStrengthProfile(ctx, new Date());
       ctx.strength = ctx.dynamicStrength.current;
       ctx.favorable = favorableElements(dayElement, ctx.strength);
@@ -9410,7 +9899,8 @@
       document.getElementById("metaTags").innerHTML = [
         state.gender,
         state.city || "未填出生地",
-        state.calendar === "solar" ? "公历" : "农历近似",
+        state.calendar === "solar" ? "公历" : "农历已转换",
+        state.timeStandard === "trueSolar" ? "真太阳时" : "当地钟表时间",
         focusLabels[state.focus] || "整体运势",
         `日主：${dayElement}`,
         `本命：${strengthDisplay(baseStrength)}`,
@@ -9492,8 +9982,20 @@
       if (event.target === event.currentTarget) closeQimenDialog();
     });
 
+    document.getElementById("calendar").addEventListener("change", syncBirthParameterUI);
+    document.getElementById("timeStandard").addEventListener("change", syncBirthParameterUI);
+    document.getElementById("dayBoundary").addEventListener("change", updateCalibrationNote);
+    document.getElementById("city").addEventListener("change", () => {
+      applyCityPreset();
+      updateCalibrationNote();
+    });
+    document.getElementById("city").addEventListener("input", applyCityPreset);
+
     document.getElementById("todayBtn").addEventListener("click", () => {
       const now = new Date();
+      document.getElementById("calendar").value = "solar";
+      document.getElementById("lunarLeap").value = "normal";
+      syncBirthParameterUI();
       document.getElementById("birthDate").value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
       document.getElementById("birthTime").value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
       generate();
@@ -9592,7 +10094,7 @@
       renderLuckTimeline();
       renderFlowYears();
       const luck = chartContext.lucks[selectedLuck];
-      showFlowDetail("大运", luck.pillar, `${luck.startAge}-${luck.endAge}岁`);
+      showFlowDetail("大运", luck.pillar, `${luck.startAgeText}起｜${luck.startDateText}`);
     });
 
     document.getElementById("yearFlow").addEventListener("click", (event) => {
@@ -9613,7 +10115,7 @@
       selectedDay = 0;
       renderFlowMonths();
       const item = chartContext.flowMonths[selectedMonth];
-      showFlowDetail("流月", item.pillar, `${item.month}月`);
+      showFlowDetail("流月", item.pillar, item.label || `${item.month}月`);
     });
 
     document.getElementById("dayFlow").addEventListener("click", (event) => {
@@ -9634,6 +10136,7 @@
       enableGanzhiAutoColor();
       await initAccountSystem();
       runCalibrationCheck();
+      syncBirthParameterUI();
       const state = location.hash ? decodeState(location.hash.slice(1)) : null;
       if (state) {
         setActiveTool("bazi");
@@ -9644,6 +10147,7 @@
       const now = new Date();
       document.getElementById("birthDate").value = "1990-01-01";
       document.getElementById("birthTime").value = "08:30";
+      syncBirthParameterUI();
       applyDisplayMode();
       localizePage();
     });
