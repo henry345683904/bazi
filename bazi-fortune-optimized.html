@@ -2364,6 +2364,7 @@
     }
 
     body[data-display-mode="daily"] [data-report-category="pattern"],
+    body[data-display-mode="daily"] [data-report-category="talent"],
     body[data-display-mode="daily"] [data-report-category="luck"] {
       display: none;
     }
@@ -2840,8 +2841,12 @@
             <button type="button" class="active" data-report-category="overview" role="tab" aria-selected="true">总览</button>
             <button type="button" data-report-category="pattern" role="tab" aria-selected="false">格局</button>
             <button type="button" data-report-category="personality" role="tab" aria-selected="false">性格</button>
-            <button type="button" data-report-category="career" role="tab" aria-selected="false">事业财运</button>
+            <button type="button" data-report-category="talent" role="tab" aria-selected="false">天赋能力</button>
+            <button type="button" data-report-category="career" role="tab" aria-selected="false">事业</button>
+            <button type="button" data-report-category="wealth" role="tab" aria-selected="false">财富</button>
             <button type="button" data-report-category="love" role="tab" aria-selected="false">感情</button>
+            <button type="button" data-report-category="marriage" role="tab" aria-selected="false">婚姻</button>
+            <button type="button" data-report-category="family" role="tab" aria-selected="false">家庭六亲</button>
             <button type="button" data-report-category="health" role="tab" aria-selected="false">健康</button>
             <button type="button" data-report-category="luck" role="tab" aria-selected="false">大运</button>
             <button type="button" data-report-category="year" role="tab" aria-selected="false">流年</button>
@@ -3282,7 +3287,13 @@
       "总览": "Overview",
       "格局": "Pattern",
       "性格": "Personality",
+      "天赋能力": "Talents",
+      "事业": "Career",
+      "事业发展": "Career Development",
+      "财富": "Wealth",
       "感情": "Relationships",
+      "婚姻": "Marriage",
+      "家庭六亲": "Family",
       "健康": "Health",
       "生成命盘后显示分类解读。": "Generate a chart to view categorized reports.",
       "命盘摘要": "Chart Summary",
@@ -4356,6 +4367,7 @@
       }
       localizePage();
       renderAccountUI();
+      syncReportCategoryLabels();
     }
 
     function refreshLanguage(scope = document.body) {
@@ -4372,10 +4384,17 @@
       });
       if (currentDisplayMode === "daily") hideFullChart();
       if (lastBaziReports.length) renderReports(lastBaziReports, { preserveCache: true });
-      if (currentDisplayMode === "daily" && ["pattern", "luck"].includes(currentReportCategory)) {
+      if (currentDisplayMode === "daily" && ["pattern", "talent", "luck"].includes(currentReportCategory)) {
         currentReportCategory = "overview";
       }
       renderReportCategory(currentReportCategory);
+      syncReportCategoryLabels();
+    }
+
+    function syncReportCategoryLabels() {
+      const yearButton = document.querySelector('[data-report-category="year"]');
+      if (!yearButton) return;
+      yearButton.textContent = currentLanguage === "en" ? "Current Year" : currentDisplayMode === "daily" ? "今年" : "流年";
     }
 
     function setDisplayMode(mode) {
@@ -4383,6 +4402,7 @@
       localStorage.setItem(displayModeStorageKey, currentDisplayMode);
       applyDisplayMode();
       refreshLanguage(document.getElementById("displayModeSwitch"));
+      syncReportCategoryLabels();
     }
 
     function colorizeGanzhi(scope = document.body) {
@@ -7059,9 +7079,9 @@
       if (stars.includes("金舆")) lines.push("金舆同看，车行出入、久坐、腰腿、颈肩和交通疲劳更容易带出身体反应。");
       if (stars.includes("将星")) lines.push("将星同看，容易因主导事务、扛责任、赶进度而出现紧绷和睡眠受扰。");
 
-      if (stemGod.includes("官") || stemGod.includes("杀")) lines.push("官杀压身时，压力、规则、责任和睡眠质量会直接影响身体反应。");
+      if (stemGod.includes("食") || stemGod.includes("伤")) lines.push("食伤引动时，熬夜输出、说话用嗓、火气和消化节律更容易被带动。");
+      else if (["正官", "七杀"].includes(stemGod)) lines.push("官杀压身时，压力、规则、责任和睡眠质量会直接影响身体反应。");
       else if (stemGod.includes("财")) lines.push("财星引动时，钱款承诺、客户压力、饮食应酬和身体消耗会同步出现。");
-      else if (stemGod.includes("食") || stemGod.includes("伤")) lines.push("食伤引动时，熬夜输出、说话用嗓、火气和消化节律更容易被带动。");
       else if (stemGod.includes("印")) lines.push("印星引动时，多表现为恢复、检查、资料焦虑、想太多或行动变慢。");
 
       if (strongest === "火" && ctx.counts.水 <= 1) lines.push("火旺水少，燥热、睡眠浅、心烦和口舌问题会比普通模板更明显。");
@@ -7818,7 +7838,7 @@
         {
           label: "八字格局",
           title: `${pattern.name}｜${pattern.god}`,
-          text: `${pattern.profile}${pattern.god.includes("财") ? "钱款、客户、库存和回款是主要应事。" : pattern.god.includes("官") || pattern.god.includes("杀") ? "合同、规则、职位责任和压力事件更容易被引动。" : pattern.god.includes("印") ? "证件、资料、贵人、学习和后台资源更容易被引动。" : pattern.god.includes("食") || pattern.god.includes("伤") ? "作品、话术、技术输出和成交转化更容易被引动。" : "合伙、竞争、朋友同业和分账事项更容易被引动。"}`
+          text: `${pattern.profile}${pattern.god.includes("财") ? "钱款、客户、库存和回款是主要应事。" : pattern.god.includes("食") || pattern.god.includes("伤") ? "作品、话术、技术输出和成交转化更容易被引动。" : pattern.god.includes("官") || pattern.god.includes("杀") ? "合同、规则、职位责任和压力事件更容易被引动。" : pattern.god.includes("印") ? "证件、资料、贵人、学习和后台资源更容易被引动。" : "合伙、竞争、朋友同业和分账事项更容易被引动。"}`
         },
         {
           label: "命主直断",
@@ -7927,7 +7947,7 @@
         const dailyFavorable = favorableElements(ctx.dayElement, dynamic.current);
         const favorableHit = [stemEl, branchEl].some((el) => dailyFavorable.includes(el));
         const wealthHit = stemGod.includes("财");
-        const officerHit = stemGod.includes("官") || stemGod.includes("杀");
+        const officerHit = ["正官", "七杀"].includes(stemGod);
         const outputHit = stemGod.includes("食") || stemGod.includes("伤");
         const resourceHit = stemGod.includes("印");
         const peerHit = stemGod.includes("比") || stemGod.includes("劫");
@@ -8069,6 +8089,30 @@
         .replace(/引动/g, "带来")
         .replace(/应事/g, "事情")
         .replace(/竞争分账被带来/g, "竞争和分账增多")
+        .replace(/财机能否承接/g, "赚钱机会能否落实")
+        .replace(/(?:命主)?承接力(?:偏紧|偏弱|较足|偏强|低于中线|高于中线)?/g, "处理大额钱款的余力")
+        .replace(/配偶星/g, "稳定关系机会")
+        .replace(/夫妻宫/g, "亲密关系")
+        .replace(/妻星|夫星/g, "稳定伴侣")
+        .replace(/没有强烈冲合/g, "没有明显突发变化")
+        .replace(/冲合/g, "明显变化")
+        .replace(/见刑主/g, "压力集中时容易带来")
+        .replace(/刑象主压力内收/g, "容易积累压力")
+        .replace(/(?:年柱|年支)/g, "长辈和家族事务")
+        .replace(/(?:月柱|月支)/g, "父母手足和工作环境")
+        .replace(/(?:日柱|日支)/g, "伴侣和亲密关系")
+        .replace(/(?:时柱|时支)/g, "子女晚辈和后续计划")
+        .replace(/藏(?=竞争分账|钱财|规则压力|资料支持|表达输出)/g, "同时带来")
+        .replace(/(?:当天|本月|今年)?[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]{2}直接落到(?:当天|本月|今年)，(?:天干)?主外显事件。/g, "事情表现得比较直接。")
+        .replace(/相克，[木火土金水]与[木火土金水]互耗，应?事(?:情)?先有阻力、争执或反复，?/g, "事情推进时先有阻力、争执或反复，")
+        .replace(/表达输出被带来，属于先输出再生财的信号，/g, "需要展示成果时，")
+        .replace(/资料支持被带来，/g, "需要资料和他人协助时，")
+        .replace(/(当天|本月|今年)?刑(?:原局)?(长辈和家族事务|父母手足和工作环境|伴侣和亲密关系|子女晚辈和后续计划)[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]?，?容易积累压力/g, "$1$2容易因时间冲突、旧问题或责任压力出现波动")
+        .replace(/压力集中时容易带来压力、/g, "压力集中时容易出现")
+        .replace(/尤其三刑、自刑被带来时更明显/g, "同类问题反复时更明显")
+        .replace(/亲人宫位不安/g, "亲人事务不安稳")
+        .replace(/[木火土金水]受伤，/g, "同时，")
+        .replace(/处理大额钱款的余力，(?=[肝心脾肺肾胃胆膀胱胸头面眼耳腰])/g, "近期精力和恢复速度偏慢，")
         .replace(/而事情/g, "")
         .replace(/多应经络/g, "容易出现经络")
         .replace(/本命|当前|动态强弱|强弱|格局|十神|五行|日主|命局|原局|纳音|月令|透干|天干|地支|干支|合化|冲合刑破害|刑冲破害|喜用|忌神|忌凶|神煞/g, "")
@@ -8099,7 +8143,7 @@
     }
 
     function dailyReportTitle(title) {
-      return String(title || "").replace(/运势/g, "") || "预测";
+      return String(title || "").replace(/今年流年/g, "今年").replace(/运势/g, "") || "预测";
     }
 
     function renderReports(reports, options = {}) {
@@ -8122,13 +8166,55 @@
       refreshLanguage(document.getElementById("reports"));
     }
 
+    function natalTenGodInventory(ctx) {
+      const dayStem = ctx.pillars[2].stem;
+      const counts = {};
+      const add = (god, weight = 1) => {
+        if (!god || god === "日主") return;
+        counts[god] = (counts[god] || 0) + weight;
+      };
+      ctx.pillars.forEach((pillar, index) => {
+        if (index !== 2) add(tenGod(dayStem, pillar.stem), 1.25);
+        (hiddenStems[pillar.branch] || []).forEach((stem, hiddenIndex) => add(tenGod(dayStem, stem), hiddenIndex === 0 ? 1 : 0.55));
+      });
+      return counts;
+    }
+
+    function talentPredictionForGod(god) {
+      if (god.includes("财")) return "对价格、客户需求、资源交换和市场变化较敏感，容易在销售、经营、采购、项目撮合或资产管理中形成经验。";
+      if (god.includes("食") || god.includes("伤")) return "输出和转化能力较明显，容易通过表达、方案、手艺、内容、培训、设计或技术成果让别人看见价值。";
+      if (god.includes("官") || god.includes("杀")) return "面对压力和责任时执行力会上升，容易承担管理、规则、合同、风控、技术标准或竞争性任务。";
+      if (god.includes("印")) return "学习、研究、理解复杂资料和借助系统资源的能力较强，容易深挖专业知识、证照、文书或冷门领域。";
+      return "对同业、人脉和群体变化反应快，容易在团队协作、资源整合、谈判竞争或独立创业中形成判断。";
+    }
+
+    function familyFlowPredictions(ctx, targetPillar) {
+      const peopleByPillar = ["长辈、父系亲属或家族事务", "父母、兄弟姐妹或共同生活的家人", "伴侣或亲密关系", "子女、晚辈或下属"];
+      const lines = [];
+      ctx.pillars.forEach((pillar, index) => {
+        branchRelationObjects(targetPillar.branch, pillar.branch).forEach((relationItem) => {
+          const people = peopleByPillar[index];
+          if (relationItem.type === "冲") lines.push(`${people}的工作、住处、健康或时间安排容易突然变化，命主会临时协调家事、出行或钱款。`);
+          else if (relationItem.type === "合") lines.push(`${people}与命主的联系和牵扯增加，容易一起处理照顾、聚会、房屋、钱款或共同决定。`);
+          else if (relationItem.type === "刑") lines.push(`${people}之间容易积累闷气和责任压力，旧矛盾、身体不适或反复沟通会集中出现。`);
+          else if (relationItem.type === "破" || relationItem.type === "害") lines.push(`${people}相关的误会、小额支出、检查维修或口头承诺容易反复，表面小事会拖成长期牵挂。`);
+          else if (relationItem.type === "同") lines.push(`${people}过去处理过的事情容易再次出现，同一类家事、钱款或健康问题需要重复确认。`);
+        });
+      });
+      return uniqueList(lines).slice(0, 4);
+    }
+
     function reportCategoryModel(category, ctx) {
       const categoryTitles = {
         overview: "人生总览",
         pattern: "八字格局",
         personality: "性格表现",
-        career: "事业财运",
+        talent: "天赋能力",
+        career: "事业发展",
+        wealth: "财富积累",
         love: "感情关系",
+        marriage: "婚姻状态",
+        family: "家庭六亲",
         health: "身体状态",
         luck: "当前大运",
         year: "今年流年"
@@ -8136,10 +8222,18 @@
       const dayStem = ctx.pillars[2].stem;
       const now = new Date();
       const dailyMode = currentDisplayMode === "daily";
+      const directReading = directBaziReading(ctx);
+      const godInventory = natalTenGodInventory(ctx);
+      const rankedGods = Object.entries(godInventory).sort((a, b) => b[1] - a[1]);
+      const currentYearPillar = periodPillar("year");
+      const categoryItems = (items, limit = 6) => {
+        const source = uniqueList(items.filter(Boolean));
+        return (dailyMode ? source.map(dailyPredictionText).filter(Boolean) : source).slice(0, limit);
+      };
       const makeFocusedReport = (focus, periodKey, title, salt) => {
         const focusedCtx = { ...ctx, state: { ...ctx.state, focus } };
         const report = buildReport(title, periodKey, ctx.dayElement, ctx.strength, ctx.favorable, salt, focusedCtx);
-        const dailyIndexes = { career: [0, 1], love: [0, 2], health: [0, 3] }[focus];
+        const dailyIndexes = { career: [0, 1], love: [2], health: [3] }[focus];
         const dailySource = dailyIndexes ? report.items.filter((_, index) => dailyIndexes.includes(index)) : report.items;
         return {
           copy: dailyMode ? "" : report.text,
@@ -8157,7 +8251,7 @@
           items: [
             `本命${strengthDisplay(ctx.baseStrength)}，当前${strengthDisplay(ctx.strength)}，运势变化会随着大运流年重新分配。`,
             `命盘最容易牵动${pattern.god}对应的人和事，当前以${pattern.useful}被引动时表现最明显。`,
-            pattern.god.includes("财") ? "客户、订单、报价、回款、库存和复购是主要事件线。" : pattern.god.includes("官") || pattern.god.includes("杀") ? "职位责任、合同规则、竞争压力和处罚风险是主要事件线。" : pattern.god.includes("印") ? "证件资料、学习考试、长辈贵人和后台资源是主要事件线。" : pattern.god.includes("食") || pattern.god.includes("伤") ? "作品技术、表达推广、成交转化和子女事项是主要事件线。" : "同业竞争、朋友合伙、分账和资源流向是主要事件线。"
+            pattern.god.includes("财") ? "客户、订单、报价、回款、库存和复购是主要事件线。" : pattern.god.includes("食") || pattern.god.includes("伤") ? "作品技术、表达推广、成交转化和子女事项是主要事件线。" : pattern.god.includes("官") || pattern.god.includes("杀") ? "职位责任、合同规则、竞争压力和处罚风险是主要事件线。" : pattern.god.includes("印") ? "证件资料、学习考试、长辈贵人和后台资源是主要事件线。" : "同业竞争、朋友合伙、分账和资源流向是主要事件线。"
           ]
         };
       }
@@ -8174,12 +8268,133 @@
           title: categoryTitles.personality,
           tag: `${dayStem}${ctx.dayElement}日主`,
           copy: dailyMode ? "" : `${copy[ctx.dayElement].nature}是较稳定的行为主线；强弱变化会改变表达方式。`,
-          items: personalityByElement[ctx.dayElement] || []
+          items: uniqueList([...(personalityByElement[ctx.dayElement] || []), ...(dailyMode ? [] : directReading.self)]).slice(0, 6)
         };
       }
 
-      if (category === "career") return { title: categoryTitles.career, ...makeFocusedReport("career", "year", "事业财运", 3) };
+      if (category === "talent") {
+        const topGods = rankedGods.slice(0, 3).map(([god]) => god);
+        return {
+          title: categoryTitles.talent,
+          tag: topGods.slice(0, 2).join(" · ") || ctx.pattern?.god || "综合能力",
+          copy: `${topGods.join("、") || "多种十神"}在命盘中较突出，能力会通过实际工作、学习方式和资源处理习惯表现出来。`,
+          items: uniqueList([
+            ...topGods.map(talentPredictionForGod),
+            ctx.pattern?.god ? talentPredictionForGod(ctx.pattern.god) : "",
+            ...directReading.self.slice(0, 2)
+          ].filter(Boolean)).slice(0, 6)
+        };
+      }
+
+      if (category === "career") {
+        const base = makeFocusedReport("career", "year", "事业发展", 3);
+        const leadingGod = rankedGods[0]?.[0] || tenGod(dayStem, currentYearPillar.stem);
+        return {
+          title: categoryTitles.career,
+          ...base,
+          items: categoryItems([
+            ...base.items,
+            talentPredictionForGod(leadingGod),
+            flowPeriodEvent(ctx, { periodKey: "year", pillar: currentYearPillar }).risk
+          ])
+        };
+      }
+
+      if (category === "wealth") {
+        const wealthGods = rankedGods.filter(([god]) => god.includes("财"));
+        const wealthCount = wealthGods.reduce((sum, [, value]) => sum + value, 0);
+        const wealthElement = elementCycle[(elementCycle.indexOf(ctx.dayElement) + 2) % 5];
+        const yearGod = tenGod(dayStem, currentYearPillar.stem);
+        const yearFlow = flowPeriodEvent(ctx, { periodKey: "year", pillar: currentYearPillar });
+        const strongEnough = (ctx.strength.value || 0) >= 0.5;
+        const capacityText = wealthCount < 1
+          ? "本命直接财星不显，钱更常通过专业输出、职位责任、项目分成或大运流年补财后出现。"
+          : wealthCount >= 3
+            ? "财星出现较多，接触钱款和机会的频率不低，但库存、垫资、家庭责任和现金流压力也会一起增加。"
+            : "财星数量适中，收入更容易沿固定客户、稳定工作、项目回款和长期复购逐步形成。";
+        const dailyCapacityText = wealthCount < 1
+          ? "收入更依赖专业能力、职位责任、项目分成和阶段性机会，不太像持续出现的轻松进账。"
+          : wealthCount >= 3
+            ? "接触钱款和机会的频率不低，但库存、垫资、家庭责任和现金流压力也会一起增加。"
+            : "收入更容易通过固定客户、稳定工作、项目回款和长期复购逐步形成。";
+        return {
+          title: categoryTitles.wealth,
+          tag: `${wealthElement}财 · ${strongEnough ? "承接力较足" : "承接力偏紧"}`,
+          copy: dailyMode ? "" : `${capacityText}当前${yearGod}被引动，需同时看大运、流年和自身承接力。`,
+          items: categoryItems([
+            dailyMode ? dailyCapacityText : capacityText,
+            strongEnough ? "大额订单、资产处理或收入增长更容易真正落袋，但合伙分账和人情支出也会增加。" : "机会出现时更容易同时发生垫资、成本、库存、延期回款或替别人承担责任。",
+            yearFlow.money || tenGodScenario(yearGod, ctx),
+            effectStrategy(branchEffects(ctx, currentYearPillar).join("、"), yearGod),
+            ...(dailyMode ? [] : directMoneyHabitLines(ctx))
+          ])
+        };
+      }
+
       if (category === "love") return { title: categoryTitles.love, ...makeFocusedReport("love", "month", "感情关系", 2) };
+
+      if (category === "marriage") {
+        const female = ctx.state.gender === "女";
+        const spouseGodCount = rankedGods
+          .filter(([god]) => female ? ["正官", "七杀"].includes(god) : god.includes("财"))
+          .reduce((sum, [, value]) => sum + value, 0);
+        const spouseRelations = branchRelationObjects(currentYearPillar.branch, ctx.pillars[2].branch).map((item) => item.type);
+        const yearStars = symbolicStars(ctx, currentYearPillar);
+        const yearPeople = flowPeriodEvent(ctx, { periodKey: "year", pillar: currentYearPillar }).people;
+        const spouseBase = spouseGodCount < 1
+          ? "本命配偶星不突出，稳定关系通常要等大运流年补到配偶星或夫妻宫被明显触发时才会快速推进。"
+          : spouseGodCount >= 3
+            ? "配偶星较多，关系机会和接触对象不算少，但选择反复、边界不清或现实条件比较会成为主要问题。"
+            : "配偶星数量集中，进入关系后会更重视稳定、责任和现实安排，关系变化通常有明确的人物或事件触发。";
+        const relationEvent = spouseRelations.includes("冲")
+          ? "今年夫妻宫被冲，关系节奏容易突然变化，常见确定或结束关系、异地奔波、争执翻旧账、伴侣工作住处变化。"
+          : spouseRelations.some((type) => ["刑", "破", "害"].includes(type))
+            ? "今年夫妻宫见刑破害，误会、冷处理、家人意见、钱款责任或旧问题反复会消耗关系。"
+            : spouseRelations.includes("合")
+              ? "今年夫妻宫被合，邀约、介绍、复合、确定关系、谈婚论嫁或共同处理现实事务的概率上升。"
+              : "今年夫妻宫没有强烈冲合，感情变化更依赖日常联系、工作环境和流月流日触发。";
+        const dailySpouseBase = spouseGodCount < 1
+          ? "稳定关系通常推进较慢，遇到明显介绍、异地变动或现实安排时才会快速确定。"
+          : spouseGodCount >= 3
+            ? "接触对象和关系机会不算少，但容易在不同选择、边界和现实条件之间反复。"
+            : "进入关系后会重视稳定和责任，重要变化通常由工作、住处、钱款或家人安排触发。";
+        const dailyRelationEvent = spouseRelations.includes("冲")
+          ? "今年关系节奏容易突然改变，常见快速确定或结束关系、异地奔波、争执翻旧账、伴侣工作或住处变化。"
+          : spouseRelations.some((type) => ["刑", "破", "害"].includes(type))
+            ? "今年误会、冷处理、家人意见、钱款责任或旧问题反复会持续消耗关系。"
+            : spouseRelations.includes("合")
+              ? "今年介绍邀约、复合、确定关系、谈婚论嫁或共同处理现实事务的概率上升。"
+              : "今年关系变化更依赖日常联系、工作环境和具体安排，不太像突然发生重大转折。";
+        return {
+          title: categoryTitles.marriage,
+          tag: female ? "夫星与夫妻宫" : "妻星与夫妻宫",
+          copy: dailyMode ? "" : `${spouseBase}今年再结合${currentYearPillar.text}与夫妻宫的关系判断。`,
+          items: categoryItems([
+            dailyMode ? dailySpouseBase : spouseBase,
+            dailyMode ? dailyRelationEvent : relationEvent,
+            yearStars.includes("天喜") || yearStars.includes("桃花") ? "今年感情接触、介绍邀约、确定关系或公开关系的信号增强；已有伴侣时也会增加共同活动和情绪牵扯。" : "今年桃花喜庆信号不算集中，关系推进更依赖工作往来、熟人圈和现实安排。",
+            dailyMode ? "已有伴侣时，最容易争议的是钱款、时间、家人边界和工作住处安排；单身时，机会更可能来自工作往来、熟人介绍和反复联系。" : yearPeople,
+            ...(dailyMode ? [] : directReading.relationship)
+          ])
+        };
+      }
+
+      if (category === "family") {
+        const familyLines = familyFlowPredictions(ctx, currentYearPillar);
+        const yearPeople = flowPeriodEvent(ctx, { periodKey: "year", pillar: currentYearPillar }).people;
+        return {
+          title: categoryTitles.family,
+          tag: `${currentYearPillar.text}家庭变化`,
+          copy: dailyMode ? "" : "年柱看长辈家族，月柱看父母手足，日支看伴侣，时柱看子女晚辈；再用当前流年判断哪一类亲人更容易被牵动。",
+          items: categoryItems([
+            ...familyLines,
+            yearPeople,
+            ...directReading.relationship,
+            familyLines.length ? "" : "今年家庭宫位没有集中形成强冲强合，家事多表现为日常照顾、时间协调、聚会往来和小额支出。"
+          ])
+        };
+      }
+
       if (category === "health") return { title: categoryTitles.health, ...makeFocusedReport("health", "month", "身体状态", 1), healthNote: true };
 
       if (category === "luck") {
@@ -8218,8 +8433,12 @@
         overview: "Life Overview",
         pattern: "Bazi Pattern",
         personality: "Personality",
-        career: "Career and Wealth",
+        talent: "Talents and Strengths",
+        career: "Career Development",
+        wealth: "Wealth and Cash Flow",
         love: "Relationships",
+        marriage: "Marriage Outlook",
+        family: "Family and Relatives",
         health: "Health Signals",
         luck: "Current Luck Cycle",
         year: "Current Year"
@@ -8254,7 +8473,52 @@
       };
       const dayStem = ctx.pillars[2].stem;
       const now = new Date();
+      const dailyMode = currentDisplayMode === "daily";
       const dynamic = ctx.dynamicStrength || dynamicStrengthProfile(ctx, now);
+      const godInventory = natalTenGodInventory(ctx);
+      const rankedGods = Object.entries(godInventory).sort((a, b) => b[1] - a[1]);
+      const currentYearPillar = periodPillar("year");
+      const currentYearGod = tenGod(dayStem, currentYearPillar.stem);
+      const currentYearEffects = branchEffects(ctx, currentYearPillar).join("、");
+      const currentYearStars = symbolicStars(ctx, currentYearPillar);
+      const specialGodNames = {
+        杀印相生: "Killing-Resource Cycle",
+        身杀两停: "Balanced Self and Seven Killings",
+        专旺: "Dominant Structure",
+        禄官互换: "Lu-Officer Exchange",
+        天上三奇: "Heavenly Three Wonders",
+        地上三奇: "Earthly Three Wonders",
+        人间三奇: "Human Three Wonders"
+      };
+      const englishGod = (god) => godNames[god] || specialGodNames[god] || "mixed chart signals";
+      const englishElement = (element) => elementNames[element] || "the active element";
+      const talentForGod = (god) => {
+        if (god.includes("财")) return "You are quick to notice price, demand and resource exchange, with practical potential in sales, purchasing, operations, deal-making or asset management.";
+        if (god.includes("食") || god.includes("伤")) return "You turn ideas into visible output through communication, solutions, craft, design, content, training or technical delivery.";
+        if (god.includes("官") || god.includes("杀")) return "Responsibility sharpens your execution. Management, compliance, contracts, technical standards, risk control and competitive work can become core strengths.";
+        if (god.includes("印")) return "You absorb complex material well and can build depth through research, credentials, documentation, systems and specialist knowledge.";
+        return "You react quickly to peers and group dynamics, building judgment through teamwork, negotiation, resource coordination, competition or independent ventures.";
+      };
+      const familyFlowEnglish = () => {
+        const peopleByPillar = [
+          "Elders, paternal relatives or wider family matters",
+          "Parents, siblings or relatives who share daily responsibilities",
+          "A spouse or intimate partner",
+          "Children, younger relatives or people you supervise"
+        ];
+        const lines = [];
+        ctx.pillars.forEach((pillar, index) => {
+          branchRelationObjects(currentYearPillar.branch, pillar.branch).forEach((relationItem) => {
+            const people = peopleByPillar[index];
+            if (relationItem.type === "冲") lines.push(`${people} may face an abrupt change in work, residence, health or schedule, leaving you to coordinate travel, care or money at short notice.`);
+            else if (relationItem.type === "合") lines.push(`${people} become more involved with you through care, gatherings, housing, shared money or a decision that must be made together.`);
+            else if (relationItem.type === "刑") lines.push(`${people} may carry pent-up pressure; an old disagreement, recurring discomfort or unresolved responsibility is likely to return.`);
+            else if (relationItem.type === "破" || relationItem.type === "害") lines.push(`${people} can bring a misunderstanding, small expense, repair, check-up or verbal promise that takes longer to settle than expected.`);
+            else if (relationItem.type === "同") lines.push(`${people} may reopen a family, money or health matter that has already been handled once and now needs another decision.`);
+          });
+        });
+        return uniqueList(lines).slice(0, 5);
+      };
 
       const focusModel = (focus, periodKey) => {
         const pillar = periodPillar(periodKey);
@@ -8267,10 +8531,10 @@
         const hasRiskStar = stars.some((star) => riskSignalStars.includes(star));
         const eventByGod = god.includes("财")
           ? "Clients, prices, payments, inventory and repeat business become the main event line."
-          : god.includes("官") || god.includes("杀")
-            ? "Contracts, managers, job duties, competition and compliance pressure become more visible."
-            : god.includes("食") || god.includes("伤")
+          : god.includes("食") || god.includes("伤")
               ? "Work output, promotion, presentations, training and conversion results move to the foreground."
+              : god.includes("官") || god.includes("杀")
+                ? "Contracts, managers, job duties, competition and compliance pressure become more visible."
               : god.includes("印")
                 ? "Documents, study, credentials, elders and behind-the-scenes support become more active."
                 : "Peers, partnerships, profit sharing, social spending and competition become more active.";
@@ -8285,11 +8549,17 @@
             ? "Contact increases around cooperation, introductions, invitations or a relationship moving closer."
             : "Relationship changes mainly come through timing, delayed replies and unspoken expectations.";
         const healthEvent = `Physical reactions are more likely around the ${healthAreas[stemElement[pillar.stem]]}. ${hasRiskStar ? "Sudden discomfort, minor injury or disrupted sleep is more likely than usual." : "The signal is more likely to appear as fatigue, tension or a recurring minor symptom."}`;
-        const shared = [eventByGod, changeEvent];
-        if (focus === "career") shared.push(hasGoodStar ? "A helpful person or timely approval can reduce delays around work or money." : "Results depend more heavily on follow-up, pricing and clear ownership of tasks.");
-        if (focus === "love") shared.push(peopleEvent);
-        if (focus === "health") shared.push(healthEvent);
-        if (focus === "overall") shared.push(peopleEvent, healthEvent);
+        const shared = focus === "career"
+          ? [eventByGod, changeEvent, hasGoodStar ? "A helpful person or timely approval can reduce delays around work or money." : "Results depend more heavily on follow-up, pricing and clear ownership of tasks."]
+          : focus === "love"
+            ? [peopleEvent, changeEvent, hasGoodStar ? "Introductions, invitations or a timely conversation can move a relationship forward." : "Progress depends on consistent contact and a clear agreement about time, money and expectations."]
+            : focus === "health"
+              ? [
+                  healthEvent,
+                  hasClash ? "Rushed travel, disrupted plans or emotional conflict can trigger a sharper physical reaction." : "The pattern is more likely to repeat through fatigue, diet, sleep rhythm or accumulated tension.",
+                  hasRiskStar ? "Take sudden pain, bleeding, a fall or a fast-worsening symptom seriously and seek appropriate care." : "The signal is gradual, so changes in sleep, appetite, pain or recovery speed are the useful early signs."
+                ]
+              : [eventByGod, changeEvent, peopleEvent, healthEvent];
         return {
           title: titles[focus === "career" ? "career" : focus === "love" ? "love" : focus === "health" ? "health" : "year"],
           tag: `${pillar.text} · ${godNames[god] || god}`,
@@ -8303,16 +8573,16 @@
         const pattern = ctx.pattern || buildPattern(ctx);
         const patternLine = pattern.god.includes("财")
           ? "Clients, orders, pricing, payments, inventory and repeat business form the main life-event line."
-          : pattern.god.includes("官") || pattern.god.includes("杀")
-            ? "Roles, contracts, rules, competition and accountability form the main life-event line."
-            : pattern.god.includes("印")
-              ? "Documents, education, credentials, elders and institutional support form the main life-event line."
-              : pattern.god.includes("食") || pattern.god.includes("伤")
+          : pattern.god.includes("食") || pattern.god.includes("伤")
                 ? "Skills, expression, promotion, conversion and children form the main life-event line."
+                : pattern.god.includes("官") || pattern.god.includes("杀")
+                  ? "Roles, contracts, rules, competition and accountability form the main life-event line."
+                  : pattern.god.includes("印")
+                    ? "Documents, education, credentials, elders and institutional support form the main life-event line."
                 : "Peers, partnerships, profit sharing and resource distribution form the main life-event line.";
         return {
           title: titles.pattern,
-          tag: translateToEnglish(pattern.name),
+          tag: `${englishGod(pattern.god)} pattern`,
           copy: `The pattern is assessed together with the natal chart and current timing rather than as a fixed label.`,
           items: [
             `Natal strength is ${strengthNames[ctx.baseStrength.label] || ctx.baseStrength.label}; current strength is ${strengthNames[ctx.strength.label] || ctx.strength.label}.`,
@@ -8331,8 +8601,124 @@
         };
       }
 
-      if (category === "career") return { ...focusModel("career", "year"), title: titles.career };
+      if (category === "talent") {
+        const topGods = rankedGods.slice(0, 3).map(([god]) => god);
+        return {
+          title: titles.talent,
+          tag: topGods.slice(0, 2).map(englishGod).join(" · ") || "Combined strengths",
+          copy: "The strongest recurring chart signals show where ability is most likely to become practical, repeatable value.",
+          items: uniqueList(topGods.map(talentForGod)).slice(0, 5)
+        };
+      }
+
+      if (category === "career") {
+        const base = focusModel("career", "year");
+        const leadingGod = rankedGods[0]?.[0] || currentYearGod;
+        return {
+          ...base,
+          title: titles.career,
+          items: uniqueList([
+            ...base.items,
+            talentForGod(leadingGod),
+            /冲|刑|破|害/.test(currentYearEffects)
+              ? "A role, deadline, manager relationship or project scope can change suddenly; written ownership and payment terms matter more this year."
+              : "Progress is more likely to come from repeat clients, accumulated proof of work and responsibilities that expand gradually."
+          ]).slice(0, 6)
+        };
+      }
+
+      if (category === "wealth") {
+        const wealthGods = rankedGods.filter(([god]) => god.includes("财"));
+        const wealthCount = wealthGods.reduce((sum, [, value]) => sum + value, 0);
+        const wealthElement = elementCycle[(elementCycle.indexOf(ctx.dayElement) + 2) % 5];
+        const canCarry = (ctx.strength.value || 0) >= 0.5;
+        const wealthBase = wealthCount < 1
+          ? "Direct wealth signals are light in the natal chart. Money is more likely to arrive through specialist output, responsibility, project sharing or a luck period that activates wealth."
+          : wealthCount >= 3
+            ? "Money opportunities appear often, but inventory, advance payments, family obligations and cash-flow pressure tend to rise at the same time."
+            : "Income is more likely to build through stable work, repeat clients, project payments and relationships maintained over time.";
+        const yearMoney = currentYearGod.includes("财")
+          ? "This year brings prices, clients, collections, purchases and larger money decisions to the foreground."
+          : currentYearGod.includes("比") || currentYearGod.includes("劫")
+            ? "This year increases competition, shared expenses and profit-splitting; revenue can rise while the amount retained grows more slowly."
+            : currentYearGod.includes("食") || currentYearGod.includes("伤")
+              ? "This year links income to promotion, visible output, technical delivery and the ability to turn attention into completed sales."
+              : currentYearGod.includes("官") || currentYearGod.includes("杀")
+                ? "This year links money to contracts, responsibility, compliance and deadlines; penalties or delayed approval can affect cash flow."
+                : "This year directs money toward study, credentials, equipment, documents or support systems before the return becomes visible.";
+        return {
+          title: titles.wealth,
+          tag: `${englishElement(wealthElement)} wealth · ${canCarry ? "stronger capacity" : "tight capacity"}`,
+          copy: dailyMode ? "" : wealthBase,
+          items: uniqueList([
+            ...(dailyMode ? [] : [wealthBase]),
+            canCarry
+              ? "Larger orders or income growth are easier to retain now, although partner shares and social spending can still reduce what remains."
+              : "When an opportunity appears, it is more likely to arrive with advance costs, stock, delayed collection or responsibility carried for someone else.",
+            yearMoney,
+            /冲|刑|破|害/.test(currentYearEffects)
+              ? "Keep a wider cash buffer: a payment date, purchase, repair or family expense may change with little notice."
+              : "Cash flow is more likely to improve through repeated follow-up and several smaller confirmations than through one sudden windfall."
+          ]).slice(0, 6)
+        };
+      }
+
       if (category === "love") return { ...focusModel("love", "month"), title: titles.love };
+
+      if (category === "marriage") {
+        const female = ctx.state.gender === "女";
+        const spouseGodCount = rankedGods
+          .filter(([god]) => female ? ["正官", "七杀"].includes(god) : god.includes("财"))
+          .reduce((sum, [, value]) => sum + value, 0);
+        const spouseRelations = branchRelationObjects(currentYearPillar.branch, ctx.pillars[2].branch).map((item) => item.type);
+        const spouseBase = spouseGodCount < 1
+          ? "The natal spouse signal is light. A stable relationship usually moves quickly only when a luck period strengthens the spouse signal or directly activates the marriage palace."
+          : spouseGodCount >= 3
+            ? "Relationship opportunities are not scarce, but repeated choices, blurred boundaries or comparison of practical conditions can delay commitment."
+            : "The spouse signal is concentrated. Once committed, you place more weight on stability, responsibility and practical arrangements, and major changes usually have a clear trigger.";
+        const relationEvent = spouseRelations.includes("冲")
+          ? "The marriage palace is clashed this year. A relationship can be defined or ended quickly, while distance, old arguments or a partner's work or residence change adds pressure."
+          : spouseRelations.some((type) => ["刑", "破", "害"].includes(type))
+            ? "The marriage palace is under friction this year. Misunderstandings, silence, family opinions, money duties or an old issue can repeatedly consume the relationship."
+            : spouseRelations.includes("合")
+              ? "The marriage palace is combined this year. Introductions, reconciliation, commitment, marriage discussions or shared practical plans become more likely."
+              : "The marriage palace has no strong annual clash or combination, so progress depends more on daily contact, work circles and monthly or daily timing.";
+        const dailyRelationEvent = spouseRelations.includes("冲")
+          ? "A relationship can be defined or ended quickly this year; distance, old arguments or a partner's change of work or residence can force a decision."
+          : spouseRelations.some((type) => ["刑", "破", "害"].includes(type))
+            ? "Misunderstandings, silence, family opinions, money duties or an old issue can repeatedly consume the relationship this year."
+            : spouseRelations.includes("合")
+              ? "Introductions, reconciliation, commitment, marriage discussions or shared practical plans become more likely this year."
+              : "Relationship progress depends more on daily contact, work circles and concrete plans than on one sudden turning point.";
+        return {
+          title: titles.marriage,
+          tag: female ? "Partner signal and marriage palace" : "Spouse signal and marriage palace",
+          copy: dailyMode ? "" : spouseBase,
+          items: uniqueList([
+            ...(dailyMode ? [] : [spouseBase]),
+            dailyMode ? dailyRelationEvent : relationEvent,
+            currentYearStars.includes("天喜") || currentYearStars.includes("桃花")
+              ? "Introductions, dates, public commitment or relationship celebrations are more active this year; existing couples also have more shared events and emotional involvement."
+              : "Romance and celebration signals are not concentrated this year, so progress relies more on work contact, familiar social circles and practical plans.",
+            /冲|刑|破|害/.test(currentYearEffects)
+              ? "Money, schedules and family responsibility need explicit agreement, because a small unresolved issue is more likely to become the visible argument."
+              : "The relationship is more likely to develop through repeated contact and concrete arrangements than through a sudden emotional decision."
+          ]).slice(0, 6)
+        };
+      }
+
+      if (category === "family") {
+        const familyLines = familyFlowEnglish();
+        return {
+          title: titles.family,
+          tag: `${currentYearPillar.text} family changes`,
+          copy: currentDisplayMode === "daily" ? "" : "The four natal pillars separate elders, parents and siblings, partner, and children or juniors; annual interactions show which group is more likely to be involved now.",
+          items: familyLines.length ? familyLines : [
+            "No family area receives a concentrated annual clash or combination. Family matters are more likely to involve routine care, schedule coordination, gatherings and small shared expenses."
+          ]
+        };
+      }
+
       if (category === "health") return { ...focusModel("health", "month"), title: titles.health, healthNote: true };
 
       if (category === "luck") {
@@ -8342,7 +8728,7 @@
         return {
           title: titles.luck,
           tag: `${luck.pillar.text} · ${luck.startYear}-${luck.endYear}`,
-          copy: `This ten-year cycle begins at ${luck.startAgeText} and runs from ${luck.startDateText} to ${luck.endDateText}.`,
+          copy: `This ten-year cycle runs from ${luck.startYear} to ${luck.endYear}, beginning at approximately age ${luck.startAge}.`,
           items: [
             focusModel("overall", "year").items[0],
             /冲|刑|破|害/.test(effects) ? "This cycle carries more abrupt changes in plans, relationships, work roles or cash flow." : "This cycle develops through gradual commitments, repeated contact and accumulated results.",
@@ -8366,7 +8752,7 @@
       const body = document.getElementById("reportCategoryBody");
       const nav = document.getElementById("reportCategoryNav");
       if (!body || !nav) return;
-      if (currentDisplayMode === "daily" && ["pattern", "luck"].includes(category)) category = "overview";
+      if (currentDisplayMode === "daily" && ["pattern", "talent", "luck"].includes(category)) category = "overview";
       currentReportCategory = category;
       nav.querySelectorAll("[data-report-category]").forEach((button) => {
         const active = button.dataset.reportCategory === category;
@@ -8388,10 +8774,10 @@
         <div class="report-feature">
           <div class="report-feature-head">
             <div>
-              <h3>${escapeHtml(model.title)}</h3>
+              <h3>${escapeHtml(currentDisplayMode === "daily" ? dailyReportTitle(model.title) : model.title)}</h3>
               ${model.copy ? `<p>${escapeHtml(model.copy)}</p>` : ""}
             </div>
-            <span class="tag">${escapeHtml(model.tag || "命盘解读")}</span>
+            ${currentDisplayMode === "daily" ? "" : `<span class="tag">${escapeHtml(model.tag || "命盘解读")}</span>`}
           </div>
           <ul class="report-event-list">
             ${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
@@ -8822,7 +9208,7 @@
       const branchRel = relation(ctx.dayElement, profile.branchEl);
       const wealthHit = gods.some((god) => god.includes("财")) || branchRel === "财星";
       const outputHit = gods.some((god) => god.includes("食") || god.includes("伤")) || branchRel === "输出";
-      const officerHit = gods.some((god) => god.includes("官") || god.includes("杀")) || branchRel === "官星";
+      const officerHit = gods.some((god) => ["正官", "七杀"].includes(god)) || branchRel === "官星";
       const resourceHit = gods.some((god) => god.includes("印")) || branchRel === "印星";
       const peerHit = gods.some((god) => god.includes("比") || god.includes("劫")) || branchRel === "比助";
       const favorableCount = [profile.stemEl, profile.branchEl].filter((element) => ctx.favorable.includes(element)).length;
@@ -9344,7 +9730,7 @@
         const weight = layer.weight;
         const wealthSources = godSources(layer, (god) => god.includes("财"), "财星");
         const outputSources = godSources(layer, (god) => god.includes("食") || god.includes("伤"), "输出");
-        const officerSources = godSources(layer, (god) => god.includes("官") || god.includes("杀"), "官星");
+        const officerSources = godSources(layer, (god) => ["正官", "七杀"].includes(god), "官星");
         const peerSources = godSources(layer, (god) => god.includes("比") || god.includes("劫"), "比助");
         wealth += layer.favorableCount * 4.5 * weight;
         risk += layer.unfavorableCount * 2.5 * weight;
@@ -10065,7 +10451,7 @@
           <span class="tag">喜用：${escapeHtml(pattern.useful)}</span>
         </div>
         <p><strong>主要应事：</strong>${escapeHtml(pattern.profile)}</p>
-        <p><strong>容易发生：</strong>${escapeHtml(pattern.god.includes("财") ? "客户、订单、报价、回款、库存和复购被引动。" : pattern.god.includes("官") || pattern.god.includes("杀") ? "合同、规则、职位责任、竞争压力和处罚风险被引动。" : pattern.god.includes("印") ? "证件、资料、学习、长辈贵人和后台资源被引动。" : pattern.god.includes("食") || pattern.god.includes("伤") ? "作品、技术、话术、推广和成交转化被引动。" : "同业竞争、朋友合伙、分账、人情支出和资源分流被引动。")}</p>
+        <p><strong>容易发生：</strong>${escapeHtml(pattern.god.includes("财") ? "客户、订单、报价、回款、库存和复购被引动。" : pattern.god.includes("食") || pattern.god.includes("伤") ? "作品、技术、话术、推广和成交转化被引动。" : pattern.god.includes("官") || pattern.god.includes("杀") ? "合同、规则、职位责任、竞争压力和处罚风险被引动。" : pattern.god.includes("印") ? "证件、资料、学习、长辈贵人和后台资源被引动。" : "同业竞争、朋友合伙、分账、人情支出和资源分流被引动。")}</p>
         <p><strong>变化来源：</strong>${escapeHtml(pattern.level)}。</p>
       `;
       colorizeGanzhi(box);
