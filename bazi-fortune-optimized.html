@@ -1912,6 +1912,658 @@
         grid-template-columns: repeat(auto-fit, minmax(34px, 1fr));
       }
     }
+
+    /* Mobile app shell */
+    body {
+      background: #f2f3f0;
+    }
+
+    .app {
+      max-width: 1120px;
+      padding: 18px 18px 112px;
+    }
+
+    .topbar {
+      min-height: 62px;
+      margin-bottom: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #d9dedb;
+    }
+
+    .seal {
+      width: 42px;
+      height: 42px;
+      color: #fff;
+      background: var(--jade);
+      box-shadow: 0 7px 18px rgba(72, 31, 40, .16);
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand h1 {
+      font-size: 25px;
+    }
+
+    .brand .subtitle {
+      margin-top: 3px;
+      font-size: 12px;
+    }
+
+    .top-tools {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 7px;
+    }
+
+    .top-tools .source-note {
+      display: none;
+    }
+
+    .mode-switch,
+    .tool-switch {
+      background: #fff;
+      border-color: #d9dedb;
+      box-shadow: none;
+    }
+
+    .language-toggle,
+    .account-shortcut {
+      min-height: 38px;
+      border: 1px solid #d9dedb;
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink);
+      box-shadow: none;
+    }
+
+    .account-shortcut {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 164px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .account-shortcut svg {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+    }
+
+    .account-shortcut .account-toggle-label,
+    .account-shortcut .account-toggle-meta {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .account-shortcut .account-toggle-meta {
+      max-width: 82px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .primary-controls {
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 0 14px;
+    }
+
+    .tool-switch {
+      width: auto;
+      grid-template-columns: repeat(3, minmax(94px, auto));
+      padding: 4px;
+    }
+
+    .tool-switch button {
+      min-height: 34px;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .panel {
+      background: #fff;
+      border-color: #dfe3e0;
+      box-shadow: 0 8px 24px rgba(35, 43, 39, .07);
+      backdrop-filter: none;
+    }
+
+    .layout {
+      grid-template-columns: minmax(292px, 350px) minmax(0, 1fr);
+      gap: 14px;
+    }
+
+    body[data-bazi-view="fortune"] #baziTool .layout,
+    body[data-bazi-view="report"] #baziTool .layout {
+      display: block;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .result {
+      gap: 14px;
+      min-width: 0;
+    }
+
+    #baziTool [data-bazi-view][hidden] {
+      display: none !important;
+    }
+
+    .chart-art {
+      min-height: 250px;
+      background: #315f58;
+    }
+
+    .hero-card {
+      min-height: 250px;
+    }
+
+    .profile-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: -2px 0 14px;
+      padding: 10px 11px;
+      border: 1px solid #e2e6e3;
+      border-radius: 8px;
+      background: #f7f8f6;
+    }
+
+    .profile-banner-copy {
+      min-width: 0;
+    }
+
+    .profile-banner span,
+    .profile-banner strong {
+      display: block;
+    }
+
+    .profile-banner span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .profile-banner strong {
+      margin-top: 2px;
+      overflow: hidden;
+      color: var(--ink);
+      font-size: 14px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .icon-command {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border: 1px solid #d9dedb;
+      border-radius: 7px;
+      background: #fff;
+      color: var(--jade-deep);
+      cursor: pointer;
+    }
+
+    .icon-command svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .app-view-heading {
+      margin-bottom: 14px;
+    }
+
+    .app-view-heading h2 {
+      font-size: 22px;
+    }
+
+    .app-view-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .report-category-nav {
+      display: flex;
+      gap: 6px;
+      min-width: 0;
+      max-width: 100%;
+      overflow-x: auto;
+      padding: 2px 0 8px;
+      scrollbar-width: thin;
+    }
+
+    .report-category-nav button {
+      min-height: 34px;
+      flex: 0 0 auto;
+      border: 1px solid #dce2de;
+      border-radius: 7px;
+      padding: 6px 12px;
+      background: #fff;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .report-category-nav button.active {
+      border-color: var(--jade);
+      color: #fff;
+      background: var(--jade);
+    }
+
+    .report-category-body {
+      min-width: 0;
+      max-width: 100%;
+      min-height: 220px;
+      margin-top: 8px;
+    }
+
+    .report-feature {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .report-feature-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e7ebe8;
+    }
+
+    .report-feature-head > * {
+      min-width: 0;
+    }
+
+    .report-feature-head h3 {
+      font-size: 19px;
+    }
+
+    .report-feature-head p,
+    .report-feature-copy {
+      margin: 5px 0 0;
+      color: #414b48;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .report-event-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .report-event-list li {
+      position: relative;
+      padding: 10px 11px 10px 28px;
+      border: 1px solid #e4e8e5;
+      border-radius: 7px;
+      background: #f9faf8;
+      color: #3c4643;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    #baziTool .result > .panel,
+    #reportLibrary,
+    #reportLibrary .tag {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    html[lang="en"] .report-feature p,
+    html[lang="en"] .report-feature li,
+    html[lang="en"] .report-feature .tag {
+      overflow-wrap: anywhere;
+      word-break: normal;
+      white-space: normal;
+    }
+
+    .report-event-list li::before {
+      content: "";
+      position: absolute;
+      top: 17px;
+      left: 12px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    .records-view,
+    .account-center {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .records-panel,
+    .account-panel {
+      padding: 18px;
+    }
+
+    .records-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .records-view .history-list {
+      max-height: none;
+      overflow: visible;
+    }
+
+    .records-view .history-row {
+      grid-template-columns: minmax(0, 1fr) 34px;
+    }
+
+    .records-view .history-load {
+      min-height: 58px;
+      padding: 9px 11px;
+    }
+
+    .records-view .history-load strong {
+      font-size: 14px;
+    }
+
+    .records-view .history-load span {
+      font-size: 12px;
+    }
+
+    .account-content {
+      padding: 0;
+      border-top: 0;
+    }
+
+    .account-center #loginArea:not([hidden]),
+    .account-center #accountArea:not([hidden]) {
+      display: grid;
+      gap: 12px;
+    }
+
+    .account-center .account-actions {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .account-center #accountArea .account-actions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .account-center .account-current {
+      margin: 0;
+      padding: 12px;
+      border: 1px solid #e2e6e3;
+      border-radius: 8px;
+      background: #f7f8f6;
+    }
+
+    .app-bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      z-index: 30;
+      width: min(560px, calc(100% - 20px));
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      transform: translateX(-50%);
+      overflow: hidden;
+      border: 1px solid #d9dedb;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .97);
+      box-shadow: 0 12px 32px rgba(32, 39, 36, .16);
+    }
+
+    .app-bottom-nav button {
+      min-width: 0;
+      min-height: 62px;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 3px;
+      border: 0;
+      padding: 6px 3px;
+      background: transparent;
+      color: #6e7773;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .app-bottom-nav button + button {
+      border-left: 1px solid #edf0ee;
+    }
+
+    .app-bottom-nav button svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .app-bottom-nav button.active {
+      color: var(--jade);
+      background: #fbf4f5;
+    }
+
+    body[data-active-tool="phone"] .app-bottom-nav button,
+    body[data-active-tool="qimen"] .app-bottom-nav button {
+      color: #7d8581;
+      background: transparent;
+    }
+
+    body[data-display-mode="daily"] [data-report-category="pattern"],
+    body[data-display-mode="daily"] [data-report-category="luck"] {
+      display: none;
+    }
+
+    .toast {
+      bottom: 84px;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        padding: 12px 12px 104px;
+      }
+
+      .topbar {
+        min-height: auto;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .top-tools {
+        width: auto;
+        flex-wrap: wrap;
+      }
+
+      .primary-controls {
+        display: flex;
+      }
+
+      .tool-switch {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 620px) {
+      body {
+        background: #f2f3f0;
+      }
+
+      .app {
+        padding: 8px 8px 98px;
+      }
+
+      .topbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        margin-bottom: 8px;
+        padding: 7px 2px 9px;
+      }
+
+      .brand {
+        align-items: center;
+      }
+
+      .brand h1 {
+        font-size: 20px;
+      }
+
+      .brand .subtitle {
+        display: none;
+      }
+
+      .seal {
+        width: 34px;
+        height: 34px;
+      }
+
+      .top-tools {
+        display: grid;
+        grid-template-columns: minmax(112px, 1fr) auto auto;
+        gap: 5px;
+      }
+
+      .mode-switch {
+        min-width: 112px;
+        margin: 0;
+      }
+
+      .mode-switch button {
+        min-height: 30px;
+        padding: 3px 5px;
+        font-size: 11px;
+      }
+
+      .language-toggle,
+      .account-shortcut {
+        min-height: 36px;
+        padding: 5px 7px;
+        font-size: 11px;
+      }
+
+      .account-shortcut {
+        width: 36px;
+        justify-content: center;
+      }
+
+      .account-shortcut .account-toggle-label,
+      .account-shortcut .account-toggle-meta {
+        display: none;
+      }
+
+      .primary-controls {
+        margin-bottom: 8px;
+      }
+
+      .tool-switch {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin: 0;
+        padding: 3px;
+      }
+
+      .tool-switch button {
+        min-height: 34px;
+        padding: 4px;
+        font-size: 11px;
+      }
+
+      .layout,
+      .hero-card,
+      .phone-tool {
+        gap: 9px;
+      }
+
+      .form-panel,
+      .section,
+      .records-panel,
+      .account-panel {
+        padding: 12px;
+      }
+
+      .panel {
+        box-shadow: 0 5px 16px rgba(35, 43, 39, .06);
+      }
+
+      .hero-card {
+        min-height: 0;
+      }
+
+      .chart-art {
+        display: none;
+      }
+
+      .summary {
+        padding: 14px;
+      }
+
+      .app-view-heading h2 {
+        font-size: 19px;
+      }
+
+      .report-category-nav {
+        margin-right: -12px;
+        padding-right: 12px;
+      }
+
+      .report-feature-head {
+        display: grid;
+      }
+
+      .account-center .account-actions,
+      .account-center #accountArea .account-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .app-bottom-nav {
+        bottom: max(6px, env(safe-area-inset-bottom));
+        width: calc(100% - 12px);
+      }
+
+      .app-bottom-nav button {
+        min-height: 58px;
+        font-size: 10px;
+      }
+
+      .toast {
+        bottom: 74px;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .topbar {
+        grid-template-columns: 1fr;
+      }
+
+      .top-tools {
+        grid-template-columns: minmax(0, 1fr) auto auto;
+      }
+
+      .brand h1 {
+        font-size: 19px;
+      }
+
+      .pillars {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .actions {
+        grid-template-columns: 1fr auto;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1924,7 +2576,7 @@
             <path d="M12 3v18M3 12h18M6.2 6.2l11.6 11.6M17.8 6.2 6.2 17.8"></path>
           </svg>
         </div>
-        <div>
+        <div class="brand-copy">
           <h1>八字运势测算</h1>
           <p class="subtitle">输入出生信息，直接生成应事预测。</p>
         </div>
@@ -1935,6 +2587,11 @@
           <button type="button" data-display-mode-choice="pro" title="显示完整分析过程">专业版</button>
         </div>
         <button class="language-toggle" type="button" id="languageToggle" title="切换中英文">English</button>
+        <button class="account-shortcut" type="button" id="accountToggle" aria-expanded="false" title="账号与查询记录">
+          <i data-lucide="user-round" aria-hidden="true"></i>
+          <span class="account-toggle-label" id="accountToggleLabel">账号</span>
+          <span class="account-toggle-meta no-translate" id="accountToggleMeta">未登录</span>
+        </button>
         <div class="source-note professional-only">四柱、五行、十神、合冲刑破害合并分析。</div>
       </div>
     </header>
@@ -1945,55 +2602,24 @@
         <button type="button" data-tool-choice="phone">数字/手机号算命</button>
         <button type="button" data-tool-choice="qimen">奇门遁甲</button>
       </nav>
-
-      <section class="top-account" aria-label="账号与查询记录">
-        <button class="account-toggle" type="button" id="accountToggle" aria-expanded="false" aria-controls="accountContent" title="账号与查询记录">
-          <span class="account-toggle-label" id="accountToggleLabel">账号</span>
-          <span class="account-toggle-meta no-translate" id="accountToggleMeta">未登录</span>
-          <span class="account-caret" aria-hidden="true"></span>
-        </button>
-        <div class="account-content" id="accountContent" hidden>
-          <div id="loginArea">
-            <span class="tag no-translate" id="accountStatus">未登录</span>
-            <div class="field">
-              <label for="accountName">邮箱</label>
-              <input id="accountName" type="email" autocomplete="email" placeholder="输入邮箱">
-            </div>
-            <div class="field">
-              <label for="accountPassword">密码</label>
-              <input id="accountPassword" type="password" autocomplete="current-password" placeholder="输入密码">
-            </div>
-            <div class="account-actions">
-              <button class="btn" type="button" id="loginBtn" title="邮箱密码登录">登录</button>
-              <button class="btn secondary" type="button" id="registerBtn" title="没有账号时自动注册">注册/登录</button>
-              <button class="btn secondary google-btn" type="button" id="googleLoginBtn" title="使用 Google 登录">Google</button>
-            </div>
-          </div>
-          <div id="accountArea" hidden>
-            <p class="account-current">当前账号：<strong class="no-translate" id="currentAccountName">--</strong></p>
-            <span class="tag no-translate" id="accountStatusLogged">未登录</span>
-            <div class="account-actions">
-              <button class="btn secondary" type="button" id="logoutBtn" title="退出账号">退出</button>
-              <button class="btn secondary" type="button" id="clearHistoryBtn" title="清空查询记录">清空记录</button>
-            </div>
-            <div class="history-head">
-              <strong>查询记录</strong>
-              <span class="tag" id="historyCount">0条</span>
-            </div>
-            <div class="history-list" id="historyList">
-              <div class="empty-state">登录后自动保存记录。</div>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
 
     <section class="tool-panel" id="baziTool">
     <div class="layout">
-      <section class="panel form-panel">
+      <section class="panel form-panel" data-bazi-view="chart">
         <div class="panel-title">
           <h2>出生资料</h2>
           <span class="tag">离线生成</span>
+        </div>
+
+        <div class="profile-banner">
+          <div class="profile-banner-copy">
+            <span>当前命盘</span>
+            <strong class="no-translate" id="activeProfileName">新命盘</strong>
+          </div>
+          <button class="icon-command" type="button" id="newChartBtn" title="新建命盘" aria-label="新建命盘">
+            <i data-lucide="user-plus" aria-hidden="true"></i>
+          </button>
         </div>
 
         <form id="baziForm">
@@ -2122,7 +2748,7 @@
       </section>
 
       <section class="result" id="result">
-        <div class="panel hero-card professional-only">
+        <div class="panel hero-card professional-only" data-bazi-view="chart">
           <div class="chart-art" aria-hidden="true">
             <div class="wheel">
               <div class="wheel-inner">
@@ -2157,7 +2783,7 @@
           </div>
         </div>
 
-        <section class="panel section full-chart professional-only" id="fullChart" aria-hidden="true">
+        <section class="panel section full-chart professional-only" id="fullChart" aria-hidden="true" data-bazi-view="chart">
           <div class="panel-title">
             <h2>完整命盘与大运流年</h2>
             <span class="tag" id="chartTag">点击条目看细节</span>
@@ -2205,9 +2831,29 @@
           </div>
         </section>
 
-        <section class="panel section professional-only">
+        <section class="panel section" data-bazi-view="report" id="reportLibrary">
+          <div class="app-view-heading">
+            <h2>命理解读</h2>
+            <p>按主题查看命盘中容易出现的人生事件。</p>
+          </div>
+          <div class="report-category-nav" id="reportCategoryNav" role="tablist" aria-label="报告分类">
+            <button type="button" class="active" data-report-category="overview" role="tab" aria-selected="true">总览</button>
+            <button type="button" data-report-category="pattern" role="tab" aria-selected="false">格局</button>
+            <button type="button" data-report-category="personality" role="tab" aria-selected="false">性格</button>
+            <button type="button" data-report-category="career" role="tab" aria-selected="false">事业财运</button>
+            <button type="button" data-report-category="love" role="tab" aria-selected="false">感情</button>
+            <button type="button" data-report-category="health" role="tab" aria-selected="false">健康</button>
+            <button type="button" data-report-category="luck" role="tab" aria-selected="false">大运</button>
+            <button type="button" data-report-category="year" role="tab" aria-selected="false">流年</button>
+          </div>
+          <div class="report-category-body" id="reportCategoryBody">
+            <div class="empty-state">生成命盘后显示分类解读。</div>
+          </div>
+        </section>
+
+        <section class="panel section professional-only" data-bazi-view="report">
           <div class="panel-title">
-            <h2>智能摘要</h2>
+            <h2>命盘摘要</h2>
             <span class="tag" id="focusTag">待生成</span>
           </div>
           <div class="insight-grid" id="insights">
@@ -2215,7 +2861,7 @@
           </div>
         </section>
 
-        <section class="panel section professional-only">
+        <section class="panel section professional-only" data-bazi-view="report">
           <div class="panel-title">
             <h2>五行分布</h2>
             <span class="tag" id="balanceTag">未测算</span>
@@ -2225,9 +2871,9 @@
           </div>
         </section>
 
-        <section class="panel section">
+        <section class="panel section" data-bazi-view="fortune">
           <div class="panel-title">
-            <h2>预测结果</h2>
+            <h2>运势时间线</h2>
             <span class="tag" id="periodTag">今日起算</span>
           </div>
           <div class="report-grid" id="reports">
@@ -2235,7 +2881,7 @@
           </div>
         </section>
 
-        <section class="panel section">
+        <section class="panel section" data-bazi-view="report">
           <div class="panel-title">
             <h2>专项日期</h2>
             <span class="tag" id="specialTag">点击查看</span>
@@ -2263,7 +2909,7 @@
           </div>
         </section>
 
-        <section class="panel section professional-only">
+        <section class="panel section professional-only" data-bazi-view="report">
           <div class="panel-title">
             <h2>生成链接</h2>
             <span class="tag">可分享同一页面</span>
@@ -2406,10 +3052,86 @@
         </dialog>
       </div>
     </section>
+
+    <section class="records-view" id="recordsView" hidden>
+      <div class="app-view-heading">
+        <h2>查询记录</h2>
+        <p>云端保存的命盘只简短显示姓名和出生日期。</p>
+      </div>
+      <section class="panel records-panel">
+        <div class="records-toolbar">
+          <strong>全部记录</strong>
+          <span class="tag" id="historyCount">0条</span>
+        </div>
+        <div class="history-list" id="historyList">
+          <div class="empty-state">登录后自动保存记录。</div>
+        </div>
+        <button class="btn secondary records-login-shortcut" type="button" id="recordsLoginShortcut">前往登录</button>
+      </section>
+    </section>
+
+    <section class="account-center" id="meView" hidden aria-label="账号与查询记录">
+      <div class="app-view-heading">
+        <h2>我的</h2>
+        <p>登录后可跨设备保存和打开查询记录。</p>
+      </div>
+      <section class="panel account-panel">
+        <div class="account-content" id="accountContent">
+          <div id="loginArea">
+            <span class="tag no-translate" id="accountStatus">未登录</span>
+            <div class="field">
+              <label for="accountName">邮箱</label>
+              <input id="accountName" type="email" autocomplete="email" placeholder="输入邮箱">
+            </div>
+            <div class="field">
+              <label for="accountPassword">密码</label>
+              <input id="accountPassword" type="password" autocomplete="current-password" placeholder="输入密码">
+            </div>
+            <div class="account-actions">
+              <button class="btn" type="button" id="loginBtn" title="邮箱密码登录">登录</button>
+              <button class="btn secondary" type="button" id="registerBtn" title="没有账号时自动注册">注册/登录</button>
+              <button class="btn secondary google-btn" type="button" id="googleLoginBtn" title="使用 Google 登录">Google</button>
+            </div>
+          </div>
+          <div id="accountArea" hidden>
+            <p class="account-current">当前账号：<strong class="no-translate" id="currentAccountName">--</strong></p>
+            <span class="tag no-translate" id="accountStatusLogged">未登录</span>
+            <div class="account-actions">
+              <button class="btn secondary" type="button" id="logoutBtn" title="退出账号">退出</button>
+              <button class="btn secondary" type="button" id="clearHistoryBtn" title="清空查询记录">清空记录</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
   </main>
+
+  <nav class="app-bottom-nav" id="baziBottomNav" aria-label="八字页面导航">
+    <button type="button" class="active" data-bazi-nav="chart" aria-current="page">
+      <i data-lucide="layout-grid" aria-hidden="true"></i>
+      <span>命盘</span>
+    </button>
+    <button type="button" data-bazi-nav="fortune">
+      <i data-lucide="calendar-days" aria-hidden="true"></i>
+      <span>运势</span>
+    </button>
+    <button type="button" data-bazi-nav="report">
+      <i data-lucide="file-text" aria-hidden="true"></i>
+      <span>报告</span>
+    </button>
+    <button type="button" data-bazi-nav="records">
+      <i data-lucide="history" aria-hidden="true"></i>
+      <span>记录</span>
+    </button>
+    <button type="button" data-bazi-nav="me">
+      <i data-lucide="user-round" aria-hidden="true"></i>
+      <span>我的</span>
+    </button>
+  </nav>
 
   <div class="toast" id="toast">已复制链接</div>
 
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const stems = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
@@ -2485,6 +3207,7 @@
     const languageStorageKey = "baziLanguageV1";
     const displayModeStorageKey = "baziDisplayModeV1";
     const activeToolStorageKey = "baziActiveToolV1";
+    const activeBaziViewStorageKey = "baziActiveViewV1";
     const accountFeatureEnabled = true;
     const baziSupabaseUrl = "https://gxgeakhhqfhgcsgmmocj.supabase.co";
     const baziSupabaseAnonKey = "sb_publishable_-aevdDydXxgp4XtMS-IM9Q_XnCz7yX_";
@@ -2497,6 +3220,9 @@
     let remoteAccountRecords = [];
     let currentLanguage = localStorage.getItem(languageStorageKey) || "zh";
     let currentDisplayMode = localStorage.getItem(displayModeStorageKey) || "pro";
+    let currentActiveTool = "bazi";
+    let currentBaziView = localStorage.getItem(activeBaziViewStorageKey) || "chart";
+    let currentReportCategory = "overview";
     let lastBaziReports = [];
     let chineseLunarFormatter = null;
     const solarTermUtcCache = new Map();
@@ -2541,6 +3267,32 @@
     const exactEnglish = {
       "八字运势测算": "Bazi Fortune Analysis",
       "输入出生信息，直接生成应事预测。": "Enter birth details to generate concrete event predictions.",
+      "八字页面导航": "Bazi Navigation",
+      "命盘": "Chart",
+      "运势": "Fortune",
+      "报告": "Reports",
+      "记录": "Records",
+      "我的": "Account",
+      "当前命盘": "Current Chart",
+      "新命盘": "New Chart",
+      "新建命盘": "Create New Chart",
+      "命理解读": "Life Reports",
+      "按主题查看命盘中容易出现的人生事件。": "View likely life events by topic.",
+      "报告分类": "Report Categories",
+      "总览": "Overview",
+      "格局": "Pattern",
+      "性格": "Personality",
+      "感情": "Relationships",
+      "健康": "Health",
+      "生成命盘后显示分类解读。": "Generate a chart to view categorized reports.",
+      "命盘摘要": "Chart Summary",
+      "运势时间线": "Fortune Timeline",
+      "查询记录": "Query Records",
+      "云端保存的命盘只简短显示姓名和出生日期。": "Cloud records show only the name and birth date.",
+      "全部记录": "All Records",
+      "前往登录": "Sign In",
+      "登录后可跨设备保存和打开查询记录。": "Sign in to save and open records across devices.",
+      "健康内容只表示传统命理信号，不替代医学诊断。": "Health content reflects traditional symbolic signals only and is not a medical diagnosis.",
       "四柱、五行、十神、合冲刑破害合并分析。": "Four pillars, five elements, ten gods, combinations, clashes and harms are analyzed together.",
       "版本模式": "Display Mode",
       "日常版": "Daily",
@@ -3562,6 +4314,16 @@
       }
     }
 
+    function syncLocalizedToolLabels() {
+      const labels = currentLanguage === "en"
+        ? { bazi: "Bazi Analysis", phone: "Number / Phone Analysis", qimen: "Qimen Dunjia" }
+        : { bazi: "八字算命", phone: "数字/手机号算命", qimen: "奇门遁甲" };
+      Object.entries(labels).forEach(([tool, label]) => {
+        const button = document.querySelector(`[data-tool-choice="${tool}"]`);
+        if (button && button.textContent.trim() !== label) button.textContent = label;
+      });
+    }
+
     function localizePage(scope = document.body) {
       if (!scope) return;
       const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
@@ -3582,11 +4344,16 @@
         toggle.title = currentLanguage === "en" ? "Switch to Chinese" : "切换到英文";
       }
       document.documentElement.lang = currentLanguage === "en" ? "en" : "zh-CN";
+      syncLocalizedToolLabels();
     }
 
     function setLanguage(language) {
       currentLanguage = language === "en" ? "en" : "zh";
       localStorage.setItem(languageStorageKey, currentLanguage);
+      if (chartContext) generate({ skipHistory: true, skipNavigation: true });
+      else {
+        renderReportCategory(currentReportCategory);
+      }
       localizePage();
       renderAccountUI();
     }
@@ -3605,6 +4372,10 @@
       });
       if (currentDisplayMode === "daily") hideFullChart();
       if (lastBaziReports.length) renderReports(lastBaziReports, { preserveCache: true });
+      if (currentDisplayMode === "daily" && ["pattern", "luck"].includes(currentReportCategory)) {
+        currentReportCategory = "overview";
+      }
+      renderReportCategory(currentReportCategory);
     }
 
     function setDisplayMode(mode) {
@@ -4352,19 +5123,55 @@
     const phoneDigitElements = Object.fromEntries(Object.entries(numberKnowledgeBase.digitMap).map(([digit, info]) => [digit, info.element]));
     const phoneDigitBranches = Object.fromEntries(Object.entries(numberKnowledgeBase.digitMap).map(([digit, info]) => [digit, info.branch]));
 
+    function setBaziView(view, persist = true, shouldScroll = false) {
+      const validViews = ["chart", "fortune", "report", "records", "me"];
+      currentBaziView = validViews.includes(view) ? view : "chart";
+      document.body.dataset.baziView = currentBaziView;
+      const isBaziActive = currentActiveTool === "bazi";
+      const utilityView = ["records", "me"].includes(currentBaziView);
+      const baziTool = document.getElementById("baziTool");
+      const recordsView = document.getElementById("recordsView");
+      const meView = document.getElementById("meView");
+
+      if (baziTool) baziTool.hidden = !isBaziActive || utilityView;
+      if (recordsView) recordsView.hidden = !isBaziActive || currentBaziView !== "records";
+      if (meView) meView.hidden = !isBaziActive || currentBaziView !== "me";
+      document.querySelectorAll("#baziTool [data-bazi-view]").forEach((panel) => {
+        panel.hidden = panel.dataset.baziView !== currentBaziView;
+      });
+      document.querySelectorAll("[data-bazi-nav]").forEach((button) => {
+        const active = isBaziActive && button.dataset.baziNav === currentBaziView;
+        button.classList.toggle("active", active);
+        if (active) button.setAttribute("aria-current", "page");
+        else button.removeAttribute("aria-current");
+      });
+      const accountToggle = document.getElementById("accountToggle");
+      if (accountToggle) accountToggle.setAttribute("aria-expanded", String(isBaziActive && currentBaziView === "me"));
+      if (currentBaziView === "records") renderHistoryList();
+      if (currentBaziView === "report") renderReportCategory(currentReportCategory);
+      if (persist) localStorage.setItem(activeBaziViewStorageKey, currentBaziView);
+      if (shouldScroll) window.scrollTo({ top: 0, behavior: "smooth" });
+      refreshLanguage(document.body);
+    }
+
     function setActiveTool(tool, persist = true) {
       const active = ["phone", "qimen"].includes(tool) ? tool : "bazi";
+      currentActiveTool = active;
+      document.body.dataset.activeTool = active;
       document.querySelectorAll("[data-tool-choice]").forEach((button) => {
         button.classList.toggle("active", button.dataset.toolChoice === active);
       });
       const baziTool = document.getElementById("baziTool");
       const phoneTool = document.getElementById("phoneTool");
       const qimenTool = document.getElementById("qimenTool");
-      baziTool.hidden = active !== "bazi";
+      baziTool.hidden = active !== "bazi" || ["records", "me"].includes(currentBaziView);
       phoneTool.hidden = active !== "phone";
       qimenTool.hidden = active !== "qimen";
+      document.getElementById("recordsView").hidden = active !== "bazi" || currentBaziView !== "records";
+      document.getElementById("meView").hidden = active !== "bazi" || currentBaziView !== "me";
       if (active !== "qimen") closeQimenDialog();
       if (persist) localStorage.setItem(activeToolStorageKey, active);
+      setBaziView(currentBaziView, false);
       refreshLanguage(document.body);
     }
 
@@ -7236,6 +8043,13 @@
         .replace(/^[^：]{1,8}：/g, "")
         .replace(/(\d{2}\/\d{2})[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]{2}/g, "$1")
         .replace(/[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]{2}(?=年|月|日|时)/g, "")
+        .replace(/(?:今年|本月|当天)?[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]{1,2}(?:年|月|日|时)?(?:干|支)?[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥木火土金水]{0,3}[，。；]/g, "")
+        .replace(/[^，。；]{0,18}(?:三会|三合|六合|天克地冲|相冲|相刑|相破|相害|冲走|冲动|合住|合化)[^，。；]{0,18}[，。；]/g, "")
+        .replace(/[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]{1,2}(?:相)?(?:冲|合|刑|破|害|克)[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥木火土金水]{0,4}[^，。；]{0,10}[，。；]?/g, "")
+        .replace(/(?:年干|月干|日干|时干|年支|月支|日支|时支)[甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥]{0,2}落[^，。；]{0,28}[，。；]/g, "")
+        .replace(/[^，。；]*(?:对应区域比资料支持更重|对应区域比规则压力更重)[，。；]/g, "")
+        .replace(/([肝心脾肺肾胃胆膀胱])对应区域/g, "$1部")
+        .replace(/此气属[^，。]*[，。]?/g, "")
         .replace(/流年/g, "今年")
         .replace(/流月/g, "本月")
         .replace(/流日/g, "当天")
@@ -7254,6 +8068,9 @@
         .replace(/贵人/g, "帮忙的人")
         .replace(/引动/g, "带来")
         .replace(/应事/g, "事情")
+        .replace(/竞争分账被带来/g, "竞争和分账增多")
+        .replace(/而事情/g, "")
+        .replace(/多应经络/g, "容易出现经络")
         .replace(/本命|当前|动态强弱|强弱|格局|十神|五行|日主|命局|原局|纳音|月令|透干|天干|地支|干支|合化|冲合刑破害|刑冲破害|喜用|忌神|忌凶|神煞/g, "")
         .replace(/偏弱|偏旺|从弱|从强|中和|转旺|转弱/g, "")
         .replace(/主事约?\d+%|保留\d+%|参与/g, "")
@@ -7303,6 +8120,287 @@
         </article>
       `).join("");
       refreshLanguage(document.getElementById("reports"));
+    }
+
+    function reportCategoryModel(category, ctx) {
+      const categoryTitles = {
+        overview: "人生总览",
+        pattern: "八字格局",
+        personality: "性格表现",
+        career: "事业财运",
+        love: "感情关系",
+        health: "身体状态",
+        luck: "当前大运",
+        year: "今年流年"
+      };
+      const dayStem = ctx.pillars[2].stem;
+      const now = new Date();
+      const dailyMode = currentDisplayMode === "daily";
+      const makeFocusedReport = (focus, periodKey, title, salt) => {
+        const focusedCtx = { ...ctx, state: { ...ctx.state, focus } };
+        const report = buildReport(title, periodKey, ctx.dayElement, ctx.strength, ctx.favorable, salt, focusedCtx);
+        const dailyIndexes = { career: [0, 1], love: [0, 2], health: [0, 3] }[focus];
+        const dailySource = dailyIndexes ? report.items.filter((_, index) => dailyIndexes.includes(index)) : report.items;
+        return {
+          copy: dailyMode ? "" : report.text,
+          items: dailyMode ? uniqueList(dailySource.map(dailyPredictionText).filter(Boolean)).slice(0, 4) : report.items,
+          tag: report.tags.slice(0, 2).join(" · ")
+        };
+      };
+
+      if (category === "pattern") {
+        const pattern = ctx.pattern || buildPattern(ctx);
+        return {
+          title: categoryTitles.pattern,
+          tag: pattern.name,
+          copy: `${pattern.profile}${pattern.level}`,
+          items: [
+            `本命${strengthDisplay(ctx.baseStrength)}，当前${strengthDisplay(ctx.strength)}，运势变化会随着大运流年重新分配。`,
+            `命盘最容易牵动${pattern.god}对应的人和事，当前以${pattern.useful}被引动时表现最明显。`,
+            pattern.god.includes("财") ? "客户、订单、报价、回款、库存和复购是主要事件线。" : pattern.god.includes("官") || pattern.god.includes("杀") ? "职位责任、合同规则、竞争压力和处罚风险是主要事件线。" : pattern.god.includes("印") ? "证件资料、学习考试、长辈贵人和后台资源是主要事件线。" : pattern.god.includes("食") || pattern.god.includes("伤") ? "作品技术、表达推广、成交转化和子女事项是主要事件线。" : "同业竞争、朋友合伙、分账和资源流向是主要事件线。"
+          ]
+        };
+      }
+
+      if (category === "personality") {
+        const personalityByElement = {
+          木: ["遇到新环境时会先观察成长空间，再决定是否长期投入。", "人际和计划同时增多时，容易一边扩张一边频繁修改方向。", "在学习、策划、沟通和连接资源的场景里表现更主动。"],
+          火: ["遇到机会时反应快，容易先行动再补充细节。", "被关注或被质疑时情绪和表达都会明显升温。", "在展示、推广、谈判和需要快速决断的场景里更容易被看见。"],
+          土: ["处理事情时重视确定性、责任和能否长期承接。", "任务和家庭责任积压时，容易沉默承担并把压力留在身体上。", "在库存、房产、流程、财务和稳定合作中更能持续投入。"],
+          金: ["遇到问题时会快速划分规则、责任和执行顺序。", "对低效率和含糊表达耐受较低，冲突时语气容易变硬。", "在合同、管理、工具、技术和需要明确标准的场景里更有掌控力。"],
+          水: ["面对变化时会先收集信息，并保留多个可能方向。", "消息过多或结果迟迟不定时，思绪和作息容易反复。", "在信息、资金流、远程沟通、物流和跨地域事务中反应更灵活。"]
+        };
+        return {
+          title: categoryTitles.personality,
+          tag: `${dayStem}${ctx.dayElement}日主`,
+          copy: dailyMode ? "" : `${copy[ctx.dayElement].nature}是较稳定的行为主线；强弱变化会改变表达方式。`,
+          items: personalityByElement[ctx.dayElement] || []
+        };
+      }
+
+      if (category === "career") return { title: categoryTitles.career, ...makeFocusedReport("career", "year", "事业财运", 3) };
+      if (category === "love") return { title: categoryTitles.love, ...makeFocusedReport("love", "month", "感情关系", 2) };
+      if (category === "health") return { title: categoryTitles.health, ...makeFocusedReport("health", "month", "身体状态", 1), healthNote: true };
+
+      if (category === "luck") {
+        const luck = luckForDate(ctx, now);
+        const god = tenGod(dayStem, luck.pillar.stem);
+        const effects = branchEffects(ctx, luck.pillar);
+        const stars = symbolicStars(ctx, luck.pillar);
+        return {
+          title: categoryTitles.luck,
+          tag: `${luck.pillar.text} · ${luck.startYear}-${luck.endYear}`,
+          copy: `${luck.startAgeText}起进入${luck.pillar.text}大运，当前十年主要由${god}和${effects.join("、")}共同引动。`,
+          items: uniqueList([
+            shortSentences(tenGodScenario(god, ctx), 2),
+            shortSentences(effectStrategy(effects.join("、"), god), 2),
+            shortSentences(starPrediction(stars).join(""), 2),
+            flowTimingText(ctx, now, "luck", luck.pillar)
+          ].filter(Boolean)).slice(0, 5)
+        };
+      }
+
+      if (category === "year") return { title: categoryTitles.year, ...makeFocusedReport(ctx.state.focus || "overall", "year", "今年流年", 4) };
+
+      const overviewItems = dailyMode
+        ? uniqueList(lastBaziReports.flatMap((report) => dailyReportItems(report))).slice(0, 6)
+        : buildInsights(ctx).map((item) => `${item.title}：${item.text}`).slice(0, 6);
+      return {
+        title: categoryTitles.overview,
+        tag: `${dayStem}${ctx.dayElement}日主`,
+        copy: dailyMode ? "" : `${ctx.state.name || "命主"}本命${strengthDisplay(ctx.baseStrength)}，当前${strengthDisplay(ctx.strength)}。${ctx.dynamicStrength?.short || ""}`,
+        items: overviewItems
+      };
+    }
+
+    function englishReportCategoryModel(category, ctx) {
+      const titles = {
+        overview: "Life Overview",
+        pattern: "Bazi Pattern",
+        personality: "Personality",
+        career: "Career and Wealth",
+        love: "Relationships",
+        health: "Health Signals",
+        luck: "Current Luck Cycle",
+        year: "Current Year"
+      };
+      const godNames = {
+        比肩: "Peer",
+        劫财: "Rob Wealth",
+        食神: "Eating God",
+        伤官: "Hurting Officer",
+        偏财: "Indirect Wealth",
+        正财: "Direct Wealth",
+        七杀: "Seven Killings",
+        正官: "Direct Officer",
+        偏印: "Indirect Resource",
+        正印: "Direct Resource"
+      };
+      const strengthNames = { 偏旺: "strong", 偏弱: "weak", 从旺: "following strong", 从强: "following strong", 从弱: "following weak", 中和: "balanced" };
+      const personality = {
+        木: ["You first look for room to grow before committing to a new environment.", "When people and plans increase together, you tend to expand quickly and revise direction often.", "Planning, learning, communication and connecting resources bring out your initiative."],
+        火: ["You respond quickly to opportunities and often act before every detail is settled.", "Attention or criticism raises both your emotion and the force of your expression.", "Presentation, promotion, negotiation and fast decisions make you more visible."],
+        土: ["You value certainty, responsibility and whether a situation can be sustained.", "When work and family duties accumulate, you tend to carry them quietly and feel the pressure physically.", "Long-running operations, property, inventory, finance and stable partnerships suit your persistent style."],
+        金: ["You quickly separate rules, responsibilities and execution order when a problem appears.", "Low efficiency and vague communication can make your tone harder during conflict.", "Contracts, management, tools, technology and clear standards strengthen your sense of control."],
+        水: ["You gather information first and keep several possible routes open when circumstances change.", "Too many messages or delayed outcomes can disturb both your thinking and sleep rhythm.", "Information, cash flow, remote communication, logistics and cross-region matters bring out your flexibility."]
+      };
+      const elementNames = { 木: "Wood", 火: "Fire", 土: "Earth", 金: "Metal", 水: "Water" };
+      const healthAreas = {
+        木: "liver, gallbladder, tendons, eyes and stress-related tension",
+        火: "heart rhythm, circulation, sleep, inflammation and heat-related symptoms",
+        土: "digestion, stomach, appetite, muscles and symptoms that linger",
+        金: "lungs, throat, skin, teeth and irritation from dryness",
+        水: "kidneys, urinary system, lower back, hormones and fatigue"
+      };
+      const dayStem = ctx.pillars[2].stem;
+      const now = new Date();
+      const dynamic = ctx.dynamicStrength || dynamicStrengthProfile(ctx, now);
+
+      const focusModel = (focus, periodKey) => {
+        const pillar = periodPillar(periodKey);
+        const god = tenGod(dayStem, pillar.stem);
+        const effects = branchEffects(ctx, pillar).join("、");
+        const stars = symbolicStars(ctx, pillar);
+        const hasClash = /冲|刑|破|害/.test(effects);
+        const hasCombine = effects.includes("合");
+        const hasGoodStar = stars.some((star) => goodSignalStars.includes(star));
+        const hasRiskStar = stars.some((star) => riskSignalStars.includes(star));
+        const eventByGod = god.includes("财")
+          ? "Clients, prices, payments, inventory and repeat business become the main event line."
+          : god.includes("官") || god.includes("杀")
+            ? "Contracts, managers, job duties, competition and compliance pressure become more visible."
+            : god.includes("食") || god.includes("伤")
+              ? "Work output, promotion, presentations, training and conversion results move to the foreground."
+              : god.includes("印")
+                ? "Documents, study, credentials, elders and behind-the-scenes support become more active."
+                : "Peers, partnerships, profit sharing, social spending and competition become more active.";
+        const changeEvent = hasClash
+          ? "Plans can be interrupted or rescheduled, and a relationship, role or payment may change abruptly."
+          : hasCombine
+            ? "Invitations, cooperation and old contacts are more likely to return and require a clear response."
+            : "Events develop through messages, follow-up conversations and gradual confirmation.";
+        const peopleEvent = hasClash
+          ? "Communication is easier to harden into disagreement, especially where responsibilities or money are unclear."
+          : hasCombine
+            ? "Contact increases around cooperation, introductions, invitations or a relationship moving closer."
+            : "Relationship changes mainly come through timing, delayed replies and unspoken expectations.";
+        const healthEvent = `Physical reactions are more likely around the ${healthAreas[stemElement[pillar.stem]]}. ${hasRiskStar ? "Sudden discomfort, minor injury or disrupted sleep is more likely than usual." : "The signal is more likely to appear as fatigue, tension or a recurring minor symptom."}`;
+        const shared = [eventByGod, changeEvent];
+        if (focus === "career") shared.push(hasGoodStar ? "A helpful person or timely approval can reduce delays around work or money." : "Results depend more heavily on follow-up, pricing and clear ownership of tasks.");
+        if (focus === "love") shared.push(peopleEvent);
+        if (focus === "health") shared.push(healthEvent);
+        if (focus === "overall") shared.push(peopleEvent, healthEvent);
+        return {
+          title: titles[focus === "career" ? "career" : focus === "love" ? "love" : focus === "health" ? "health" : "year"],
+          tag: `${pillar.text} · ${godNames[god] || god}`,
+          copy: currentDisplayMode === "daily" ? "" : `${pillar.text} emphasizes ${elementNames[stemElement[pillar.stem]]} and ${godNames[god] || god}. The chart is currently ${strengthNames[dynamic.current.label] || dynamic.current.label}.`,
+          items: shared,
+          healthNote: focus === "health"
+        };
+      };
+
+      if (category === "pattern") {
+        const pattern = ctx.pattern || buildPattern(ctx);
+        const patternLine = pattern.god.includes("财")
+          ? "Clients, orders, pricing, payments, inventory and repeat business form the main life-event line."
+          : pattern.god.includes("官") || pattern.god.includes("杀")
+            ? "Roles, contracts, rules, competition and accountability form the main life-event line."
+            : pattern.god.includes("印")
+              ? "Documents, education, credentials, elders and institutional support form the main life-event line."
+              : pattern.god.includes("食") || pattern.god.includes("伤")
+                ? "Skills, expression, promotion, conversion and children form the main life-event line."
+                : "Peers, partnerships, profit sharing and resource distribution form the main life-event line.";
+        return {
+          title: titles.pattern,
+          tag: translateToEnglish(pattern.name),
+          copy: `The pattern is assessed together with the natal chart and current timing rather than as a fixed label.`,
+          items: [
+            `Natal strength is ${strengthNames[ctx.baseStrength.label] || ctx.baseStrength.label}; current strength is ${strengthNames[ctx.strength.label] || ctx.strength.label}.`,
+            `Events become most visible when ${ctx.favorable.map((element) => elementNames[element]).join(" and ")} are activated.`,
+            patternLine
+          ]
+        };
+      }
+
+      if (category === "personality") {
+        return {
+          title: titles.personality,
+          tag: `${dayStem} ${elementNames[ctx.dayElement]} day master`,
+          copy: currentDisplayMode === "daily" ? "" : `${elementNames[ctx.dayElement]} describes the stable behavioral theme; timing changes how strongly it is expressed.`,
+          items: personality[ctx.dayElement] || []
+        };
+      }
+
+      if (category === "career") return { ...focusModel("career", "year"), title: titles.career };
+      if (category === "love") return { ...focusModel("love", "month"), title: titles.love };
+      if (category === "health") return { ...focusModel("health", "month"), title: titles.health, healthNote: true };
+
+      if (category === "luck") {
+        const luck = luckForDate(ctx, now);
+        const god = tenGod(dayStem, luck.pillar.stem);
+        const effects = branchEffects(ctx, luck.pillar).join("、");
+        return {
+          title: titles.luck,
+          tag: `${luck.pillar.text} · ${luck.startYear}-${luck.endYear}`,
+          copy: `This ten-year cycle begins at ${luck.startAgeText} and runs from ${luck.startDateText} to ${luck.endDateText}.`,
+          items: [
+            focusModel("overall", "year").items[0],
+            /冲|刑|破|害/.test(effects) ? "This cycle carries more abrupt changes in plans, relationships, work roles or cash flow." : "This cycle develops through gradual commitments, repeated contact and accumulated results.",
+            `The first half of the cycle shows more through the heavenly stem; the second half shows more through the earthly branch.`
+          ]
+        };
+      }
+
+      if (category === "year") return { ...focusModel(ctx.state.focus || "overall", "year"), title: titles.year };
+
+      const today = focusModel("overall", "day");
+      return {
+        title: titles.overview,
+        tag: `${dayStem} ${elementNames[ctx.dayElement]} day master`,
+        copy: currentDisplayMode === "daily" ? "" : `${ctx.state.name || "Chart owner"} is natal ${strengthNames[ctx.baseStrength.label] || ctx.baseStrength.label} and currently ${strengthNames[ctx.strength.label] || ctx.strength.label}.`,
+        items: today.items
+      };
+    }
+
+    function renderReportCategory(category = "overview") {
+      const body = document.getElementById("reportCategoryBody");
+      const nav = document.getElementById("reportCategoryNav");
+      if (!body || !nav) return;
+      if (currentDisplayMode === "daily" && ["pattern", "luck"].includes(category)) category = "overview";
+      currentReportCategory = category;
+      nav.querySelectorAll("[data-report-category]").forEach((button) => {
+        const active = button.dataset.reportCategory === category;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-selected", String(active));
+      });
+      if (!chartContext) {
+        body.innerHTML = `<div class="empty-state">生成命盘后显示分类解读。</div>`;
+        refreshLanguage(body);
+        return;
+      }
+      const model = currentLanguage === "en"
+        ? englishReportCategoryModel(category, chartContext)
+        : reportCategoryModel(category, chartContext);
+      const items = uniqueList((model.items || []).filter(Boolean))
+        .filter((item, index, all) => !all.slice(0, index).some((earlier) => earlier.includes(item)))
+        .slice(0, 7);
+      body.innerHTML = `
+        <div class="report-feature">
+          <div class="report-feature-head">
+            <div>
+              <h3>${escapeHtml(model.title)}</h3>
+              ${model.copy ? `<p>${escapeHtml(model.copy)}</p>` : ""}
+            </div>
+            <span class="tag">${escapeHtml(model.tag || "命盘解读")}</span>
+          </div>
+          <ul class="report-event-list">
+            ${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+          </ul>
+          ${model.healthNote ? `<p class="hint">健康内容只表示传统命理信号，不替代医学诊断。</p>` : ""}
+        </div>
+      `;
+      colorizeGanzhi(body);
+      refreshLanguage(body);
     }
 
     function tenGod(dayStem, targetStem) {
@@ -9512,14 +10610,16 @@
     }
 
     function setAccountPanelOpen(isOpen, focusFirstField = false) {
-      const panel = document.querySelector(".top-account");
       const toggle = document.getElementById("accountToggle");
-      const content = document.getElementById("accountContent");
-      if (!panel || !toggle || !content) return;
       const open = Boolean(isOpen);
-      panel.classList.toggle("is-open", open);
+      if (!toggle) return;
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
-      content.hidden = !open;
+      if (open) {
+        setActiveTool("bazi");
+        setBaziView("me", true, true);
+      } else if (currentActiveTool === "bazi" && currentBaziView === "me") {
+        setBaziView(chartContext ? "fortune" : "chart", true, true);
+      }
       if (open && focusFirstField && !currentAccount()) {
         requestAnimationFrame(() => document.getElementById("accountName")?.focus());
       }
@@ -9527,8 +10627,10 @@
 
     function renderAccountUI() {
       if (!accountFeatureEnabled) {
-        const accountPanel = document.querySelector(".top-account");
+        const accountPanel = document.getElementById("meView");
         if (accountPanel) accountPanel.hidden = true;
+        const accountToggle = document.getElementById("accountToggle");
+        if (accountToggle) accountToggle.hidden = true;
         return;
       }
       const sessionUser = currentAccount();
@@ -9542,8 +10644,11 @@
       document.getElementById("currentAccountName").textContent = loggedIn ? sessionUser.name : "--";
       const toggleMeta = document.getElementById("accountToggleMeta");
       toggleMeta.textContent = loggedIn ? sessionUser.name : visibleStatusText;
+      const recordsLoginShortcut = document.getElementById("recordsLoginShortcut");
+      if (recordsLoginShortcut) recordsLoginShortcut.hidden = loggedIn;
       renderHistoryList();
-      refreshLanguage(document.querySelector(".top-account"));
+      refreshLanguage(document.getElementById("meView"));
+      refreshLanguage(document.getElementById("recordsView"));
     }
 
     function setAccountBusy(isBusy) {
@@ -9787,9 +10892,6 @@
         renderAccountUI();
         return;
       }
-      const accountPanel = document.querySelector(".top-account");
-      if (accountPanel) accountPanel.hidden = false;
-      setAccountPanelOpen(false);
       const client = getSupabaseClient();
       if (!client) {
         clearRemoteSession();
@@ -9893,8 +10995,18 @@
       ctx.pattern = buildPattern(ctx);
       chartContext = ctx;
 
-      document.getElementById("summaryTitle").textContent = `${state.name || "命主"}：${d.stem}${dayElement}日主，本命${strengthDisplay(baseStrength)}，当前${strengthDisplay(ctx.strength)}`;
-      document.getElementById("summaryText").textContent = `${y.text}年、${m.text}月、${d.text}日、${h.text}时。${ctx.dynamicStrength.short}`;
+      document.getElementById("activeProfileName").textContent = state.name || `${state.birthDate}命盘`;
+
+      const summaryName = state.name || (currentLanguage === "en" ? "Chart owner" : "命主");
+      const englishElements = { 木: "Wood", 火: "Fire", 土: "Earth", 金: "Metal", 水: "Water" };
+      const englishStrengths = { 偏旺: "strong", 偏弱: "weak", 从旺: "following strong", 从强: "following strong", 从弱: "following weak", 中和: "balanced" };
+      if (currentLanguage === "en") {
+        document.getElementById("summaryTitle").innerHTML = `<span class="no-translate">${escapeHtml(summaryName)}</span>: ${escapeHtml(d.stem)} ${englishElements[dayElement]} day master, natal ${englishStrengths[baseStrength.label] || baseStrength.label}, currently ${englishStrengths[ctx.strength.label] || ctx.strength.label}`;
+        document.getElementById("summaryText").textContent = `Birth pillars: ${y.text}, ${m.text}, ${d.text}, ${h.text}. Events become most visible when ${ctx.favorable.map((element) => englishElements[element]).join(" and ")} are active.`;
+      } else {
+        document.getElementById("summaryTitle").innerHTML = `<span class="no-translate">${escapeHtml(summaryName)}</span>：${escapeHtml(d.stem)}${dayElement}日主，本命${strengthDisplay(baseStrength)}，当前${strengthDisplay(ctx.strength)}`;
+        document.getElementById("summaryText").textContent = `${y.text}年、${m.text}月、${d.text}日、${h.text}时。${ctx.dynamicStrength.short}`;
+      }
       document.getElementById("balanceTag").textContent = `本命${strengthDisplay(baseStrength)}｜当前${strengthDisplay(ctx.strength)}`;
       document.getElementById("metaTags").innerHTML = [
         state.gender,
@@ -9919,6 +11031,7 @@
       resetSpecialPanels();
       renderFullChart(ctx);
       hideFullChart();
+      renderReportCategory(currentReportCategory);
       const link = `${location.href.split("#")[0]}#${encodeState(state)}`;
       history.replaceState(null, "", link);
       document.getElementById("shareLink").value = link;
@@ -9927,6 +11040,7 @@
       document.getElementById("quickHint").innerHTML = `<strong>近期应事：</strong>${escapeHtml(focusTips[state.focus] || focusTips.overall)}${escapeHtml(shortSentences(tenGodScenario(yearGod, ctx), 1))}`;
       refreshLanguage(document.body);
       if (!options.skipHistory) saveCurrentQueryRecord(ctx);
+      if (!options.skipNavigation) setBaziView("fortune", true, true);
     }
 
     function showToast(text) {
@@ -9934,6 +11048,33 @@
       toast.textContent = localizeText(text);
       toast.classList.add("show");
       setTimeout(() => toast.classList.remove("show"), 1700);
+    }
+
+    function startNewChart() {
+      document.getElementById("baziForm").reset();
+      chartContext = null;
+      lastBaziReports = [];
+      document.getElementById("activeProfileName").textContent = "新命盘";
+      document.getElementById("summaryTitle").textContent = "请先生成八字报告";
+      document.getElementById("summaryText").textContent = "生成后显示命盘重点和具体应事。";
+      ["yearPillar", "monthPillar", "dayPillar", "hourPillar"].forEach((id) => {
+        document.getElementById(id).textContent = "--";
+      });
+      document.getElementById("metaTags").innerHTML = `<span class="tag">等待输入</span>`;
+      document.getElementById("quickHint").textContent = "生成后显示近期最容易发生的事。";
+      document.getElementById("reports").innerHTML = `<div class="empty-state">生成后显示今日、本周、本月、今年的具体应事。</div>`;
+      document.getElementById("insights").innerHTML = `<div class="empty-state">生成后显示近期事件信号。</div>`;
+      document.getElementById("bars").innerHTML = `<div class="empty-state">生成后显示五行强弱。</div>`;
+      document.getElementById("shareLink").value = "生成后出现链接";
+      resetSpecialPanels();
+      hideFullChart();
+      renderReportCategory("overview");
+      history.replaceState(null, "", location.href.split("#")[0]);
+      syncBirthParameterUI();
+      setActiveTool("bazi");
+      setBaziView("chart", true, true);
+      refreshLanguage(document.body);
+      requestAnimationFrame(() => document.getElementById("name")?.focus());
     }
 
     document.getElementById("baziForm").addEventListener("submit", (event) => {
@@ -9956,6 +11097,22 @@
       if (!button) return;
       setActiveTool(button.dataset.toolChoice);
     });
+
+    document.getElementById("baziBottomNav").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-bazi-nav]");
+      if (!button) return;
+      setActiveTool("bazi");
+      setBaziView(button.dataset.baziNav, true, true);
+    });
+
+    document.getElementById("reportCategoryNav").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-report-category]");
+      if (!button || button.hidden) return;
+      renderReportCategory(button.dataset.reportCategory);
+    });
+
+    document.getElementById("newChartBtn").addEventListener("click", startNewChart);
+    document.getElementById("recordsLoginShortcut").addEventListener("click", () => setAccountPanelOpen(true, true));
 
     document.getElementById("phoneForm").addEventListener("submit", generatePhoneReport);
 
@@ -10133,6 +11290,7 @@
     window.addEventListener("DOMContentLoaded", async () => {
       applyDisplayMode();
       setActiveTool(localStorage.getItem(activeToolStorageKey) || "bazi", false);
+      if (window.lucide?.createIcons) window.lucide.createIcons();
       enableGanzhiAutoColor();
       await initAccountSystem();
       runCalibrationCheck();
@@ -10148,6 +11306,7 @@
       document.getElementById("birthDate").value = "1990-01-01";
       document.getElementById("birthTime").value = "08:30";
       syncBirthParameterUI();
+      if (currentActiveTool === "bazi") setBaziView("chart", false);
       applyDisplayMode();
       localizePage();
     });
