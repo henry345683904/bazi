@@ -920,6 +920,47 @@
       font-weight: 800;
     }
 
+    .report-evidence {
+      margin-top: 12px;
+      border-top: 1px solid #e7ebe8;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .report-evidence summary {
+      padding: 9px 0 4px;
+      cursor: pointer;
+      color: #53625e;
+      font-weight: 800;
+      list-style-position: inside;
+    }
+
+    .evidence-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 4px 0 2px;
+    }
+
+    .evidence-chip {
+      display: inline-flex;
+      gap: 3px;
+      align-items: center;
+      max-width: 100%;
+      padding: 4px 7px;
+      border: 1px solid #dce5e1;
+      border-radius: 5px;
+      background: #f8faf8;
+      color: #586663;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+
+    .evidence-chip b { color: var(--ink); }
+    .evidence-chip.positive { border-color: #b9dcc7; background: #f1faf4; }
+    .evidence-chip.negative { border-color: #e5c3c3; background: #fff7f7; }
+    .evidence-chip.mixed { border-color: #e7d3a9; background: #fffaf0; }
+
     .special-actions {
       display: flex;
       flex-wrap: wrap;
@@ -3136,6 +3177,7 @@
 
   <div class="toast" id="toast">已复制链接</div>
 
+  <script src="vendor/lunar-1.7.7.js"></script>
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -3765,7 +3807,14 @@
     const standaloneEnglishTerms = new Set("甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥木火土金水分时".split(""));
 
     const knowledgeBase = {
-      schemaVersion: 1,
+      schemaVersion: 2,
+      enginePolicy: {
+        modelVersion: "evidence-layered-1",
+        scoring: "多层信号加权，对正负冲突、单一信号和重复神煞降权；分数只表示规则支持强度，不代表科学概率。",
+        layers: ["本命", "大运", "流年", "流月", "流日"],
+        signals: ["旺衰", "喜用", "十神", "合化", "三会三合", "刑冲破害", "天克地冲", "并临", "神煞"],
+        validationStatus: "传统资料规则整理，尚未完成统计学案例验证；健康内容不能替代医学诊断。"
+      },
       sources: [
         {
           id: "yt-9NH6DOhSs5g",
@@ -4549,6 +4598,14 @@
     function solarTermUtcMillis(year, termIndex) {
       const cacheKey = `${year}-${termIndex}`;
       if (solarTermUtcCache.has(cacheKey)) return solarTermUtcCache.get(cacheKey);
+      if (window.Solar) {
+        const term = window.Solar.fromYmd(year, 6, 1).getLunar().getJieQiTable()[solarTermNames[termIndex]];
+        if (term && term.getYear() === year) {
+          const value = Date.UTC(term.getYear(), term.getMonth() - 1, term.getDay(), term.getHour() - 8, term.getMinute(), term.getSecond());
+          solarTermUtcCache.set(cacheKey, value);
+          return value;
+        }
+      }
       const rough = Date.UTC(1900, 0, 6, 2, 5, 0) + 31556925974.7 * (year - 1900) + solarTermMinuteOffsets[termIndex] * 60000;
       const targetLongitude = (285 + termIndex * 15) % 360;
       let lower = rough - 2 * 86400000;
@@ -4901,6 +4958,84 @@
         .filter(Boolean)
         .slice(0, limit)
         .join("");
+    }
+
+    function predictionPeriodLabel(periodKey) {
+      return {
+        day: "当天",
+        week: "本周流日",
+        month: "本月流月",
+        year: "今年流年"
+      }[periodKey] || "当前时间层";
+    }
+
+    function buildPredictionEvidence(ctx, periodKey, pillar, options = {}) {
+      if (!ctx || !pillar) return null;
+      const evidence = [];
+      const add = (layer, type, label, weight = 1, polarity = "neutral") => {
+        if (!label || label.includes("无明显")) return;
+        evidence.push({ layer, type, label, weight, polarity });
+      };
+      const dayStem = ctx.pillars[2].stem;
+      const stemGod = options.stemGod || tenGod(dayStem, pillar.stem);
+      const effects = uniqueList(options.effects || branchEffects(ctx, pillar));
+      const stars = uniqueList(options.stars || symbolicStars(ctx, pillar)).filter((star) => star !== "无明显常用神煞");
+      const dynamic = options.dynamic || ctx.dynamicStrength;
+      const periodLabel = predictionPeriodLabel(periodKey);
+      const currentStrength = dynamic?.current || ctx.strength;
+      const baseStrength = dynamic?.base || ctx.baseStrength || ctx.strength;
+      const favorable = ctx.favorable || [];
+
+      add("本命", "强弱", `日主${ctx.dayElement}，本命${strengthDisplay(baseStrength)}`, 1.15, "neutral");
+      add(periodLabel, "十神", `${pillar.text}引动${stemGod}`, 1.2, /财|食|伤|印|官/.test(stemGod) ? "topic" : "neutral");
+      if (dynamic && dynamic.trend && dynamic.trend !== "变化不大") {
+        add(periodLabel, "能量", `当前${strengthDisplay(currentStrength)}，${dynamic.trend}`, 1.1, dynamic.trend === "转旺" ? "positive" : "negative");
+      }
+      effects.slice(0, 4).forEach((effect) => {
+        const type = /天克地冲/.test(effect) ? "天克地冲" : /冲|刑|破|害/.test(effect) ? "刑冲破害" : /合/.test(effect) ? "合化牵动" : "地支关系";
+        const polarity = /冲|刑|破|害|克/.test(effect) ? "negative" : /合/.test(effect) ? "mixed" : "neutral";
+        add(periodLabel, type, effect, /冲|刑|克/.test(effect) ? 1.45 : 1.1, polarity);
+      });
+      stars.slice(0, 4).forEach((star) => {
+        const polarity = riskSignalStars.includes(star) ? "negative" : goodSignalStars.includes(star) ? "positive" : "neutral";
+        add(periodLabel, "神煞", star, riskSignalStars.includes(star) ? 1.3 : 0.95, polarity);
+      });
+      if (favorable.includes(stemElement[pillar.stem]) || favorable.includes(branchElement[pillar.branch])) {
+        add(periodLabel, "喜用", `${pillar.text}带来${uniqueList([stemElement[pillar.stem], branchElement[pillar.branch]]).filter((element) => favorable.includes(element)).join("、")}喜用气`, 1.2, "positive");
+      }
+      (options.extra || []).filter(Boolean).slice(0, 3).forEach((item) => add("流日汇总", "交叉验证", item, 0.8, "neutral"));
+
+      const unique = [];
+      const seen = new Set();
+      evidence.forEach((item) => {
+        const key = `${item.type}:${item.label}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        unique.push(item);
+      });
+      const families = new Set(unique.map((item) => item.type));
+      const positive = unique.filter((item) => item.polarity === "positive").length;
+      const negative = unique.filter((item) => item.polarity === "negative").length;
+      const conflicts = Math.min(3, Math.min(positive, negative) + (dynamic?.trend === "变化不大" && unique.some((item) => item.polarity === "negative") ? 1 : 0));
+      const strength = Math.max(0.34, Math.min(0.9, 0.4 + Math.min(4, families.size) * 0.075 + Math.min(6, unique.length) * 0.025 - conflicts * 0.045));
+      const label = strength >= 0.76 ? "多层支持" : strength >= 0.6 ? "中等支持" : "单层或弱支持";
+      return {
+        items: unique.slice(0, 8),
+        families: Array.from(families),
+        positive,
+        negative,
+        conflicts,
+        strength,
+        label
+      };
+    }
+
+    function renderPredictionEvidence(evidence) {
+      if (!evidence || !evidence.items.length) return "";
+      const score = Math.round(evidence.strength * 100);
+      const rows = evidence.items.map((item) => `<span class="evidence-chip ${item.polarity}"><b>${escapeHtml(item.layer)}</b>${escapeHtml(item.type)}：${escapeHtml(item.label)}</span>`).join("");
+      const conflict = evidence.conflicts ? `；正负信号并存${evidence.conflicts}处` : "";
+      return `<details class="report-evidence"><summary>分析依据｜${escapeHtml(evidence.label)}${escapeHtml(conflict)}</summary><div class="evidence-list">${rows}</div></details>`;
     }
 
     function compactList(items, limit = 4) {
@@ -7909,6 +8044,7 @@
         ? shortSentences(composeHealthStatus(ctx, { periodKey, pillar: p, strength, stemGod, stars, effects, dynamic: ctx.dynamicStrength }), 3)
         : shortSentences(healthPrediction(mainElement, favorable, strength), 2);
       const dynamicHint = ctx?.dynamicStrength?.short || "";
+      const evidence = ctx ? buildPredictionEvidence(ctx, periodKey, p, { stemGod, stars, effects, dynamic: ctx.dynamicStrength }) : null;
       const peopleHint = starText.includes("桃花")
         ? "客户、朋友、伴侣互动增加，暧昧和边界拉扯也会增加。"
         : effectText.includes("合")
@@ -7929,7 +8065,8 @@
           eventLine("身体状态", healthHint),
           starHint ? eventLine("神煞应事", starHint) : ""
         ].filter(Boolean),
-        tags: compactList([`${p.text}`, `${mainElement}`, stemGod, ...matchedTags, ...stars.slice(0, 2)], 6)
+        tags: compactList([`${p.text}`, `${mainElement}`, stemGod, ...matchedTags, ...stars.slice(0, 2)], 6),
+        evidence
       };
     }
 
@@ -8034,6 +8171,16 @@
         stars: healthSource.stars,
         effects: healthSource.effects
       });
+      const evidence = buildPredictionEvidence(ctx, "week", bestDays[0]?.pillar || daily[0].pillar, {
+        stemGod: dominantGod,
+        stars: allStars,
+        effects: allEffects,
+        dynamic: bestDays[0]?.dynamic || daily[0].dynamic,
+        extra: [
+          `高分日${bestDays.map((item) => formatDateShort(item.date)).join("、")}`,
+          volatileDays.length ? `波动日${volatileDays.map((item) => formatDateShort(item.date)).join("、")}` : ""
+        ]
+      });
       return {
         title: "本周运势",
         periodKey: "week",
@@ -8045,7 +8192,8 @@
           eventLine("人际关系", relationText),
           eventLine("身体状态", `${volatileDays.length ? `身体波动较明显的日子是${volatileDays.map((item) => `${formatDateShort(item.date)}${item.pillar.text}`).join("、")}。` : ""}${weekHealthText}`)
         ].filter(Boolean),
-        tags: compactList(["流日汇总", dominantGod, ...matchedTags, ...allStars.slice(0, 2), ...allEffects.slice(0, 1)], 6)
+        tags: compactList(["流日汇总", dominantGod, ...matchedTags, ...allStars.slice(0, 2), ...allEffects.slice(0, 1)], 6),
+        evidence
       };
     }
 
@@ -8161,6 +8309,7 @@
           ${dailyMode ? "" : `<div class="meta">${r.tags.map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join("")}</div>`}
           ${dailyMode ? "" : `<p>${escapeHtml(r.text)}</p>`}
           <ul>${(dailyMode ? dailyReportItems(r) : (r.items || [])).map((item) => `<li class="${!dailyMode && item.startsWith("整体：") ? "overall" : ""}">${escapeHtml(item)}</li>`).join("")}</ul>
+          ${dailyMode ? "" : renderPredictionEvidence(r.evidence)}
         </article>
       `).join("");
       refreshLanguage(document.getElementById("reports"));
@@ -9255,10 +9404,13 @@
     }
 
     function displaySpecialScore(rawScore, mode) {
-      const normalized = mode === "wealth"
-        ? 50 + rawScore * 0.22
-        : 58 + rawScore * 0.1;
-      return Math.max(5, Math.min(98, Math.round(normalized)));
+      // Use a bounded curve so a few stacked signals cannot make every date look like 99.
+      const center = mode === "wealth" ? 60 : 56;
+      const spread = mode === "wealth" ? 30 : 34;
+      const pivot = mode === "wealth" ? 55 : 52;
+      const scale = mode === "wealth" ? 55 : 65;
+      const normalized = center + spread * Math.tanh((rawScore - pivot) / scale);
+      return Math.max(8, Math.min(95, Math.round(normalized)));
     }
 
     function scoreGrade(score, mode) {
@@ -9267,6 +9419,48 @@
       if (score >= 70) return mode === "wealth" ? "较旺" : "风险偏高";
       if (score >= 58) return "中等";
       return mode === "wealth" ? "偏弱" : "较低";
+    }
+
+    function specialEvidenceProfile(ctx, details) {
+      const items = [];
+      const add = (layer, type, label, polarity = "neutral", weight = 1) => {
+        if (!label || label.includes("无明显")) return;
+        items.push({ layer, type, label, polarity, weight });
+      };
+      const { layers, combineEffects, severeEffects, skyConflicts, concurrent, starStrength, dynamicStrength } = details;
+      add("本命", "强弱", `本命${strengthDisplay(dynamicStrength?.base || ctx.baseStrength || ctx.strength)}`);
+      add("岁运流日", "动态强弱", `当日${strengthDisplay(dynamicStrength?.current || ctx.strength)}，${dynamicStrength?.trend || "变化不大"}`, dynamicStrength?.trend === "转旺" ? "positive" : dynamicStrength?.trend === "转弱" ? "negative" : "neutral", 1.1);
+      const layerNames = uniqueList(layers.filter((layer) => layer.wealthHit || layer.weakCannotCarry || layer.officerHit || layer.outputHit).map((layer) => `${layer.label}${layer.pillar.text}`));
+      if (layerNames.length) add("十神", "事件主题", `财官食伤落在${layerNames.slice(0, 3).join("、")}`, "topic", 1.1);
+      if (combineEffects.length) add("岁运流日", "合化", combineEffects.slice(0, 3).map((item) => item.label).join("、"), "mixed", 1.25);
+      if (severeEffects.length) add("岁运流日", "刑冲破害", severeEffects.slice(0, 3).map((item) => item.label).join("、"), "negative", 1.4);
+      if (skyConflicts.length) add("岁运流日", "天克地冲", skyConflicts.slice(0, 3).map((item) => item.label).join("、"), "negative", 1.6);
+      if (concurrent.length) add("并临", "重复引动", concurrent.slice(0, 3).map((item) => item.label).join("、"), "mixed", 1.2);
+      const goodStars = starStrength.list.filter((item) => goodSignalStars.includes(item.star)).slice(0, 3);
+      const riskStars = starStrength.list.filter((item) => riskSignalStars.includes(item.star)).slice(0, 3);
+      if (goodStars.length) add("神煞", "助力", goodStars.map((item) => `${item.star}${item.count}见`).join("、"), "positive", 0.9);
+      if (riskStars.length) add("神煞", "风险", riskStars.map((item) => `${item.star}${item.count}见`).join("、"), "negative", 1.2);
+      const unique = [];
+      const seen = new Set();
+      items.forEach((item) => {
+        const key = `${item.type}:${item.label}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        unique.push(item);
+      });
+      const families = new Set(unique.map((item) => item.type));
+      const positive = unique.filter((item) => item.polarity === "positive").length;
+      const negative = unique.filter((item) => item.polarity === "negative").length;
+      const conflicts = Math.min(3, Math.min(positive, negative) + unique.filter((item) => item.polarity === "mixed").length);
+      const strength = Math.max(0.34, Math.min(0.9, 0.38 + Math.min(5, families.size) * 0.07 + Math.min(7, unique.length) * 0.025 - conflicts * 0.04));
+      return {
+        items: unique.slice(0, 9),
+        families: Array.from(families),
+        conflicts,
+        strength,
+        label: strength >= 0.76 ? "多层支持" : strength >= 0.6 ? "中等支持" : "单层或弱支持",
+        calibration: (families.size < 2 ? -3 : 0) - Math.min(8, conflicts * 2)
+      };
     }
 
     function concurrentPairTitle(left, right) {
@@ -9882,9 +10076,21 @@
       const tieScore = mode === "wealth"
         ? rawScore + wealthPower * 0.25 + outputPower * 0.2 + goodStars.length * 1.5 + concurrent.filter((item) => item.wealth || item.favorable).length * 1.8 - severeEffects.length * 1.2
         : rawScore + severeTie + starTie + weakPressure * 1.5 + concurrent.reduce((sum, item) => sum + (item.riskStars.length ? item.strength : 0), 0) + (energy.imbalance ? energy.gap : 0) + skyConflicts.length * 4;
-      const score = displaySpecialScore(rawScore, mode);
+      const evidence = specialEvidenceProfile(ctx, {
+        layers,
+        combineEffects,
+        severeEffects,
+        skyConflicts,
+        concurrent,
+        starStrength,
+        dynamicStrength: dynamic
+      });
+      const calibratedRawScore = rawScore + evidence.calibration;
+      const score = displaySpecialScore(calibratedRawScore, mode);
       const reasons = [stackLabel];
       reasons.push(`动态强弱：本命${strengthDisplay(dynamic.base || ctx.strength)}，当日${strengthDisplay(effectiveStrength)}，${dynamic.trend}`);
+      if (evidence.conflicts) reasons.push(`正负信号并存${evidence.conflicts}处，分数已降权`);
+      if (evidence.families.length < 2) reasons.push("独立信号较少，分数按保守值处理");
       if (mode === "wealth") {
         if (concurrent.some((item) => item.wealth || item.favorable || item.goodStars.length)) reasons.push(`并临助财：${concurrent.filter((item) => item.wealth || item.favorable || item.goodStars.length).slice(0, 2).map((item) => item.label).join("、")}`);
         if (energy.dominantRel === "财星" || effectiveFavorable.includes(energy.dominant)) reasons.push(`能量偏${energy.dominant}，为${energy.dominantRel}${effectiveFavorable.includes(energy.dominant) ? "且属喜用" : ""}`);
@@ -9928,7 +10134,7 @@
         layers,
         dynamicStrength: dynamic
       });
-      return cache.set({ date, pillar, stemGod, stars, effects, stack, score, rawScore, tieScore, mode, reasons: conciseSpecialReasons(reasons, mode), detail, dynamicStrength: dynamic });
+      return cache.set({ date, pillar, stemGod, stars, effects, stack, score, rawScore: calibratedRawScore, baseRawScore: rawScore, tieScore, mode, evidence, reasons: conciseSpecialReasons(reasons, mode), detail, dynamicStrength: dynamic });
     }
 
     function compareSpecialDates(a, b) {
@@ -10093,8 +10299,21 @@
         : boundaries.filter((item) => item.date <= ctx.birthDate).pop();
       const spanDays = Math.abs(boundary.date - ctx.birthDate) / 86400000;
       const ageDecimal = spanDays / 3;
-      const startDate = new Date(ctx.birthDate.getTime() + ageDecimal * 365.2422 * 86400000);
-      return { ...boundary, spanDays, ageDecimal, startDate };
+      // Three elapsed days correspond to one luck year (360 symbolic days).
+      const totalHours = Math.floor(spanDays * 120 * 24);
+      const years = Math.floor(totalHours / 8640);
+      const months = Math.floor(totalHours % 8640 / 720);
+      const days = Math.floor(totalHours % 720 / 24);
+      const hours = totalHours % 24;
+      const startDate = new Date(ctx.birthDate);
+      const birthDay = startDate.getDate();
+      startDate.setDate(1);
+      startDate.setFullYear(startDate.getFullYear() + years);
+      startDate.setMonth(startDate.getMonth() + months);
+      const lastDay = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0).getDate();
+      startDate.setDate(Math.min(birthDay, lastDay) + days);
+      startDate.setHours(startDate.getHours() + hours);
+      return { ...boundary, spanDays, ageDecimal, startDate, ageParts: { years, months, days, hours } };
     }
 
     function buildLuckCycles(ctx) {
@@ -10102,7 +10321,7 @@
       const isYangYear = stems.indexOf(birthYearStem) % 2 === 0;
       const forward = (ctx.state.gender === "男" && isYangYear) || (ctx.state.gender === "女" && !isYangYear);
       const startInfo = luckBoundaryInfo(ctx, forward);
-      return Array.from({ length: 8 }, (_, i) => {
+      return Array.from({ length: 9 }, (_, i) => {
         const offset = forward ? i + 1 : -(i + 1);
         const stemIndex = (stems.indexOf(ctx.pillars[1].stem) + offset + 10) % 10;
         const branchIndex = (branches.indexOf(ctx.pillars[1].branch) + offset + 12) % 12;
@@ -10122,7 +10341,7 @@
           endAge: Math.max(Math.floor(startAgeDecimal), Math.ceil(endAgeDecimal) - 1),
           startAgeDecimal,
           endAgeDecimal,
-          startAgeText: formatLuckAge(startAgeDecimal),
+          startAgeText: `${startInfo.ageParts.years + i * 10}岁${startInfo.ageParts.months}个月${startInfo.ageParts.days}天${startInfo.ageParts.hours}小时`,
           endAgeText: formatLuckAge(endAgeDecimal),
           startDate,
           endDate,
@@ -10282,17 +10501,24 @@
       if (!target) return;
       const birthText = `${ctx.birthMeta?.solarDateText || ctx.state.birthDate || "--"} ${ctx.state.birthTime || "--"}`;
       const fetal = fetalPillar(ctx);
+      const calendarChart = window.Solar ? window.Solar.fromDate(ctx.birthDate).getLunar().getEightChar() : null;
+      const lunar = lunarPartsForSolarDate(ctx.birthMeta?.clockDate || ctx.birthDate);
+      const lunarText = `${lunar.year}年${lunar.leap ? "闰" : ""}${lunar.month}月${lunar.day}日`;
+      const beforeTerm = luckBoundaryInfo(ctx, false);
+      const afterTerm = luckBoundaryInfo(ctx, true);
       const firstLuck = ctx.lucks?.[0];
-      const luckText = firstLuck ? `${firstLuck.startAgeText}起运，${firstLuck.startDateText}交${firstLuck.pillar.text}` : "待排";
+      const luckText = firstLuck ? `${firstLuck.startAgeText}起运，${formatLocalDateTime(firstLuck.startDate)}交${firstLuck.pillar.text}` : "待排";
       const chips = [
         ["姓名", ctx.state.name || "命主"],
         ["性别", ctx.state.gender || "未填"],
         ["公历", birthText],
-        ...(ctx.state.calendar === "lunar" ? [["农历", `${ctx.state.birthDate}${ctx.state.lunarLeap === "leap" ? "（闰月）" : ""}`]] : []),
+        ["农历", lunarText],
+        ["节气", `${beforeTerm.name} ${formatLocalDateTime(beforeTerm.date)}；${afterTerm.name} ${formatLocalDateTime(afterTerm.date)}`],
         ["校时", ctx.birthMeta?.timeLabel || "当地钟表时间"],
         ["换月换日", `精确节气｜${ctx.state.dayBoundary === "zi" ? "子初换日" : "零点换日"}`],
-        ["生肖", `${ctx.pillars[0].branch}年生`],
+        ["生肖", `${"鼠牛虎兔龙蛇马羊猴鸡狗猪"[branches.indexOf(ctx.pillars[0].branch)]}（${ctx.pillars[0].branch}年）`],
         ["胎元", `${fetal.text}（${pillarNayin(fetal)}）`],
+        ...(calendarChart ? [["命宫", `${calendarChart.getMingGong()}（${calendarChart.getMingGongNaYin()}）`]] : []),
         ["排盘方式", ctx.state.calendar === "solar" ? "公历排盘" : "农历转换公历排盘"],
         ["起运交运", luckText],
         ...(firstLuck ? [["起运依据", `${firstLuck.direction}｜出生至${firstLuck.boundaryName}${firstLuck.boundaryDays.toFixed(2)}天`]] : []),
@@ -10397,7 +10623,7 @@
 
       const yearStemYang = stems.indexOf(ctx.pillars[0].stem) % 2 === 0;
       const forward = (ctx.state.gender === "男" && yearStemYang) || (ctx.state.gender === "女" && !yearStemYang);
-      const smallLucks = Array.from({ length: 9 }, (_, i) => {
+      const smallLucks = Array.from({ length: 10 }, (_, i) => {
         const offset = forward ? i + 1 : -(i + 1);
         return { age: i + 1, pillar: ganzhi(ctx.pillars[3].index + offset) };
       });

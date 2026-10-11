@@ -1,7 +1,15 @@
 {
-  "schemaVersion": 1,
-  "updatedAt": "2026-07-08",
-  "description": "八字预测理论知识库。后续可以继续追加视频、笔记、规则和案例，用于提升网页预测的评分与解释精度。",
+  "schemaVersion": 2,
+  "updatedAt": "2026-10-04",
+  "description": "八字预测理论知识库。规则按来源、主题、时间层级和验证状态维护，用于生成可追溯的事件预测。",
+  "enginePolicy": {
+    "modelVersion": "evidence-layered-1",
+    "scoring": "多层信号加权，并对正负冲突、单一信号和重复神煞降权；分数只表示规则支持强度，不代表科学概率。",
+    "layers": ["本命", "大运", "流年", "流月", "流日"],
+    "signals": ["旺衰", "喜用", "十神", "合化", "三会三合", "刑冲破害", "天克地冲", "并临", "神煞"],
+    "eventTopics": ["事业", "财富", "感情", "婚姻", "家庭六亲", "健康", "灾害", "性格", "格局"],
+    "validationStatus": "规则来自传统资料整理，尚未用足量现实案例做统计学验证；健康内容不能替代医学诊断。"
+  },
   "sources": [
     {
       "id": "yt-9NH6DOhSs5g",
@@ -616,6 +624,8 @@
   "updateGuide": {
     "addSource": "新增视频或笔记时，在 sources 中追加一条来源，设置唯一 id。",
     "addRule": "把可执行的理论整理成 rules：when 写命中条件，scoreAdjust 写评分修正，messages 写报告文案。",
-    "transcript": "如有字幕，可另建 transcripts/source-id.txt 保存原文摘要或时间点，不建议把整段课程逐字塞进网页。"
+    "transcript": "如有字幕，可另建 transcripts/source-id.txt 保存原文摘要或时间点，不建议把整段课程逐字塞进网页。",
+    "validation": "新增规则需标记 validationStatus、caseCount 和 lastValidatedAt；没有案例复核的规则只能作为低或中置信度提示。",
+    "eventRecord": "预测事件应记录 topic、period、headline、polarity、score、evidence 和 sourceRefs，专业版展示 evidence，日常版只展示 headline/detail。"
   }
 }
