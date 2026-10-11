@@ -10747,7 +10747,7 @@
       timeline.innerHTML = lucks.map((l, i) => `
         <button class="pick ${i === selectedLuck ? "active" : ""}" type="button" data-luck="${i}">
           <strong>${l.pillar.text}</strong>
-          <span>${escapeHtml(l.startAgeText)}</span>
+          <span>${l.startAge}岁起</span>
           <span>${l.startYear}-${l.endYear}</span>
         </button>
       `).join("");
