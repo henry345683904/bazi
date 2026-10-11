@@ -1954,6 +1954,95 @@
       }
     }
 
+    /* Reference paipan layout: dense, table-first and single-column. */
+    .layout {
+      display: block;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .form-panel {
+      position: relative;
+      top: auto;
+      margin-bottom: 12px;
+      border-radius: 2px;
+      box-shadow: 0 2px 8px rgba(70, 24, 36, .08);
+    }
+
+    .result { min-width: 0; }
+
+    .full-chart,
+    .panel.section,
+    .hero-card {
+      border-radius: 2px;
+      box-shadow: 0 2px 8px rgba(70, 24, 36, .08);
+    }
+
+    .full-chart { gap: 6px; padding: 10px; }
+    .full-chart > .panel-title { margin-bottom: 4px; }
+    .full-chart > .panel-title h2 { font-size: 16px; }
+    .full-chart > .detail-box { border-radius: 2px; padding: 8px; }
+
+    .xipan-summary {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      border: 1px solid #d3d9d7;
+      border-bottom: 0;
+      background: #fff;
+    }
+
+    .xipan-chip {
+      min-height: 43px;
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      align-items: center;
+      gap: 4px;
+      padding: 5px 7px;
+      border: 0;
+      border-right: 1px solid #dfe4e2;
+      border-bottom: 1px solid #dfe4e2;
+      border-radius: 0;
+    }
+
+    .xipan-chip span { font-size: 11px; color: #68716f; }
+    .xipan-chip strong { margin: 0; font-size: 12px; color: #6a263a; }
+
+    .xipan-table-wrap {
+      border-radius: 0;
+      border-color: #cfd7d4;
+    }
+
+    .xipan-table {
+      min-width: 760px;
+      font-size: 11px;
+    }
+
+    .xipan-table th,
+    .xipan-table td {
+      padding: 4px 3px;
+      border-color: #d5ddda;
+      line-height: 1.25;
+    }
+
+    .xipan-table th { background: #f4e5e9; color: #6f263d; }
+    .xipan-table .label { width: 58px; background: #f4f6f5; }
+    .xipan-table .gz-big { font-size: 20px; }
+    .xipan-table .small { font-size: 9px; }
+
+    .mingpan-grid { display: none; }
+    .xipan-attention { gap: 5px; }
+    .xipan-attention .detail-box { border-radius: 0; padding: 7px; }
+    .timeline { grid-template-columns: repeat(9, minmax(68px, 1fr)); overflow-x: auto; }
+    .timeline .pick { border-radius: 0; border-color: #d2dbd7; }
+    .flow-layout { gap: 6px; }
+    .flow-detail, #flowDetail { border-radius: 0; }
+
+    @media (max-width: 900px) {
+      .xipan-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .xipan-chip { border-right: 1px solid #dfe4e2; }
+      .xipan-table { min-width: 700px; }
+    }
+
     /* Mobile app shell */
     body {
       background: #f2f3f0;
@@ -2827,7 +2916,7 @@
 
         <section class="panel section full-chart professional-only" id="fullChart" aria-hidden="true" data-bazi-view="chart">
           <div class="panel-title">
-            <h2>完整命盘与大运流年</h2>
+            <h2>八字排盘结果</h2>
             <span class="tag" id="chartTag">点击条目看细节</span>
           </div>
           <div class="detail-box" id="patternBox">
