@@ -258,12 +258,34 @@
       padding: 18px;
     }
 
+    .form-panel.is-collapsed #baziForm {
+      display: none;
+    }
+
+    .form-panel.is-collapsed .profile-banner {
+      margin-bottom: 0;
+    }
+
+    #toggleBirthFormBtn svg {
+      transition: transform .2s ease;
+    }
+
+    .form-panel.is-collapsed #toggleBirthFormBtn svg {
+      transform: rotate(180deg);
+    }
+
     .panel-title {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 16px;
+    }
+
+    .panel-title-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     h2, h3 {
@@ -2740,7 +2762,12 @@
       <section class="panel form-panel" data-bazi-view="chart">
         <div class="panel-title">
           <h2>出生资料</h2>
-          <span class="tag">离线生成</span>
+          <div class="panel-title-actions">
+            <span class="tag">离线生成</span>
+            <button class="icon-command" type="button" id="toggleBirthFormBtn" title="收起出生资料" aria-label="收起出生资料" aria-expanded="true">
+              <i data-lucide="chevron-up" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
 
         <div class="profile-banner">
@@ -11633,6 +11660,17 @@
       renderAccountUI();
     }
 
+    function setBirthFormCollapsed(collapsed) {
+      const panel = document.querySelector('.form-panel[data-bazi-view="chart"]');
+      const button = document.getElementById("toggleBirthFormBtn");
+      if (!panel || !button) return;
+      panel.classList.toggle("is-collapsed", collapsed);
+      button.setAttribute("aria-expanded", String(!collapsed));
+      const label = collapsed ? "展开出生资料" : "收起出生资料";
+      button.title = label;
+      button.setAttribute("aria-label", label);
+    }
+
     function generate(options = {}) {
       const state = formState();
       if (!state.birthDate || !state.birthTime) return;
@@ -11740,6 +11778,7 @@
       const yearGod = tenGod(d.stem, year.stem);
       document.getElementById("quickHint").innerHTML = `<strong>近期应事：</strong>${escapeHtml(focusTips[state.focus] || focusTips.overall)}${escapeHtml(shortSentences(tenGodScenario(yearGod, ctx), 1))}`;
       refreshLanguage(document.body);
+      setBirthFormCollapsed(true);
       if (!options.skipHistory) saveCurrentQueryRecord(ctx);
       if (!options.skipNavigation) setBaziView("fortune", true, true);
     }
@@ -11773,6 +11812,7 @@
       history.replaceState(null, "", location.href.split("#")[0]);
       syncBirthParameterUI();
       setActiveTool("bazi");
+      setBirthFormCollapsed(false);
       setBaziView("chart", true, true);
       refreshLanguage(document.body);
       requestAnimationFrame(() => document.getElementById("name")?.focus());
@@ -11813,6 +11853,10 @@
     });
 
     document.getElementById("newChartBtn").addEventListener("click", startNewChart);
+    document.getElementById("toggleBirthFormBtn").addEventListener("click", () => {
+      const panel = document.querySelector('.form-panel[data-bazi-view="chart"]');
+      setBirthFormCollapsed(!panel?.classList.contains("is-collapsed"));
+    });
     document.getElementById("recordsLoginShortcut").addEventListener("click", () => setAccountPanelOpen(true, true));
 
     document.getElementById("phoneForm").addEventListener("submit", generatePhoneReport);
