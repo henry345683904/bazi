@@ -11014,7 +11014,6 @@
     function renderXipanAttention(ctx) {
       const target = document.getElementById("xipanAttention");
       if (!target) return;
-      const allStars = uniqueList(ctx.pillars.flatMap((pillar) => compactStars(symbolicStars(ctx, pillar))));
       target.innerHTML = `
         <div class="detail-box">
           <div class="detail-title"><h3>天干留意</h3><span class="tag">${escapeHtml(stemAttention(ctx).length)}条</span></div>
@@ -11023,14 +11022,6 @@
         <div class="detail-box">
           <div class="detail-title"><h3>地支留意</h3><span class="tag">${escapeHtml(branchAttention(ctx).length)}条</span></div>
           <p>${escapeHtml(branchAttention(ctx).join("；"))}</p>
-        </div>
-        <div class="detail-box">
-          <div class="detail-title"><h3>神煞重点</h3><span class="tag">${escapeHtml(allStars.length || 0)}项</span></div>
-          <p>${escapeHtml(allStars.length ? allStars.join("、") : "常用神煞不突出")}</p>
-        </div>
-        <div class="detail-box">
-          <div class="detail-title"><h3>细盘提示</h3><span class="tag">专业排盘</span></div>
-          <p>${escapeHtml(`当前以${ctx.flowYears?.[selectedYear]?.pillar?.text || "流年"}、${ctx.flowMonths?.[selectedMonth]?.pillar?.text || "流月"}、${ctx.flowDays?.[selectedDay]?.pillar?.text || "流日"}同看大运和原局。`)}</p>
         </div>
       `;
       colorizeGanzhi(target);
