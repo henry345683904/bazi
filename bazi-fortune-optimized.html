@@ -3174,6 +3174,38 @@
       width: 44px;
       min-width: 44px;
     }
+    body.basic-chart-only #luckTimeline,
+    body.basic-chart-only #yearFlow {
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-columns: none;
+      grid-auto-columns: minmax(0, 1fr);
+      gap: 3px;
+      padding: 2px 0;
+      overflow: visible;
+    }
+    body.basic-chart-only #luckTimeline .pick,
+    body.basic-chart-only #yearFlow .pick {
+      width: 100%;
+      min-width: 0;
+      padding: 4px 1px;
+      box-sizing: border-box;
+      overflow-wrap: anywhere;
+    }
+    @media (max-width: 620px) {
+      body.basic-chart-only #luckTimeline,
+      body.basic-chart-only #yearFlow { gap: 1px; }
+      body.basic-chart-only #luckTimeline .pick,
+      body.basic-chart-only #yearFlow .pick { padding: 3px 0; border-radius: 3px; }
+      body.basic-chart-only #luckTimeline .pick strong,
+      body.basic-chart-only #yearFlow .pick strong { font-size: 17px; }
+      body.basic-chart-only #luckTimeline .pick > span,
+      body.basic-chart-only #yearFlow .pick > span { font-size: 8px; line-height: 1.2; }
+      body.basic-chart-only #luckTimeline .flow-gods,
+      body.basic-chart-only #yearFlow .flow-gods { left: 100%; }
+      body.basic-chart-only #luckTimeline .flow-gods > span,
+      body.basic-chart-only #yearFlow .flow-gods > span { font-size: 6px; }
+    }
   </style>
 </head>
   <body class="basic-chart-only">
