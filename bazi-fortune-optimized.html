@@ -11511,14 +11511,20 @@
       const dayItem = days[Math.max(0, Math.min(selectedDay, days.length - 1))];
       const lunarDateLabel = (date) => {
         const lunar = lunarPartsForSolarDate(date);
-        return `${lunar.leap ? "闰" : ""}${lunar.month}月${lunar.day}日`;
+        const months = ["正月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "冬月", "腊月"];
+        const digits = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+        const day = lunar.day <= 10 ? (lunar.day === 10 ? "初十" : `初${digits[lunar.day]}`)
+          : lunar.day < 20 ? `十${digits[lunar.day - 10]}`
+          : lunar.day === 20 ? "二十"
+          : lunar.day < 30 ? `廿${digits[lunar.day - 20]}` : "三十";
+        return `${lunar.leap ? "闰" : ""}${months[lunar.month - 1]}${day}日`;
       };
       const lunarMonthRange = monthItem.startDate && monthItem.endDate
         ? `${lunarDateLabel(monthItem.startDate)}–${lunarDateLabel(new Date(monthItem.endDate.getTime() - 86400000))}`
         : lunarDateLabel(dayItem.date);
       const columns = [
-        { name: "流日", item: dayItem, age: `${dayItem.date.getMonth() + 1}/${dayItem.date.getDate()}<br><small>农历${escapeHtml(lunarDateLabel(dayItem.date))}</small>` },
-        { name: "流月", item: monthItem, age: `${escapeHtml(monthItem.label || `${monthItem.month}月`)}<br><small>农历${escapeHtml(lunarMonthRange)}</small>` },
+        { name: "流日", item: dayItem, age: `${dayItem.date.getMonth() + 1}/${dayItem.date.getDate()}<br><small>${escapeHtml(lunarDateLabel(dayItem.date))}</small>` },
+        { name: "流月", item: monthItem, age: `${escapeHtml(monthItem.label || `${monthItem.month}月`)}<br><small>${escapeHtml(lunarMonthRange)}</small>` },
         { name: "流年", item: yearItem, age: `${luck.startAge + selectedYear}岁<br>${yearItem.year}` },
         { name: "大运", item: luck, age: `${luck.startAge}–${luck.endAge}岁<br>${luck.startYear}` },
         ...ctx.pillars.map((pillar, i) => ({ name: pillarLabels[i], item: { pillar }, age: "*" }))
