@@ -3023,6 +3023,19 @@
     @media (max-width: 620px) {
       .natal-inline-arrows text { font-size: 8px; }
     }
+    body.basic-chart-only .flow-layout { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+    body.basic-chart-only .flow-stack { gap: 6px; }
+    body.basic-chart-only .small-title { margin: 0 0 4px; font-size: 12px; }
+    body.basic-chart-only .timeline, body.basic-chart-only .scroll-row { gap: 3px; }
+    body.basic-chart-only .pick { padding: 3px 2px; min-height: 30px; border-radius: 4px; }
+    body.basic-chart-only .pick strong { display: flex; justify-content: center; font-size: 12px; line-height: 1.1; }
+    body.basic-chart-only .pick span { font-size: 9px; line-height: 1.1; }
+    body.basic-chart-only #xipanFineTable td, body.basic-chart-only #xipanFineTable th { padding: 3px 2px; line-height: 1.2; }
+    body.basic-chart-only #xipanFineTable .gz-big { font-size: 18px; }
+    @media (max-width: 620px) {
+      body.basic-chart-only .timeline { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      body.basic-chart-only .scroll-row { grid-template-columns: repeat(auto-fit, minmax(38px, 1fr)); }
+    }
   </style>
 </head>
   <body class="basic-chart-only">
@@ -3265,6 +3278,7 @@
                 <div class="scroll-row" id="dayFlow"></div>
               </div>
             </div>
+            <details class="small-luck-collapse"><summary>查看运程细节</summary>
             <div class="detail-box" id="flowDetail">
               <div class="detail-title">
                 <h3>细节</h3>
@@ -3272,6 +3286,7 @@
               </div>
               <p>点击大运、流年、流月或流日查看具体应事。</p>
             </div>
+            </details>
           </div>
           <div class="luck-tables-bottom">
             <details class="small-luck-collapse">
