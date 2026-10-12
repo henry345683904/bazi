@@ -11507,9 +11507,16 @@
       const monthItem = months[Math.max(0, Math.min(selectedMonth, months.length - 1))];
       const days = buildFlowDays(yearItem, monthItem);
       const dayItem = days[Math.max(0, Math.min(selectedDay, days.length - 1))];
+      const lunarDateLabel = (date) => {
+        const lunar = lunarPartsForSolarDate(date);
+        return `${lunar.leap ? "闰" : ""}${lunar.month}月${lunar.day}日`;
+      };
+      const lunarMonthRange = monthItem.startDate && monthItem.endDate
+        ? `${lunarDateLabel(monthItem.startDate)}–${lunarDateLabel(new Date(monthItem.endDate.getTime() - 86400000))}`
+        : lunarDateLabel(dayItem.date);
       const columns = [
-        { name: "流日", item: dayItem, age: `${dayItem.date.getMonth() + 1}/${dayItem.date.getDate()}` },
-        { name: "流月", item: monthItem, age: escapeHtml(monthItem.label || `${monthItem.month}月`) },
+        { name: "流日", item: dayItem, age: `${dayItem.date.getMonth() + 1}/${dayItem.date.getDate()}<br><small>农历${escapeHtml(lunarDateLabel(dayItem.date))}</small>` },
+        { name: "流月", item: monthItem, age: `${escapeHtml(monthItem.label || `${monthItem.month}月`)}<br><small>农历${escapeHtml(lunarMonthRange)}</small>` },
         { name: "流年", item: yearItem, age: `${luck.startAge + selectedYear}岁<br>${yearItem.year}` },
         { name: "大运", item: luck, age: `${luck.startAge}–${luck.endAge}岁<br>${luck.startYear}` },
         ...ctx.pillars.map((pillar, i) => ({ name: pillarLabels[i], item: { pillar }, age: "*" }))
