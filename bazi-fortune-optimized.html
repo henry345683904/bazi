@@ -3274,6 +3274,8 @@
     .clash-prediction-details summary { cursor: pointer; padding: 6px 8px; font-weight: 700; font-size: 12px; }
     .clash-prediction-details .clash-prediction-list { padding: 0 8px 5px; }
     .clash-high-risk { border-left: 3px solid #c99320; padding-left: 6px; background: #fff8dc; }
+    .clash-nested { border-left: 3px solid #d6b647; padding-left: 6px; background: #fff8d6; }
+    .clash-high-risk { border-left-color: #c43d3d; background: #ffe1e1; }
     @media (max-width: 620px) {
       body.basic-chart-only #xipanMainTable td,
       body.basic-chart-only #xipanMainTable th { font-size: 11px; }
@@ -12853,7 +12855,7 @@
       const hits = [];
       (ctx.lucks || []).forEach((luck) => {
         const affected = natalHeavenlyClashEarthlyClash(ctx, luck.pillar);
-        if (affected.length) hits.push({ type: "大运", pillar: luck.pillar, age: `${luck.startAge}–${luck.endAge}岁`, years: `${luck.startYear}-${luck.endYear}`, affected });
+        if (affected.length) hits.push({ type: "大运", pillar: luck.pillar, age: `${luck.startAge}–${luck.endAge}岁`, years: `${luck.startYear}-${luck.endYear}`, affected, luckClash: true });
         buildFlowYears(ctx, luck).forEach((year) => {
           const yearAffected = natalHeavenlyClashEarthlyClash(ctx, year.pillar);
           if (yearAffected.length) hits.push({
@@ -12862,13 +12864,14 @@
             age: `${luck.startAge + (year.year - luck.startYear)}岁`,
             years: `${year.year}年`,
             affected: yearAffected,
+            luckClash: affected.length > 0,
             concurrent: year.pillar.text === luck.pillar.text
           });
         });
       });
       const uniqueHits = hits.filter((hit, index, list) => index === list.findIndex((item) => `${item.type}-${item.years}-${item.pillar.text}` === `${hit.type}-${hit.years}-${hit.pillar.text}`));
       const text = uniqueHits.length
-        ? uniqueHits.map((hit) => `<p class="${hit.concurrent ? "clash-high-risk" : ""}"><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}${hit.concurrent ? "　岁运并临" : ""}<br><span>与原局${hit.affected.join("、")}形成天克地冲。${hit.concurrent ? `${heavenlyEarthlyClashImpact(hit.affected)}岁运并临使冲克力量明显叠加，疾病、重病、住院、意外灾祸和死亡风险上升。` : heavenlyEarthlyClashImpact(hit.affected)}</span></p>`).join("")
+        ? uniqueHits.map((hit) => `<p class="${hit.concurrent ? "clash-high-risk" : hit.luckClash ? "clash-nested" : ""}"><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}${hit.concurrent ? "　岁运并临" : ""}<br><span>与原局${hit.affected.join("、")}形成天克地冲。${hit.concurrent ? `${heavenlyEarthlyClashImpact(hit.affected)}岁运并临使冲克力量明显叠加，疾病、重病、住院、意外灾祸和死亡风险上升。` : heavenlyEarthlyClashImpact(hit.affected)}</span></p>`).join("")
         : "<p>暂未找到与原局同时形成天克地冲的大运或流年。</p>";
       content.innerHTML = `<details class="clash-prediction-details"><summary>天克地冲（${uniqueHits.length}项）</summary><div class="clash-prediction-list">${text}</div></details>`;
     }
