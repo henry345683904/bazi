@@ -3252,6 +3252,9 @@
       body.basic-chart-only #dayFlow .pick > span { font-size: 6px; line-height: 1.1; }
       body.basic-chart-only #dayFlow .flow-gods { left: 100%; }
       body.basic-chart-only #dayFlow .flow-gods > span { font-size: 5px; }
+      /* The row labels are redundant on a narrow portrait screen. */
+      body.basic-chart-only #xipanFineTable th.label,
+      body.basic-chart-only #xipanFineTable td.label { display: none; }
     }
   </style>
 </head>
