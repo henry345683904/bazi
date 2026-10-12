@@ -13003,7 +13003,9 @@
         : "<p>暂未找到与原局同时形成天克地冲的大运或流年。</p>";
       const disasterShaHits = [];
       (ctx.lucks || []).forEach((luck) => {
-        if (symbolicStars(ctx, luck.pillar).includes("灾煞")) {
+        const luckStars = symbolicStars(ctx, luck.pillar);
+        // 天乙贵人同现时作为缓解信号，该阶段不列入灾煞清单。
+        if (luckStars.includes("灾煞") && !luckStars.includes("天乙贵人")) {
           disasterShaHits.push({
             type: "大运",
             pillar: luck.pillar,
@@ -13012,7 +13014,8 @@
           });
         }
         buildFlowYears(ctx, luck).forEach((year) => {
-          if (symbolicStars(ctx, year.pillar).includes("灾煞")) {
+          const yearStars = symbolicStars(ctx, year.pillar);
+          if (yearStars.includes("灾煞") && !yearStars.includes("天乙贵人")) {
             disasterShaHits.push({
               type: "流年",
               pillar: year.pillar,
