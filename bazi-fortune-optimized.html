@@ -3105,6 +3105,34 @@
       max-width: 100%;
     }
     #dayFlow .pick { scroll-snap-align: start; }
+    body.basic-chart-only .flow-stack,
+    body.basic-chart-only .flow-stack > div { min-width: 0; max-width: 100%; }
+    body.basic-chart-only #luckTimeline,
+    body.basic-chart-only #yearFlow,
+    body.basic-chart-only #monthFlow {
+      grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+      grid-auto-flow: row;
+      overflow: visible;
+      width: 100%;
+      min-width: 0;
+      gap: 2px;
+    }
+    body.basic-chart-only #monthFlow .pick,
+    body.basic-chart-only #dayFlow .pick { padding: 2px 1px; min-height: 0; }
+    body.basic-chart-only #luckTimeline .pick strong,
+    body.basic-chart-only #yearFlow .pick strong,
+    body.basic-chart-only #monthFlow .pick strong,
+    body.basic-chart-only #dayFlow .pick strong { font-size: 22px; line-height: 1.05; }
+    body.basic-chart-only .pick strong br { display: none; }
+    body.basic-chart-only .pick strong .wuxing-char { font-size: inherit; line-height: inherit; margin: 0; }
+    body.basic-chart-only #monthFlow .pick > span { font-size: 9px; white-space: normal; }
+    body.basic-chart-only #dayFlow { grid-auto-columns: 36px; gap: 2px; padding: 1px 0 4px; }
+    body.basic-chart-only .flow-stack { gap: 3px; }
+    @media (max-width: 620px) {
+      body.basic-chart-only #luckTimeline,
+      body.basic-chart-only #yearFlow { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      body.basic-chart-only #monthFlow { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    }
   </style>
 </head>
   <body class="basic-chart-only">
