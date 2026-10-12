@@ -9144,6 +9144,36 @@
       return { branch: luBranch, periods };
     }
 
+    function wealthEnergyEffects(ctx, period) {
+      const effects = [];
+      ctx.pillars.forEach((pillar) => {
+        if (stemCombineElement(period.stem, pillar.stem)) effects.push(`${period.stem}${pillar.stem}合，财星能量得到引动`);
+        if (stemClashPairs[period.stem] === pillar.stem) effects.push(`${period.stem}${pillar.stem}冲，财星能量减弱并伴随波动`);
+        branchRelationObjects(period.branch, pillar.branch).filter((item) => item.type !== "同").forEach((item) => {
+          if (["合"].includes(item.type)) effects.push(`${period.branch}${pillar.branch}${item.type}，财星能量增强`);
+          else if (["冲", "刑", "破", "害"].includes(item.type)) effects.push(`${period.branch}${pillar.branch}${item.type}，财星能量减弱`);
+        });
+      });
+      [...branchMeetings, ...branchCombinations].forEach((group) => {
+        const branchesInChart = ctx.pillars.map((pillar) => pillar.branch).concat(period.branch);
+        if (group.branches.every((branch) => branchesInChart.includes(branch))) effects.push(`${group.branches.join("")}${group.name}，财星能量增强`);
+      });
+      return uniqueList(effects);
+    }
+
+    function buildStrongWealth(ctx) {
+      const strong = ["偏旺", "从强", "从旺"].includes(ctx.baseStrength?.label);
+      const periods = [];
+      if (!strong) return { strong, periods };
+      (ctx.lucks || []).forEach((luck) => {
+        if (["正财", "偏财"].includes(tenGod(ctx.pillars[2].stem, luck.pillar.stem))) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${luck.endYear}`, age: `${luck.startAge}–${luck.endAge}岁`, effects: wealthEnergyEffects(ctx, luck.pillar) });
+        buildFlowYears(ctx, luck).forEach((year) => {
+          if (["正财", "偏财"].includes(tenGod(ctx.pillars[2].stem, year.pillar.stem))) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${luck.startAge + (year.year - luck.startYear)}岁`, effects: wealthEnergyEffects(ctx, year.pillar) });
+        });
+      });
+      return { strong, periods };
+    }
+
     function reportCategoryModel(category, ctx) {
       const categoryTitles = {
         overview: "人生总览",
@@ -9270,7 +9300,8 @@
             ...(dailyMode ? [] : directMoneyHabitLines(ctx))
           ]),
           fiveGhostWealth,
-          luWealth: buildLuWealth(ctx)
+          luWealth: buildLuWealth(ctx),
+          strongWealth: buildStrongWealth(ctx)
         };
       }
 
@@ -9727,6 +9758,7 @@
           </ul>
           ${model.fiveGhostWealth ? `<details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(chartContext.pillars[1].branch)}顺数第四支为${escapeHtml(model.fiveGhostWealth.branch)}，本气十神为${escapeHtml(model.fiveGhostWealth.god)}。</p><p>${escapeHtml(model.fiveGhostWealth.text)}</p>${model.fiveGhostWealth.periods.length ? `<div>${model.fiveGhostWealth.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}</p>`).join("")}</div>` : "<p>当前大运和流年中未出现五鬼运财地支。</p>"}</div></details>` : ""}
           ${model.luWealth ? `<details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(model.luWealth.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${model.luWealth.periods.length ? model.luWealth.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}</p>`).join("") : "<p>当前大运和流年中未出现禄神地支。</p>"}</div></details>` : ""}
+          ${model.strongWealth ? `<details class="five-ghost-details"><summary>身旺财旺</summary><div class="five-ghost-content">${model.strongWealth.periods.length ? model.strongWealth.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}<br>${escapeHtml(period.effects.join("；") || "财星能量稳定增强")}</p>`).join("") : model.strongWealth.strong ? "<p>身强但当前大运、流年天干未出现正财或偏财。</p>" : "<p>本命身强条件未满足，暂不列入身旺财旺。</p>"}</div></details>` : ""}
           ${model.healthNote ? `<p class="hint">健康内容只表示传统命理信号，不替代医学诊断。</p>` : ""}
         </div>
       `;
@@ -12938,11 +12970,13 @@
       const content = block.querySelector(".analysis-content");
       const result = buildFiveGhostWealth(ctx);
       const luResult = buildLuWealth(ctx);
+      const strongResult = buildStrongWealth(ctx);
       const periods = result.periods.length
         ? result.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}</p>`).join("")
         : "<p>当前大运和流年中未出现五鬼运财地支。</p>";
       const luPeriods = luResult.periods.length ? luResult.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}</p>`).join("") : "<p>当前大运和流年中未出现禄神地支。</p>";
-      content.innerHTML = `<details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details><details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(luResult.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${luPeriods}</div></details>`;
+      const strongPeriods = strongResult.periods.length ? strongResult.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}<br>${escapeHtml(period.effects.join("；") || "财星能量稳定增强")}</p>`).join("") : strongResult.strong ? "<p>身强但当前大运、流年天干未出现正财或偏财。</p>" : "<p>本命身强条件未满足，暂不列入身旺财旺。</p>";
+      content.innerHTML = `<details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details><details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(luResult.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${luPeriods}</div></details><details class="five-ghost-details"><summary>身旺财旺</summary><div class="five-ghost-content">${strongPeriods}</div></details>`;
     }
 
     function generate(options = {}) {
