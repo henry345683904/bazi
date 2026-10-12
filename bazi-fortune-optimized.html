@@ -12836,10 +12836,10 @@
 
     function heavenlyEarthlyClashImpact(affected) {
       const impact = {
-        年: "父亲容易出现健康、住处、工作或经济方面的明显变化；母亲容易出现健康、情绪、家庭安排或生活环境方面的明显变化；家族长辈也容易发生需要命主参与处理的事件。",
-        月: "兄弟姐妹容易出现工作、住处、钱款分担或关系变化；父亲和母亲容易因家庭安排、经济分配或意见不合产生波动。",
-        日: "命主本人容易出现健康、情绪、出行、工作或居住变化；配偶容易出现健康、工作、钱款和夫妻关系方面的明显波动。",
-        时: "子女容易出现健康、学习、工作或出行方面的变化；晚辈和下属容易出现反复、冲突或需要命主承担责任的事情。"
+        年: "父亲容易出现疾病、重病、住院或意外灾祸；母亲容易出现疾病、重病、住院或意外灾祸；家族长辈容易出现严重健康问题或意外伤灾。",
+        月: "兄弟姐妹容易出现疾病、重病、住院或意外伤灾；父亲和母亲容易出现疾病、慢性病加重、住院或意外灾祸。",
+        日: "命主本人容易出现疾病、重病、住院或意外伤灾；配偶容易出现疾病、重病、住院或意外灾祸。",
+        时: "子女容易出现疾病、重病、住院或意外伤灾；晚辈和下属容易出现健康恶化、反复住院或意外伤灾。"
       };
       return affected.map((pillar) => impact[pillar] || "对应家庭宫位的人事安排容易发生明显变化。").join(" ");
     }
@@ -12867,7 +12867,7 @@
       });
       const uniqueHits = hits.filter((hit, index, list) => index === list.findIndex((item) => `${item.type}-${item.years}-${item.pillar.text}` === `${hit.type}-${hit.years}-${hit.pillar.text}`));
       const text = uniqueHits.length
-        ? uniqueHits.map((hit) => `<p class="${hit.concurrent ? "clash-high-risk" : ""}"><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}${hit.concurrent ? "　岁运并临" : ""}<br><span>与原局${hit.affected.join("、")}形成天克地冲。${hit.concurrent ? `${heavenlyEarthlyClashImpact(hit.affected)}岁运并临使冲克力量明显叠加，死亡或重大健康恶化风险上升。` : heavenlyEarthlyClashImpact(hit.affected)}</span></p>`).join("")
+        ? uniqueHits.map((hit) => `<p class="${hit.concurrent ? "clash-high-risk" : ""}"><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}${hit.concurrent ? "　岁运并临" : ""}<br><span>与原局${hit.affected.join("、")}形成天克地冲。${hit.concurrent ? `${heavenlyEarthlyClashImpact(hit.affected)}岁运并临使冲克力量明显叠加，疾病、重病、住院、意外灾祸和死亡风险上升。` : heavenlyEarthlyClashImpact(hit.affected)}</span></p>`).join("")
         : "<p>暂未找到与原局同时形成天克地冲的大运或流年。</p>";
       content.innerHTML = `<details class="clash-prediction-details"><summary>天克地冲（${uniqueHits.length}项）</summary><div class="clash-prediction-list">${text}</div></details>`;
     }
