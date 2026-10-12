@@ -10945,8 +10945,8 @@
 
     function xipanBranchCell(ctx, pillar) {
       const dayVoid = emptyBranches(ctx.pillars[2]);
-      const isVoid = dayVoid.includes(pillar.branch);
-      return `<span class="gz-big${isVoid ? " void-branch" : ""}">${escapeHtml(pillar.branch)}${isVoid ? `<span class="void-mark">（空）</span>` : ""}</span>`;
+      const isVoid = ctx.pillars.includes(pillar) && dayVoid.includes(pillar.branch);
+      return `<span class="gz-big">${escapeHtml(pillar.branch)}${isVoid ? `<span class="void-mark">（空）</span>` : ""}</span>`;
     }
 
     function renderXipanSummary(ctx) {
@@ -11027,7 +11027,7 @@
         ["地支", ctx.pillars.map((p) => xipanBranchCell(ctx, p))],
         ["藏干", ctx.pillars.map((p) => hiddenStemDetails(ctx, p.branch).join("<br>"))],
         ["纳音", ctx.pillars.map((p) => pillarNayin(p))],
-        ["空亡", ctx.pillars.map((p, index) => `<span class="${index === 2 ? "void-branch" : ""}">${escapeHtml(emptyBranches(p))}</span>`)],
+        ["空亡", ctx.pillars.map((p, index) => `<span class="${index === 2 && ctx.pillars.some((natal) => emptyBranches(ctx.pillars[2]).includes(natal.branch)) ? "void-branch" : ""}">${escapeHtml(emptyBranches(p))}</span>`)],
         ["十二长生", ctx.pillars.map((p) => lifeStage(dayStem, p.branch))],
         ["神煞", ctx.pillars.map((p) => compactStars(symbolicStars(ctx, p)).join("<br>") || "无明显")]
       ];
