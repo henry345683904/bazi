@@ -3272,6 +3272,7 @@
     .clash-prediction-details { margin: 0; border: 1px solid #eadca4; background: #fffdf1; }
     .clash-prediction-details summary { cursor: pointer; padding: 6px 8px; font-weight: 700; font-size: 12px; }
     .clash-prediction-details .clash-prediction-list { padding: 0 8px 5px; }
+    .clash-high-risk { border-left: 3px solid #c99320; padding-left: 6px; background: #fff8dc; }
     @media (max-width: 620px) {
       body.basic-chart-only #xipanMainTable td,
       body.basic-chart-only #xipanMainTable th { font-size: 11px; }
@@ -12854,12 +12855,19 @@
         if (affected.length) hits.push({ type: "大运", pillar: luck.pillar, age: `${luck.startAge}–${luck.endAge}岁`, years: `${luck.startYear}-${luck.endYear}`, affected });
         buildFlowYears(ctx, luck).forEach((year) => {
           const yearAffected = natalHeavenlyClashEarthlyClash(ctx, year.pillar);
-          if (yearAffected.length) hits.push({ type: "流年", pillar: year.pillar, age: `${luck.startAge + (year.year - luck.startYear)}岁`, years: `${year.year}年`, affected: yearAffected });
+          if (yearAffected.length) hits.push({
+            type: "流年",
+            pillar: year.pillar,
+            age: `${luck.startAge + (year.year - luck.startYear)}岁`,
+            years: `${year.year}年`,
+            affected: yearAffected,
+            concurrent: year.pillar.text === luck.pillar.text
+          });
         });
       });
       const uniqueHits = hits.filter((hit, index, list) => index === list.findIndex((item) => `${item.type}-${item.years}-${item.pillar.text}` === `${hit.type}-${hit.years}-${hit.pillar.text}`));
       const text = uniqueHits.length
-        ? uniqueHits.map((hit) => `<p><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}<br><span>与原局${hit.affected.join("、")}形成天克地冲。${heavenlyEarthlyClashImpact(hit.affected)}</span></p>`).join("")
+        ? uniqueHits.map((hit) => `<p class="${hit.concurrent ? "clash-high-risk" : ""}"><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}${hit.concurrent ? "　岁运并临" : ""}<br><span>与原局${hit.affected.join("、")}形成天克地冲。${hit.concurrent ? `${heavenlyEarthlyClashImpact(hit.affected)}岁运并临使冲克力量明显叠加，相关亲属出现重病、住院、急性健康恶化、重大家庭变故或丧亲风险的可能性显著上升，应尽早核查现实中的健康和安全情况。` : heavenlyEarthlyClashImpact(hit.affected)}</span></p>`).join("")
         : "<p>暂未找到与原局同时形成天克地冲的大运或流年。</p>";
       content.innerHTML = `<details class="clash-prediction-details"><summary>天克地冲（${uniqueHits.length}项）</summary><div class="clash-prediction-list">${text}</div></details>`;
     }
