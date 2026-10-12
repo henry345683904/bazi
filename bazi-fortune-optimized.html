@@ -13001,7 +13001,32 @@
       const text = uniqueHits.length
         ? uniqueHits.map((hit) => `<p class="${hit.concurrent ? "clash-high-risk" : hit.luckClash ? "clash-nested" : ""}"><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}${hit.concurrent ? "　岁运并临" : ""}<br><span>与原局${hit.affected.join("、")}形成天克地冲。${hit.concurrent ? `${heavenlyEarthlyClashImpact(hit.affected)}岁运并临使冲克力量明显叠加，疾病、重病、住院、意外灾祸和死亡风险上升。` : heavenlyEarthlyClashImpact(hit.affected)}</span></p>`).join("")
         : "<p>暂未找到与原局同时形成天克地冲的大运或流年。</p>";
-      content.innerHTML = `<details class="clash-prediction-details"><summary>天克地冲（${uniqueHits.length}项）</summary><div class="clash-prediction-list">${text}</div></details>`;
+      const disasterShaHits = [];
+      (ctx.lucks || []).forEach((luck) => {
+        if (symbolicStars(ctx, luck.pillar).includes("灾煞")) {
+          disasterShaHits.push({
+            type: "大运",
+            pillar: luck.pillar,
+            age: `${luck.startAge}–${luck.endAge}岁`,
+            years: `${luck.startYear}-${luck.endYear}`
+          });
+        }
+        buildFlowYears(ctx, luck).forEach((year) => {
+          if (symbolicStars(ctx, year.pillar).includes("灾煞")) {
+            disasterShaHits.push({
+              type: "流年",
+              pillar: year.pillar,
+              age: `${luck.startAge + (year.year - luck.startYear)}岁`,
+              years: `${year.year}年`
+            });
+          }
+        });
+      });
+      const uniqueDisasterShaHits = disasterShaHits.filter((hit, index, list) => index === list.findIndex((item) => `${item.type}-${item.years}-${item.pillar.text}` === `${hit.type}-${hit.years}-${hit.pillar.text}`));
+      const disasterShaText = uniqueDisasterShaHits.length
+        ? uniqueDisasterShaHits.map((hit) => `<p><strong>${hit.type} ${escapeHtml(hit.pillar.text)}</strong>　${escapeHtml(hit.age)}　${escapeHtml(hit.years)}<br><span>灾煞被引动，突发病痛、意外磕碰、交通风险、破财或事情突然受阻的信号增强。</span></p>`).join("")
+        : "<p>当前大运流年未出现灾煞。</p>";
+      content.innerHTML = `<details class="clash-prediction-details"><summary>天克地冲（${uniqueHits.length}项）</summary><div class="clash-prediction-list">${text}</div></details><details class="clash-prediction-details"><summary>灾煞（${uniqueDisasterShaHits.length}项）</summary><div class="clash-prediction-list">${disasterShaText}</div></details>`;
     }
 
     function renderBasicWealthPrediction(ctx) {
