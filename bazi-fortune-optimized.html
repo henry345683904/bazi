@@ -3316,6 +3316,16 @@
     body.basic-chart-only #xipanAttention h3 { font-size: 12px; margin: 0; line-height: 1.2; }
     body.basic-chart-only #xipanAttention p { font-size: 11px; margin: 0; line-height: 1.4; }
     body.basic-chart-only #xipanAttention .tag { font-size: 10px; padding: 1px 4px; min-height: 0; }
+    .flow-date-line { display: inline; }
+    @media (max-width: 620px) and (orientation: portrait) {
+      #xipanFineTable .flow-date-line { display: block; white-space: nowrap; font-size: 8px; line-height: 1.3; }
+      #xipanFineTable .flow-date-line small { font-size: 7px; }
+      #xipanFineTable .flow-date-line + br { display: none; }
+      #xipanFineTable .lunar-range-start,
+      #xipanFineTable .lunar-range-end { display: block; white-space: nowrap; }
+      #xipanFineTable .lunar-range-separator { display: none; }
+      #xipanFineTable tr:nth-child(2) td { vertical-align: middle; text-align: center; padding: 2px 0; font-size: 8px; line-height: 1.3; }
+    }
   </style>
 </head>
   <body class="basic-chart-only">
@@ -11756,11 +11766,11 @@
         return `${lunar.leap ? "闰" : ""}${months[lunar.month - 1]}${day}`;
       };
       const lunarMonthRange = monthItem.startDate && monthItem.endDate
-        ? `${lunarDateLabel(monthItem.startDate)}–${lunarDateLabel(new Date(monthItem.endDate.getTime() - 86400000))}`
-        : lunarDateLabel(dayItem.date);
+        ? `<span class="lunar-range-start">${escapeHtml(lunarDateLabel(monthItem.startDate))}</span><span class="lunar-range-separator">–</span><span class="lunar-range-end">${escapeHtml(lunarDateLabel(new Date(monthItem.endDate.getTime() - 86400000)))}</span>`
+        : escapeHtml(lunarDateLabel(dayItem.date));
       const columns = [
-        { name: "流日", item: dayItem, age: `${dayItem.date.getMonth() + 1}/${dayItem.date.getDate()}<br><small>${escapeHtml(lunarDateLabel(dayItem.date))}</small>` },
-        { name: "流月", item: monthItem, age: `${escapeHtml(monthItem.label || `${monthItem.month}月`)}<br><small>${escapeHtml(lunarMonthRange)}</small>` },
+        { name: "流日", item: dayItem, age: `<span class="flow-date-line">${dayItem.date.getMonth() + 1}/${dayItem.date.getDate()}</span><br><span class="flow-date-line"><small>${escapeHtml(lunarDateLabel(dayItem.date))}</small></span>` },
+        { name: "流月", item: monthItem, age: `<span class="flow-date-line">${escapeHtml(monthItem.label || `${monthItem.month}月`)}</span><br><span class="flow-date-line"><small>${lunarMonthRange}</small></span>` },
         { name: "流年", item: yearItem, age: `${luck.startAge + selectedYear}岁<br>${yearItem.year}` },
         { name: "大运", item: luck, age: `${luck.startAge}–${luck.endAge}岁<br>${luck.startYear}` },
         ...ctx.pillars.map((pillar, i) => ({ name: pillarLabels[i], item: { pillar }, age: "*" }))
