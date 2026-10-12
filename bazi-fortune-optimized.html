@@ -11517,7 +11517,7 @@
           : lunar.day < 20 ? `十${digits[lunar.day - 10]}`
           : lunar.day === 20 ? "二十"
           : lunar.day < 30 ? `廿${digits[lunar.day - 20]}` : "三十";
-        return `${lunar.leap ? "闰" : ""}${months[lunar.month - 1]}${day}日`;
+        return `${lunar.leap ? "闰" : ""}${months[lunar.month - 1]}${day}`;
       };
       const lunarMonthRange = monthItem.startDate && monthItem.endDate
         ? `${lunarDateLabel(monthItem.startDate)}–${lunarDateLabel(new Date(monthItem.endDate.getTime() - 86400000))}`
