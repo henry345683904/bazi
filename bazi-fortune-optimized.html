@@ -10888,17 +10888,7 @@
         ["姓名", ctx.state.name || "命主"],
         ["性别", ctx.state.gender || "未填"],
         ["公历", birthText],
-        ["农历", lunarText],
-        ["节气", `${beforeTerm.name} ${formatLocalDateTime(beforeTerm.date)}；${afterTerm.name} ${formatLocalDateTime(afterTerm.date)}`],
-        ["校时", ctx.birthMeta?.timeLabel || "当地钟表时间"],
-        ["换月换日", `精确节气｜${ctx.state.dayBoundary === "zi" ? "子初换日" : "零点换日"}`],
-        ["生肖", `${"鼠牛虎兔龙蛇马羊猴鸡狗猪"[branches.indexOf(ctx.pillars[0].branch)]}（${ctx.pillars[0].branch}年）`],
-        ["胎元", `${fetal.text}（${pillarNayin(fetal)}）`],
-        ...(calendarChart ? [["命宫", `${calendarChart.getMingGong()}（${calendarChart.getMingGongNaYin()}）`]] : []),
-        ["排盘方式", ctx.state.calendar === "solar" ? "公历排盘" : "农历转换公历排盘"],
-        ["起运交运", luckText],
-        ...(firstLuck ? [["起运依据", `${firstLuck.direction}｜出生至${firstLuck.boundaryName}${firstLuck.boundaryDays.toFixed(2)}天`]] : []),
-        ["格局强弱", `${ctx.pattern?.name || "未定"}｜${ctx.strength.label}`]
+        ["农历", lunarText]
       ];
       target.innerHTML = chips.map(([label, value]) => `
         <div class="xipan-chip"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>
