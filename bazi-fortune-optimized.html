@@ -3024,6 +3024,7 @@
     .natal-inline-arrows text { font-size: 10px; }
     .xipan-table .void-branch { background: #fff1a8; border-radius: 3px; }
     .xipan-table .void-mark { position: absolute; left: calc(100% + 1px); top: 50%; transform: translateY(-50%); white-space: nowrap; background: transparent !important; color: #9a6a00; font-size: 10px; font-weight: 700; }
+    .xipan-table .branch-left-mark { position: absolute; right: calc(100% + 2px); top: 50%; transform: translateY(-50%); white-space: nowrap; color: #9a6a00; font-size: 10px; font-weight: 700; }
     @media (max-width: 620px) {
       .natal-inline-arrows text { font-size: 8px; }
     }
@@ -10936,8 +10937,9 @@
       return items.length ? items : ["地支无明显冲合刑破害"];
     }
 
-    function xipanCellBig(pillar, small = "") {
-      return `<span class="gz-big">${escapeHtml(pillar.stem)}${escapeHtml(pillar.branch)}</span>`;
+    function xipanCellBig(pillar, small = "", ctx = null) {
+      const marks = ctx ? branchMarks(ctx, pillar).join("、") : "";
+      return `<span class="gz-big">${escapeHtml(pillar.stem)}${marks ? `<span class="branch-mark-wrap"><span class="branch-left-mark">${marks}</span>${escapeHtml(pillar.branch)}</span>` : escapeHtml(pillar.branch)}</span>`;
     }
 
     function xipanStemCell(ctx, pillar, index) {
@@ -10947,7 +10949,16 @@
     function xipanBranchCell(ctx, pillar) {
       const dayVoid = emptyBranches(ctx.pillars[2]);
       const isVoid = ctx.pillars.includes(pillar) && dayVoid.includes(pillar.branch);
-      return `<span class="gz-big" style="background:transparent">${escapeHtml(pillar.branch)}${isVoid ? `<span class="void-mark">空</span>` : ""}</span>`;
+      const marks = branchMarks(ctx, pillar);
+      return `<span class="gz-big" style="background:transparent">${marks.length ? `<span class="branch-left-mark">${escapeHtml(marks.join("、"))}</span>` : ""}${escapeHtml(pillar.branch)}${isVoid ? `<span class="void-mark">空</span>` : ""}</span>`;
+    }
+
+    function branchMarks(ctx, pillar) {
+      const marks = [];
+      if (symbolicStars(ctx, pillar).includes("禄神")) marks.push("禄");
+      const monthBranch = ctx.pillars[1]?.branch;
+      if (monthBranch && branches[(branches.indexOf(monthBranch) + 4) % 12] === pillar.branch) marks.push("鬼");
+      return uniqueList(marks);
     }
 
     function renderXipanSummary(ctx) {
@@ -11102,7 +11113,7 @@
       target.innerHTML = `<table class="xipan-table">
         <tr><th class="label">大运表</th>${lucks.map((luck) => `<th>${escapeHtml(luck.startAgeText)}<br>${luck.startYear}</th>`).join("")}</tr>
         ${luckRow("天干十神", (luck) => escapeHtml(tenGod(dayStem, luck.pillar.stem)))}
-        ${luckRow("大运", (luck) => xipanCellBig(luck.pillar))}
+        ${luckRow("大运", (luck) => xipanCellBig(luck.pillar, "", ctx))}
         ${luckRow("地支十神", (luck) => hiddenStemDetails(ctx, luck.pillar.branch).join("<br>"))}
         ${luckRow("十二长生", (luck) => escapeHtml(lifeStage(dayStem, luck.pillar.branch)))}
         ${luckRow("大运止于", (luck) => `${escapeHtml(luck.endDateText)}<br>${luck.endYear}`)}
@@ -11118,7 +11129,7 @@
       smallTarget.innerHTML = `<table class="xipan-table">
         <tr><th class="label">小运表</th>${smallLucks.map((luck) => `<th>${luck.age}岁</th>`).join("")}</tr>
         ${smallRow("小运十神", (luck) => escapeHtml(tenGod(dayStem, luck.pillar.stem)))}
-        ${smallRow("小运", (luck) => xipanCellBig(luck.pillar))}
+        ${smallRow("小运", (luck) => xipanCellBig(luck.pillar, "", ctx))}
         ${smallRow("地支十神", (luck) => escapeHtml(hiddenStemDetails(ctx, luck.pillar.branch, true).join("")))}
       </table>`;
       colorizeGanzhi(target);
