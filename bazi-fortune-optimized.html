@@ -10815,13 +10815,18 @@
 
     function dynamicStrengthProfile(ctx, date = new Date()) {
       const stack = flowStackForDate(ctx, date);
+      // 身强身弱的动态标签只由大运和流年决定；流月、流日继续保留给日期和事件分析。
+      const strengthStack = {
+        ...stack,
+        layers: stack.layers.filter((layer) => ["luck", "year"].includes(layer.key))
+      };
       const power = { 木: 0, 火: 0, 土: 0, 金: 0, 水: 0 };
       elementCycle.forEach((element) => {
         power[element] = ctx.counts[element] || 0;
       });
 
-      const layerScale = { luck: 0.9, year: 0.78, month: 0.55, day: 0.36 };
-      stack.layers.forEach((layer) => {
+      const layerScale = { luck: 0.9, year: 0.78 };
+      strengthStack.layers.forEach((layer) => {
         const amount = (layerScale[layer.key] || 0.45) * layer.weight;
         addElementPower(power, stemElement[layer.pillar.stem], 0.92 * amount);
         addElementPower(power, branchElement[layer.pillar.branch], 1.05 * amount);
@@ -10831,9 +10836,9 @@
         });
       });
 
-      const interactions = flowBranchInteractions(ctx, stack);
-      const stemInteractions = flowStemInteractions(ctx, stack);
-      const groupCompletions = branchGroupCompletions(ctx, stack);
+      const interactions = flowBranchInteractions(ctx, strengthStack);
+      const stemInteractions = flowStemInteractions(ctx, strengthStack);
+      const groupCompletions = branchGroupCompletions(ctx, strengthStack);
       const combineEffects = interactions
         .filter((item) => item.type === "合" && item.element && item.transformed)
         .concat(stemInteractions.filter((item) => item.type === "合" && item.transformed))
@@ -10856,7 +10861,7 @@
 
       const base = ctx.baseStrength || ctx.natalStrength || ctx.strength;
       let current = strengthFromPower(selfElement, power, rootShock);
-      const flowBalance = stack.layers.reduce((balance, layer) => {
+      const flowBalance = strengthStack.layers.reduce((balance, layer) => {
         const layerElements = [stemElement[layer.pillar.stem], branchElement[layer.pillar.branch]]
           .concat((hiddenStems[layer.pillar.branch] || []).map((stem) => stemElement[stem]));
         const supportCount = layerElements.filter((element) => [selfElement, supportElement].includes(element)).length;
