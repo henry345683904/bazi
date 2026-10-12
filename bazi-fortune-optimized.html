@@ -12820,6 +12820,32 @@
       if (window.lucide?.createIcons) window.lucide.createIcons();
     }
 
+    function natalHeavenlyClashEarthlyClash(ctx, period) {
+      return ctx.pillars.map((pillar, index) => ({ pillar, index }))
+        .filter(({ pillar }) => stemClashPairs[period.stem] === pillar.stem && clashPairs[period.branch] === pillar.branch)
+        .map(({ index }) => pillarLabels[index].replace("柱", ""));
+    }
+
+    function renderBasicDisasterPrediction(ctx) {
+      const block = Array.from(document.querySelectorAll("#basicAnalysisView .basic-analysis-block"))
+        .find((item) => item.querySelector("h3")?.textContent.includes("灾祸"));
+      if (!block) return;
+      const content = block.querySelector(".analysis-content");
+      const hits = [];
+      (ctx.lucks || []).forEach((luck) => {
+        const affected = natalHeavenlyClashEarthlyClash(ctx, luck.pillar);
+        if (affected.length) hits.push({ type: "大运", pillar: luck.pillar, age: `${luck.startAge}–${luck.endAge}岁`, years: `${luck.startYear}-${luck.endYear}`, affected });
+        buildFlowYears(ctx, luck).forEach((year) => {
+          const yearAffected = natalHeavenlyClashEarthlyClash(ctx, year.pillar);
+          if (yearAffected.length) hits.push({ type: "流年", pillar: year.pillar, age: `${luck.startAge + (year.year - luck.startYear)}岁`, years: `${year.year}年`, affected: yearAffected });
+        });
+      });
+      const uniqueHits = hits.filter((hit, index, list) => index === list.findIndex((item) => `${item.type}-${item.years}-${item.pillar.text}` === `${hit.type}-${hit.years}-${hit.pillar.text}`));
+      content.innerHTML = uniqueHits.length
+        ? uniqueHits.map((hit) => `<p><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}<br><span>与原局${hit.affected.join("、")}形成天克地冲，相关阶段的健康、出行、工作变动和家庭压力需要重点留意。</span></p>`).join("")
+        : "<p>暂未找到与原局同时形成天克地冲的大运或流年。</p>";
+    }
+
     function generate(options = {}) {
       const state = formState();
       if (!state.birthDate || !state.birthTime) return;
@@ -12882,6 +12908,7 @@
       ctx.favorable = favorableElements(dayElement, ctx.strength);
       ctx.pattern = buildPattern(ctx);
       chartContext = ctx;
+      renderBasicDisasterPrediction(ctx);
 
       document.getElementById("activeProfileName").textContent = state.name || `${state.birthDate}命盘`;
 
