@@ -293,7 +293,6 @@
     .basic-chart-only .primary-controls,
     .basic-chart-only .source-note,
     .basic-chart-only #fullChartBtn,
-    .basic-chart-only #fullChart,
     .basic-chart-only #reportLibrary,
     .basic-chart-only .result > section:has(#insights),
     .basic-chart-only .result > section:has(#bars),
@@ -322,6 +321,28 @@
 
     .basic-chart-only .hero-card {
       display: block !important;
+    }
+
+    .basic-chart-only #fullChart {
+      display: grid !important;
+      visibility: visible !important;
+    }
+
+    body.basic-chart-only[data-display-mode="daily"] #fullChart,
+    body.basic-chart-only[data-display-mode="pro"] #fullChart {
+      display: grid !important;
+      visibility: visible !important;
+    }
+
+    .basic-chart-only #fullChart .professional-only {
+      display: block !important;
+      visibility: visible !important;
+    }
+
+    body.basic-chart-only[data-display-mode="daily"] #fullChart .professional-only,
+    body.basic-chart-only[data-display-mode="pro"] #fullChart .professional-only {
+      display: block !important;
+      visibility: visible !important;
     }
 
     body.basic-chart-only[data-display-mode="daily"] .hero-card,
@@ -11948,7 +11969,7 @@
       ]);
       resetSpecialPanels();
       renderFullChart(ctx);
-      hideFullChart();
+      revealFullChart();
       renderReportCategory(currentReportCategory);
       const link = `${location.href.split("#")[0]}#${encodeState(state)}`;
       history.replaceState(null, "", link);
