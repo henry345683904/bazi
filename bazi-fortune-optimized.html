@@ -12826,6 +12826,16 @@
         .map(({ index }) => pillarLabels[index].replace("柱", ""));
     }
 
+    function heavenlyEarthlyClashImpact(affected) {
+      const impact = {
+        年: "父亲、母亲和家族长辈容易出现健康、住处、工作、经济或家庭安排的明显变化，命主也容易为长辈奔波协调。",
+        月: "兄弟姐妹、父母和家庭事务容易出现意见冲突、距离变化、工作变动或钱款分担，家中原有安排容易被打乱。",
+        日: "命主本人和配偶容易出现健康、情绪、出行、工作与居住变化，夫妻之间也容易因钱款、责任或决定方式发生冲突。",
+        时: "子女、晚辈和下属相关事项容易反复，重点表现为健康、学习、工作、出行或照顾责任增加，命主需要投入更多时间。"
+      };
+      return affected.map((pillar) => impact[pillar] || "对应家庭宫位的人事安排容易发生明显变化。").join(" ");
+    }
+
     function renderBasicDisasterPrediction(ctx) {
       const block = Array.from(document.querySelectorAll("#basicAnalysisView .basic-analysis-block"))
         .find((item) => item.querySelector("h3")?.textContent.includes("灾祸"));
@@ -12842,7 +12852,7 @@
       });
       const uniqueHits = hits.filter((hit, index, list) => index === list.findIndex((item) => `${item.type}-${item.years}-${item.pillar.text}` === `${hit.type}-${hit.years}-${hit.pillar.text}`));
       content.innerHTML = uniqueHits.length
-        ? uniqueHits.map((hit) => `<p><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}<br><span>与原局${hit.affected.join("、")}形成天克地冲，相关阶段的健康、出行、工作变动和家庭压力需要重点留意。</span></p>`).join("")
+        ? uniqueHits.map((hit) => `<p><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}<br><span>与原局${hit.affected.join("、")}形成天克地冲。${heavenlyEarthlyClashImpact(hit.affected)}</span></p>`).join("")
         : "<p>暂未找到与原局同时形成天克地冲的大运或流年。</p>";
     }
 
