@@ -2976,6 +2976,38 @@
         grid-template-columns: 1fr auto;
       }
     }
+    @media (max-width: 620px) {
+      body.basic-chart-only .xipan-table-wrap {
+        width: 100%;
+        min-width: 0;
+        overflow-x: visible;
+      }
+      body.basic-chart-only .xipan-table {
+        width: 100%;
+        min-width: 0;
+        table-layout: fixed;
+        font-size: 10px;
+      }
+      body.basic-chart-only .xipan-table th,
+      body.basic-chart-only .xipan-table td {
+        padding: 5px 2px;
+        overflow-wrap: anywhere;
+        white-space: normal;
+        line-height: 1.35;
+      }
+      body.basic-chart-only .xipan-table .label { width: 38px; font-size: 10px; }
+      body.basic-chart-only .xipan-table .gz-big { font-size: 17px; }
+      body.basic-chart-only .xipan-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      body.basic-chart-only .xipan-chip { grid-template-columns: 34px minmax(0, 1fr); padding: 6px; font-size: 11px; }
+      body.basic-chart-only .xipan-chip strong { min-width: 0; overflow-wrap: anywhere; }
+      body.basic-chart-only #fullChart { padding: 8px; gap: 10px; min-width: 0; }
+      body.basic-chart-only .timeline { grid-template-columns: repeat(3, minmax(0, 1fr)); overflow-x: visible; }
+      body.basic-chart-only .flow-layout { grid-template-columns: minmax(0, 1fr); }
+      body.basic-chart-only .scroll-row { grid-template-columns: repeat(auto-fit, minmax(32px, 1fr)); overflow-x: visible; }
+      body.basic-chart-only .pick { min-width: 0; padding: 5px 2px; }
+      body.basic-chart-only .natal-relations text { font-size: 8px; }
+      body.basic-chart-only .detail-box { min-width: 0; padding: 9px; overflow-wrap: anywhere; }
+    }
   </style>
 </head>
   <body class="basic-chart-only">
