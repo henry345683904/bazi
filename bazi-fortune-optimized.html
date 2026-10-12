@@ -304,9 +304,13 @@
     .basic-chart-only #phoneTool,
     .basic-chart-only #qimenTool,
     .basic-chart-only #recordsView,
-    .basic-chart-only #meView,
-    .basic-chart-only #baziBottomNav {
+    .basic-chart-only #meView {
       display: none !important;
+    }
+
+    .basic-chart-only .app-bottom-nav {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
     .basic-chart-only .layout {
@@ -3021,6 +3025,7 @@
           </button>
         </div>
 
+        <details id="basicSavedRecords"><summary>保存记录</summary><div id="basicSavedList"></div></details>
         <form id="baziForm">
           <div class="field">
             <label for="name">姓名或称呼</label>
@@ -3494,25 +3499,21 @@
   </main>
 
   <nav class="app-bottom-nav" id="baziBottomNav" aria-label="八字页面导航">
-    <button type="button" class="active" data-bazi-nav="chart" aria-current="page">
+    <button type="button" class="active" data-bazi-nav="home" aria-current="page">
+      <i data-lucide="house" aria-hidden="true"></i>
+      <span>首页</span>
+    </button>
+    <button type="button" data-bazi-nav="chart">
       <i data-lucide="layout-grid" aria-hidden="true"></i>
       <span>命盘</span>
     </button>
-    <button type="button" data-bazi-nav="fortune">
-      <i data-lucide="calendar-days" aria-hidden="true"></i>
-      <span>运势</span>
-    </button>
-    <button type="button" data-bazi-nav="report">
+    <button type="button" data-bazi-nav="analysis">
       <i data-lucide="file-text" aria-hidden="true"></i>
-      <span>报告</span>
+      <span>分析</span>
     </button>
-    <button type="button" data-bazi-nav="records">
-      <i data-lucide="history" aria-hidden="true"></i>
-      <span>记录</span>
-    </button>
-    <button type="button" data-bazi-nav="me">
-      <i data-lucide="user-round" aria-hidden="true"></i>
-      <span>我的</span>
+    <button type="button" data-bazi-nav="resolve">
+      <i data-lucide="sparkles" aria-hidden="true"></i>
+      <span>化解</span>
     </button>
   </nav>
 
@@ -11893,6 +11894,22 @@
       button.setAttribute("aria-label", label);
     }
 
+    function renderBasicSavedRecords() {
+      const list = document.getElementById("basicSavedList");
+      list.replaceChildren();
+      let records = [];
+      try { records = JSON.parse(localStorage.getItem("baziBasicRecords") || "[]"); } catch (_) {}
+      records.forEach((state) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "btn secondary";
+        button.textContent = `${state.name || "命主"} ${state.birthDate} ${state.birthTime}`;
+        button.addEventListener("click", () => { applyState(state); generate(); });
+        list.append(button);
+      });
+      if (!records.length) list.textContent = "暂无保存记录";
+    }
+
     function generate(options = {}) {
       const state = formState();
       if (!state.birthDate || !state.birthTime) return;
@@ -12001,6 +12018,14 @@
       document.getElementById("quickHint").innerHTML = `<strong>近期应事：</strong>${escapeHtml(focusTips[state.focus] || focusTips.overall)}${escapeHtml(shortSentences(tenGodScenario(yearGod, ctx), 1))}`;
       refreshLanguage(document.body);
       setBirthFormCollapsed(true);
+      if (!options.skipHistory) {
+        try {
+          const records = JSON.parse(localStorage.getItem("baziBasicRecords") || "[]");
+          const filtered = records.filter((item) => JSON.stringify(item) !== JSON.stringify(state));
+          localStorage.setItem("baziBasicRecords", JSON.stringify([state, ...filtered].slice(0, 100)));
+          renderBasicSavedRecords();
+        } catch (_) {}
+      }
       if (!options.skipHistory) saveCurrentQueryRecord(ctx);
       if (!options.skipNavigation) {
         const basicChartMode = document.body.classList.contains("basic-chart-only");
@@ -12067,8 +12092,27 @@
     document.getElementById("baziBottomNav").addEventListener("click", (event) => {
       const button = event.target.closest("[data-bazi-nav]");
       if (!button) return;
+      const destination = button.dataset.baziNav;
+      document.querySelectorAll("#baziBottomNav [data-bazi-nav]").forEach((item) => {
+        const active = item === button;
+        item.classList.toggle("active", active);
+        if (active) item.setAttribute("aria-current", "page");
+        else item.removeAttribute("aria-current");
+      });
       setActiveTool("bazi");
-      setBaziView(button.dataset.baziNav, true, true);
+      if (destination === "analysis" || destination === "resolve") {
+        showToast(destination === "analysis" ? "分析功能正在准备中" : "化解功能正在准备中");
+        return;
+      }
+      setBaziView("chart", true, false);
+      if (destination === "home") setBirthFormCollapsed(false);
+      document.querySelectorAll("#baziBottomNav [data-bazi-nav]").forEach((item) => {
+        item.classList.toggle("active", item.dataset.baziNav === destination);
+      });
+      const target = destination === "home"
+        ? document.querySelector('#baziTool .form-panel[data-bazi-view="chart"]')
+        : document.getElementById("fullChart");
+      target?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
     document.getElementById("reportCategoryNav").addEventListener("click", (event) => {
@@ -12257,6 +12301,7 @@
     });
 
     window.addEventListener("DOMContentLoaded", async () => {
+      renderBasicSavedRecords();
       applyDisplayMode();
       setActiveTool(localStorage.getItem(activeToolStorageKey) || "bazi", false);
       if (window.lucide?.createIcons) window.lucide.createIcons();
