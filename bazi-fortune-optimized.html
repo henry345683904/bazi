@@ -3021,6 +3021,8 @@
     .natal-inline-arrows { position: absolute; left: 0; top: 0; pointer-events: none; }
     .natal-inline-symbols + .natal-inline-symbols { border-top: 1px solid var(--line); }
     .natal-inline-arrows text { font-size: 10px; }
+    .xipan-table .void-branch { background: #fff1a8; border-radius: 3px; }
+    .xipan-table .void-mark { margin-left: 3px; color: #9a6a00; font-size: 10px; font-weight: 700; }
     @media (max-width: 620px) {
       .natal-inline-arrows text { font-size: 8px; }
     }
@@ -10942,7 +10944,9 @@
     }
 
     function xipanBranchCell(ctx, pillar) {
-      return `<span class="gz-big">${escapeHtml(pillar.branch)}</span>`;
+      const dayVoid = emptyBranches(ctx.pillars[2]);
+      const isVoid = dayVoid.includes(pillar.branch);
+      return `<span class="gz-big${isVoid ? " void-branch" : ""}">${escapeHtml(pillar.branch)}${isVoid ? `<span class="void-mark">（空）</span>` : ""}</span>`;
     }
 
     function renderXipanSummary(ctx) {
@@ -11023,7 +11027,7 @@
         ["地支", ctx.pillars.map((p) => xipanBranchCell(ctx, p))],
         ["藏干", ctx.pillars.map((p) => hiddenStemDetails(ctx, p.branch).join("<br>"))],
         ["纳音", ctx.pillars.map((p) => pillarNayin(p))],
-        ["空亡", ctx.pillars.map((p) => emptyBranches(p))],
+        ["空亡", ctx.pillars.map((p, index) => `<span class="${index === 2 ? "void-branch" : ""}">${escapeHtml(emptyBranches(p))}</span>`)],
         ["十二长生", ctx.pillars.map((p) => lifeStage(dayStem, p.branch))],
         ["神煞", ctx.pillars.map((p) => compactStars(symbolicStars(ctx, p)).join("<br>") || "无明显")]
       ];
