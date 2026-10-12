@@ -12979,7 +12979,12 @@
         : "<p>当前大运和流年中未出现五鬼运财地支。</p>";
       const luPeriods = luResult.periods.length ? luResult.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}</p>`).join("") : "<p>当前大运和流年中未出现禄神地支。</p>";
       const strongPeriods = strongResult.periods.length ? strongResult.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}<br>${escapeHtml(period.effects.join("；") || "财星能量稳定增强")}</p>`).join("") : strongResult.strong ? "<p>身强但当前大运、流年天干未出现正财或偏财。</p>" : "<p>本命身强条件未满足，暂不列入身旺财旺。</p>";
-      content.innerHTML = `<details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details><details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(luResult.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${luPeriods}</div></details><details class="five-ghost-details"><summary>身旺财旺</summary><div class="five-ghost-content">${strongPeriods}</div></details>`;
+      const summaryParts = [
+        strongResult.strong ? "本命身强，遇到正财、偏财大运流年时有承接财星的基础。" : "本命身强条件不足，财星出现时承接力有限。",
+        result.periods.length ? `五鬼运财落在${result.branch}，本气为${result.god}，${result.text.replace(`五鬼运财地支本气为${result.god}：`, "")}` : "当前大运流年未出现五鬼运财地支。",
+        luResult.periods.length ? `禄神为${luResult.branch}，命中大运流年时收入、工作和赚钱机会增强。` : "当前大运流年未出现禄神地支。"
+      ];
+      content.innerHTML = `<details class="five-ghost-details"><summary>综合财运</summary><div class="five-ghost-content">${summaryParts.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}</div></details><details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details><details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(luResult.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${luPeriods}</div></details><details class="five-ghost-details"><summary>身旺财旺</summary><div class="five-ghost-content">${strongPeriods}</div></details>`;
     }
 
     function generate(options = {}) {
