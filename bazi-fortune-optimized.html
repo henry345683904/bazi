@@ -10809,16 +10809,15 @@
     }
 
     function xipanCellBig(pillar, small = "") {
-      return `<span class="gz-big">${escapeHtml(pillar.stem)}${escapeHtml(pillar.branch)}</span>${small ? `<span class="small">${escapeHtml(small)}</span>` : ""}`;
+      return `<span class="gz-big">${escapeHtml(pillar.stem)}${escapeHtml(pillar.branch)}</span>`;
     }
 
     function xipanStemCell(ctx, pillar, index) {
-      const god = index === 2 ? (ctx.state.gender === "女" ? "元女" : "元男") : tenGod(ctx.pillars[2].stem, pillar.stem);
-      return `<span class="gz-big">${escapeHtml(pillar.stem)}</span><span class="small">${escapeHtml(tenGodShort(god.replace("元女", "日主").replace("元男", "日主")))}</span>`;
+      return `<span class="gz-big">${escapeHtml(pillar.stem)}</span>`;
     }
 
     function xipanBranchCell(ctx, pillar) {
-      return `<span class="gz-big">${escapeHtml(pillar.branch)}</span><span class="small">${escapeHtml(hiddenStemDetails(ctx, pillar.branch, true).join(""))}</span>`;
+      return `<span class="gz-big">${escapeHtml(pillar.branch)}</span>`;
     }
 
     function renderXipanSummary(ctx) {
