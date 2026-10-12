@@ -8275,32 +8275,20 @@
       const monthBranch = ctx.pillars[1].branch;
       const monthHidden = hiddenStems[monthBranch] || [];
       const visibleStems = ctx.pillars.map((pillar) => pillar.stem);
-      let chosenStem = monthHidden.find((stem) => stem !== dayStem && visibleStems.includes(stem));
-      let basis = "";
-      if (chosenStem) {
-        const rank = ["本气", "中气", "余气"][monthHidden.indexOf(chosenStem)] || "藏干";
-        basis = `月令${monthBranch}中${rank}${chosenStem}透干，按月令透干取格。`;
-      } else {
-        const candidates = ctx.pillars
-          .map((pillar, index) => ({ stem: pillar.stem, index, god: index === 2 ? "日主" : tenGod(dayStem, pillar.stem) }))
-          .filter((item) => item.index !== 2);
-        const weightMap = { 1: 3, 0: 2, 3: 1.4 };
-        const scored = candidates.map((item) => {
-          const element = stemElement[item.stem];
-          const hiddenBonus = monthHidden.includes(item.stem) ? 2 : 0;
-          return { ...item, score: (ctx.counts[element] || 0) + (weightMap[item.index] || 1) + hiddenBonus };
-        }).sort((a, b) => b.score - a.score);
-        chosenStem = scored[0]?.stem || ctx.pillars[1].stem;
-        basis = "月令本气、中气、余气未明显透干，取日元之外天干中力量较明显者为格。";
-      }
-      const god = tenGod(dayStem, chosenStem);
+      const monthCandidates = monthHidden
+        .map((stem, index) => ({ stem, index, god: tenGod(dayStem, stem) }))
+        .filter((item) => item.god !== "偏印" && visibleStems.includes(item.stem));
+      const chosen = monthCandidates[0];
+      const chosenStem = chosen?.stem || monthHidden[0] || ctx.pillars[1].stem;
+      const god = chosen?.god || tenGod(dayStem, chosenStem);
+      const basis = chosen
+        ? `月令${monthBranch}中${["本气", "中气", "余气"][chosen.index] || "藏气"}${chosen.stem}透出年、月、日、时天干，按月令透干取${chosen.god}格。`
+        : `月令${monthBranch}藏干没有符合透干取格的十神，按杂气格论；偏印不单独成格。`;
       let patternName = patternNameFromGod(god);
       let patternGod = god;
-      const special = specialPattern(ctx);
-      if (special) {
-        patternName = special.name;
-        patternGod = special.god;
-        basis = special.basis;
+      if (!chosen) {
+        patternName = "杂气格";
+        patternGod = "杂气";
       }
       const useful = ctx.favorable.join("、");
       const avoid = elementCycle.filter((el) => !ctx.favorable.includes(el)).join("、");
@@ -8320,6 +8308,22 @@
         avoid,
         level: levelHints.join("；")
       };
+    }
+
+    function tenGodScores(ctx) {
+      const tenGodNames = ["比肩", "劫财", "食神", "伤官", "正财", "偏财", "正官", "七杀", "正印", "偏印"];
+      const scores = Object.fromEntries(tenGodNames.map((name) => [name, 0]));
+      const dayStem = ctx.pillars[2].stem;
+      ctx.pillars.forEach((pillar, index) => {
+        const visibleGod = tenGod(dayStem, pillar.stem);
+        scores[visibleGod] += index === 1 ? 2.2 : 2;
+        const weights = index === 1 ? [1.5, 1, 0.55] : [0.85, 0.55, 0.3];
+        (hiddenStems[pillar.branch] || []).forEach((stem, hiddenIndex) => {
+          scores[tenGod(dayStem, stem)] += weights[hiddenIndex] || 0.2;
+        });
+      });
+      const total = Object.values(scores).reduce((sum, value) => sum + value, 0) || 1;
+      return Object.entries(scores).map(([name, score]) => ({ name, score, percent: score / total * 100 }));
     }
 
     function buildInsights(ctx) {
@@ -11036,6 +11040,7 @@
 
     function renderPatternBox(ctx) {
       const pattern = ctx.pattern || buildPattern(ctx);
+      const godScores = tenGodScores(ctx).filter((item) => item.score > 0);
       const box = document.getElementById("patternBox");
       box.innerHTML = `
         <div class="detail-title">
@@ -11051,6 +11056,8 @@
         <p><strong>主要应事：</strong>${escapeHtml(pattern.profile)}</p>
         <p><strong>容易发生：</strong>${escapeHtml(pattern.god.includes("财") ? "客户、订单、报价、回款、库存和复购被引动。" : pattern.god.includes("食") || pattern.god.includes("伤") ? "作品、技术、话术、推广和成交转化被引动。" : pattern.god.includes("官") || pattern.god.includes("杀") ? "合同、规则、职位责任、竞争压力和处罚风险被引动。" : pattern.god.includes("印") ? "证件、资料、学习、长辈贵人和后台资源被引动。" : "同业竞争、朋友合伙、分账、人情支出和资源分流被引动。")}</p>
         <p><strong>变化来源：</strong>${escapeHtml(pattern.level)}。</p>
+        <p><strong>十神强弱：</strong>${godScores.map((item) => `${escapeHtml(item.name)} ${item.score.toFixed(1)}分`).join("、") || "暂无有效十神分值"}。</p>
+        <p class="field-note">评分按原局天干、月令藏干和其他地支藏干加权统计，用于比较命局内部十神力量。</p>
       `;
       colorizeGanzhi(box);
     }
