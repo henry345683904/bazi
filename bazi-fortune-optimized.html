@@ -10991,6 +10991,7 @@
       const add = (indices, label, element) => links.push({ indices, label, color: elementColors[element] || "#8f2637" });
       pillars.forEach((left, i) => pillars.slice(i + 1).forEach((right, offset) => {
         const j = i + offset + 1;
+        if (j !== i + 1) return;
         if (kind === "stem") {
           const element = stemCombineElement(left.stem, right.stem);
           if (element) add([i, j], `${left.stem}${right.stem}合${element}`, element);
@@ -11005,7 +11006,8 @@
         [...branchMeetings, ...branchCombinations].forEach((group) => {
           if (group.branches.every((branch) => pillars.some((p) => p.branch === branch))) {
             const indices = pillars.map((p, i) => group.branches.includes(p.branch) ? i : -1).filter((i) => i >= 0);
-            add(indices, `${group.branches.join("")}${group.name}`, group.element);
+            const adjacent = indices.length === 3 && indices[1] === indices[0] + 1 && indices[2] === indices[1] + 1;
+            if (adjacent) add(indices, `${group.branches.join("")}${group.name}`, group.element);
           }
         });
       }
