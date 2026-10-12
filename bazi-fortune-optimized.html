@@ -11146,7 +11146,6 @@
 
     function renderPatternBox(ctx) {
       const pattern = ctx.pattern || buildPattern(ctx);
-      const godScores = tenGodScores(ctx).filter((item) => item.score > 0);
       const box = document.getElementById("patternBox");
       box.innerHTML = `
         <div class="detail-title">
@@ -11159,11 +11158,6 @@
           <span class="tag">当前：${escapeHtml(ctx.strength.label)}</span>
           <span class="tag">喜用：${escapeHtml(pattern.useful)}</span>
         </div>
-        <p><strong>主要应事：</strong>${escapeHtml(pattern.profile)}</p>
-        <p><strong>容易发生：</strong>${escapeHtml(pattern.god.includes("财") ? "客户、订单、报价、回款、库存和复购被引动。" : pattern.god.includes("食") || pattern.god.includes("伤") ? "作品、技术、话术、推广和成交转化被引动。" : pattern.god.includes("官") || pattern.god.includes("杀") ? "合同、规则、职位责任、竞争压力和处罚风险被引动。" : pattern.god.includes("印") ? "证件、资料、学习、长辈贵人和后台资源被引动。" : "同业竞争、朋友合伙、分账、人情支出和资源分流被引动。")}</p>
-        <p><strong>变化来源：</strong>${escapeHtml(pattern.level)}。</p>
-        <p><strong>十神强弱：</strong>${godScores.map((item) => `${escapeHtml(item.name)} ${item.score.toFixed(1)}分`).join("、") || "暂无有效十神分值"}。</p>
-        <p class="field-note">评分按原局天干、月令藏干和其他地支藏干加权统计，用于比较命局内部十神力量。</p>
       `;
       colorizeGanzhi(box);
     }
