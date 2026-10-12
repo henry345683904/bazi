@@ -3495,25 +3495,6 @@
                 <div class="scroll-row" id="dayFlow"></div>
               </div>
             </div>
-            <details class="small-luck-collapse"><summary>查看运程细节</summary>
-            <div class="detail-box" id="flowDetail">
-              <div class="detail-title">
-                <h3>细节</h3>
-                <span class="tag">未选择</span>
-              </div>
-              <p>点击大运、流年、流月或流日查看具体应事。</p>
-            </div>
-            </details>
-          </div>
-          <div class="luck-tables-bottom">
-            <details class="small-luck-collapse">
-              <summary>大运表</summary>
-              <div class="xipan-table-wrap" id="xipanLuckTable"></div>
-            </details>
-            <details class="small-luck-collapse">
-              <summary>小运表</summary>
-              <div class="xipan-table-wrap" id="xipanSmallLuckTable"></div>
-            </details>
           </div>
         </section>
 
@@ -11948,6 +11929,7 @@
     }
 
     function showFlowDetail(type, pillar, label) {
+      if (!document.getElementById("flowDetail")) return;
       const ctx = chartContext;
       const detailDate = chartContext.flowDays?.[selectedDay]?.date || new Date();
       const dynamic = dynamicStrengthProfile(ctx, detailDate);
