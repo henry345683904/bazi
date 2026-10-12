@@ -9104,6 +9104,7 @@
         劫财: "五鬼运财地支本气为劫财：钱财容易快速进出，出现财来财去、投入增加或最后剩余不多的情况。",
         偏财: "五鬼运财地支本气为偏财：容易通过生意、项目、客户、交易或临时机会赚钱。",
         正财: "五鬼运财地支本气为正财：容易通过固定工作、稳定收入或持续经营赚钱。",
+        伤官: "五鬼运财地支本气为伤官：赚钱过程中容易出现口舌纠纷、合同争议、客户投诉或合作分歧。",
         偏印: "五鬼运财地支本气为枭神：能够赚钱，但赚钱过程中的心理满足感较低，收入伴随压力或不情愿。",
         食神: "五鬼运财地支本气为食神：容易在饮食、享受、服务、才艺或轻松往来中赚钱。",
         正官: "五鬼运财地支本气为正官：容易通过领导、长辈、单位资源或正式合作获得收入。",
@@ -12914,6 +12915,18 @@
       content.innerHTML = `<details class="clash-prediction-details"><summary>天克地冲（${uniqueHits.length}项）</summary><div class="clash-prediction-list">${text}</div></details>`;
     }
 
+    function renderBasicWealthPrediction(ctx) {
+      const block = Array.from(document.querySelectorAll("#basicAnalysisView .basic-analysis-block"))
+        .find((item) => item.querySelector("h3")?.textContent.includes("财运"));
+      if (!block) return;
+      const content = block.querySelector(".analysis-content");
+      const result = buildFiveGhostWealth(ctx);
+      const periods = result.periods.length
+        ? result.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}</p>`).join("")
+        : "<p>当前大运和流年中未出现五鬼运财地支。</p>";
+      content.innerHTML = `<details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details>`;
+    }
+
     function generate(options = {}) {
       const state = formState();
       if (!state.birthDate || !state.birthTime) return;
@@ -12977,6 +12990,7 @@
       ctx.pattern = buildPattern(ctx);
       chartContext = ctx;
       renderBasicDisasterPrediction(ctx);
+      renderBasicWealthPrediction(ctx);
 
       document.getElementById("activeProfileName").textContent = state.name || `${state.birthDate}命盘`;
 
