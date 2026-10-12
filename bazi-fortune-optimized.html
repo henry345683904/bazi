@@ -36,7 +36,30 @@
 
     html[lang="en"] body {
       font-family: "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
-      font-size: 15px;
+      font-size: 22px;
+    }
+    body.basic-chart-only #luckTimeline .pick strong br,
+    body.basic-chart-only #yearFlow .pick strong br,
+    body.basic-chart-only #monthFlow .pick strong br,
+    body.basic-chart-only #dayFlow .pick strong br { display: none; }
+    body.basic-chart-only .pick strong .wuxing-char { font-size: inherit; line-height: inherit; margin: 0; }
+    body.basic-chart-only #luckTimeline,
+    body.basic-chart-only #yearFlow,
+    body.basic-chart-only #monthFlow {
+      display: grid;
+      grid-auto-flow: row;
+      grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+      overflow: visible;
+      min-width: 0;
+      width: 100%;
+    }
+    body.basic-chart-only #luckTimeline .pick,
+    body.basic-chart-only #yearFlow .pick,
+    body.basic-chart-only #monthFlow .pick { white-space: normal; overflow-wrap: anywhere; }
+    @media (max-width: 620px) {
+      body.basic-chart-only #luckTimeline,
+      body.basic-chart-only #yearFlow { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      body.basic-chart-only #monthFlow { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     }
 
     html[lang="en"] h1 {
