@@ -2467,6 +2467,7 @@
       min-width: 0;
     }
 
+    #baziTool #result[hidden],
     #baziTool [data-bazi-view][hidden] {
       display: none !important;
     }
@@ -3088,7 +3089,7 @@
 
     <section class="tool-panel" id="baziTool">
     <div class="layout">
-      <section class="panel form-panel" data-bazi-view="chart">
+      <section class="panel form-panel" data-bazi-view="home">
         <div class="panel-title">
           <h2>出生资料</h2>
           <div class="panel-title-actions">
@@ -5728,8 +5729,8 @@
     const phoneDigitBranches = Object.fromEntries(Object.entries(numberKnowledgeBase.digitMap).map(([digit, info]) => [digit, info.branch]));
 
     function setBaziView(view, persist = true, shouldScroll = false) {
-      const validViews = ["chart", "fortune", "report", "records", "me"];
-      if (document.body.classList.contains("basic-chart-only")) view = "chart";
+      const validViews = ["home", "chart", "fortune", "report", "records", "me"];
+      if (document.body.classList.contains("basic-chart-only") && !["home", "chart"].includes(view)) view = "chart";
       currentBaziView = validViews.includes(view) ? view : "chart";
       document.body.dataset.baziView = currentBaziView;
       const isBaziActive = currentActiveTool === "bazi";
@@ -5741,6 +5742,11 @@
       if (baziTool) baziTool.hidden = !isBaziActive || utilityView;
       if (recordsView) recordsView.hidden = !isBaziActive || currentBaziView !== "records";
       if (meView) meView.hidden = !isBaziActive || currentBaziView !== "me";
+      document.getElementById("basicAnalysisView").hidden = true;
+      document.getElementById("basicResolveView").hidden = true;
+      const result = document.getElementById("result");
+      if (result) result.hidden = currentBaziView === "home";
+      if (currentBaziView === "home") setBirthFormCollapsed(false);
       document.querySelectorAll("#baziTool [data-bazi-view]").forEach((panel) => {
         panel.hidden = panel.dataset.baziView !== currentBaziView;
       });
@@ -12438,7 +12444,7 @@
     }
 
     function setBirthFormCollapsed(collapsed) {
-      const panel = document.querySelector('.form-panel[data-bazi-view="chart"]');
+      const panel = document.querySelector('.form-panel[data-bazi-view="home"]');
       const button = document.getElementById("toggleBirthFormBtn");
       if (!panel || !button) return;
       panel.classList.toggle("is-collapsed", collapsed);
@@ -12617,7 +12623,7 @@
       syncBirthParameterUI();
       setActiveTool("bazi");
       setBirthFormCollapsed(false);
-      setBaziView("chart", true, true);
+      setBaziView("home", true, true);
       refreshLanguage(document.body);
       requestAnimationFrame(() => document.getElementById("name")?.focus());
     }
@@ -12668,13 +12674,13 @@
         window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
-      setBaziView("chart", true, false);
+      setBaziView(destination === "home" ? "home" : "chart", true, false);
       if (destination === "home") setBirthFormCollapsed(false);
       document.querySelectorAll("#baziBottomNav [data-bazi-nav]").forEach((item) => {
         item.classList.toggle("active", item.dataset.baziNav === destination);
       });
       const target = destination === "home"
-        ? document.querySelector('#baziTool .form-panel[data-bazi-view="chart"]')
+        ? document.querySelector('#baziTool .form-panel[data-bazi-view="home"]')
         : document.getElementById("fullChart");
       target?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
@@ -12687,7 +12693,7 @@
 
     document.getElementById("newChartBtn").addEventListener("click", startNewChart);
     document.getElementById("toggleBirthFormBtn").addEventListener("click", () => {
-      const panel = document.querySelector('.form-panel[data-bazi-view="chart"]');
+      const panel = document.querySelector('.form-panel[data-bazi-view="home"]');
       setBirthFormCollapsed(!panel?.classList.contains("is-collapsed"));
     });
     document.getElementById("recordsLoginShortcut").addEventListener("click", () => setAccountPanelOpen(true, true));
@@ -12884,7 +12890,7 @@
       document.getElementById("birthDate").value = "1990-01-01";
       document.getElementById("birthTime").value = "08:30";
       syncBirthParameterUI();
-      if (currentActiveTool === "bazi") setBaziView("chart", false);
+      if (currentActiveTool === "bazi") setBaziView("home", false);
       applyDisplayMode();
       localizePage();
     });
