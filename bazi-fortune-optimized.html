@@ -288,6 +288,48 @@
       gap: 8px;
     }
 
+    /* Basic chart mode: keep the first screen focused on birth details and pillars. */
+    .basic-chart-only .top-tools,
+    .basic-chart-only .primary-controls,
+    .basic-chart-only .source-note,
+    .basic-chart-only #fullChartBtn,
+    .basic-chart-only #fullChart,
+    .basic-chart-only #reportLibrary,
+    .basic-chart-only .result > section:has(#insights),
+    .basic-chart-only .result > section:has(#bars),
+    .basic-chart-only .result > section:has(#reports),
+    .basic-chart-only #wealthDatesBtn,
+    .basic-chart-only #riskDatesBtn,
+    .basic-chart-only .result > section:has(#wealthDatesPanel),
+    .basic-chart-only .result > section:has(#shareLink),
+    .basic-chart-only #phoneTool,
+    .basic-chart-only #qimenTool,
+    .basic-chart-only #recordsView,
+    .basic-chart-only #meView,
+    .basic-chart-only #baziBottomNav {
+      display: none !important;
+    }
+
+    .basic-chart-only .layout {
+      grid-template-columns: minmax(0, 760px);
+      justify-content: center;
+    }
+
+    .basic-chart-only .result {
+      display: grid;
+      gap: 14px;
+    }
+
+    .basic-chart-only .hero-card {
+      display: block !important;
+    }
+
+    .basic-chart-only .chart-actions,
+    .basic-chart-only #quickHint,
+    .basic-chart-only #metaTags {
+      display: none !important;
+    }
+
     h2, h3 {
       margin: 0;
       letter-spacing: 0;
@@ -2719,7 +2761,7 @@
     }
   </style>
 </head>
-<body>
+  <body class="basic-chart-only">
   <main class="app">
     <header class="topbar">
       <div class="brand">
@@ -2929,7 +2971,7 @@
           <div class="meta" id="metaTags">
               <span class="tag">等待输入</span>
             </div>
-            <div class="empty-state" id="quickHint">生成后显示近期最容易发生的事。</div>
+            <div class="empty-state" id="quickHint">生成后显示基础命盘信息。</div>
             <div class="chart-actions">
               <button class="btn secondary" type="button" id="fullChartBtn" title="查看完整命盘" aria-expanded="false">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
