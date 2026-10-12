@@ -3037,6 +3037,11 @@
       body.basic-chart-only .timeline { grid-template-columns: repeat(5, minmax(0, 1fr)); }
       body.basic-chart-only .scroll-row { grid-template-columns: repeat(auto-fit, minmax(38px, 1fr)); }
     }
+    body.basic-chart-only .result > .hero-card,
+    body.basic-chart-only[data-display-mode="daily"] .result > .hero-card,
+    body.basic-chart-only[data-display-mode="pro"] .result > .hero-card {
+      display: none !important;
+    }
   </style>
 </head>
   <body class="basic-chart-only">
