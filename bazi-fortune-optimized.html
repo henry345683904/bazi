@@ -3268,6 +3268,10 @@
       line-height: 1.35;
     }
     body.basic-chart-only #xipanMainTable .gz-big { font-size: 25px; }
+    .xipan-table .heavenly-earthly-clash { background: #fff4bf !important; }
+    .clash-prediction-details { margin: 0; border: 1px solid #eadca4; background: #fffdf1; }
+    .clash-prediction-details summary { cursor: pointer; padding: 6px 8px; font-weight: 700; font-size: 12px; }
+    .clash-prediction-details .clash-prediction-list { padding: 0 8px 5px; }
     @media (max-width: 620px) {
       body.basic-chart-only #xipanMainTable td,
       body.basic-chart-only #xipanMainTable th { font-size: 11px; }
@@ -11787,9 +11791,12 @@
         { name: "大运", item: luck, age: `${luck.startAge}–${luck.endAge}岁<br>${luck.startYear}` },
         ...ctx.pillars.map((pillar, i) => ({ name: pillarLabels[i], item: { pillar }, age: "*" }))
       ];
-      const row = (label, getter) => `<tr><td class="label">${escapeHtml(label)}</td>${columns.map((col) => `<td>${getter(col)}</td>`).join("")}</tr>`;
+      columns.forEach((col) => {
+        col.clash = (col.name === "大运" || col.name === "流年") && natalHeavenlyClashEarthlyClash(ctx, col.item.pillar).length > 0;
+      });
+      const row = (label, getter) => `<tr><td class="label">${escapeHtml(label)}</td>${columns.map((col) => `<td class="${col.clash ? "heavenly-earthly-clash" : ""}">${getter(col)}</td>`).join("")}</tr>`;
       target.innerHTML = `<table class="xipan-table">
-        <tr><th class="label">日期</th>${columns.map((col) => `<th>${escapeHtml(col.name)}</th>`).join("")}</tr>
+        <tr><th class="label">日期</th>${columns.map((col) => `<th class="${col.clash ? "heavenly-earthly-clash" : ""}">${escapeHtml(col.name)}</th>`).join("")}</tr>
         ${row("岁年", (col) => col.age)}
         ${row("天干", (col) => xipanSymbolWithGods(ctx, col.item.pillar, "stem", col.name === "日柱"))}
         ${row("地支", (col) => xipanSymbolWithGods(ctx, col.item.pillar, "branch"))}
@@ -12851,9 +12858,10 @@
         });
       });
       const uniqueHits = hits.filter((hit, index, list) => index === list.findIndex((item) => `${item.type}-${item.years}-${item.pillar.text}` === `${hit.type}-${hit.years}-${hit.pillar.text}`));
-      content.innerHTML = uniqueHits.length
+      const text = uniqueHits.length
         ? uniqueHits.map((hit) => `<p><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}<br><span>与原局${hit.affected.join("、")}形成天克地冲。${heavenlyEarthlyClashImpact(hit.affected)}</span></p>`).join("")
         : "<p>暂未找到与原局同时形成天克地冲的大运或流年。</p>";
+      content.innerHTML = `<details class="clash-prediction-details"><summary>天克地冲（${uniqueHits.length}项）</summary><div class="clash-prediction-list">${text}</div></details>`;
     }
 
     function generate(options = {}) {
