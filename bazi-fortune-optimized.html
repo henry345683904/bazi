@@ -10854,8 +10854,18 @@
         return touchesRoot ? sum + item.weight * 0.018 : sum;
       }, 0);
 
-      const current = strengthFromPower(selfElement, power, rootShock);
       const base = ctx.baseStrength || ctx.natalStrength || ctx.strength;
+      let current = strengthFromPower(selfElement, power, rootShock);
+      const flowBalance = stack.layers.reduce((balance, layer) => {
+        const layerElements = [stemElement[layer.pillar.stem], branchElement[layer.pillar.branch]]
+          .concat((hiddenStems[layer.pillar.branch] || []).map((stem) => stemElement[stem]));
+        const supportCount = layerElements.filter((element) => [selfElement, supportElement].includes(element)).length;
+        const pressureCount = layerElements.filter((element) => ![selfElement, supportElement].includes(element)).length;
+        return balance + (supportCount - pressureCount) * (layer.weight || 1);
+      }, 0);
+      if (flowBalance > 0 && base && ["偏旺", "从强", "从旺"].includes(base.label)) {
+        current = { ...current, ...strengthFromValue(Math.max(current.value, Math.min(0.9, base.value + Math.min(0.12, flowBalance * 0.018)))) };
+      }
       const change = current.value - (base?.value || current.value);
       const trend = change >= 0.08 ? "转旺" : change <= -0.08 ? "转弱" : "变化不大";
       const flowText = stackText(stack);
