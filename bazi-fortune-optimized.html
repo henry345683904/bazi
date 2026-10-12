@@ -11874,6 +11874,25 @@
       if (selectedDay < 0) selectedDay = 0;
     }
 
+    function jumpToTodayIfCurrent(level, index) {
+      const previous = [selectedLuck, selectedYear, selectedMonth, selectedDay];
+      const today = new Date();
+      selectCurrentFlow(today);
+      const matches = level === "luck"
+        ? index === selectedLuck && today >= chartContext.lucks[selectedLuck].startDate && today <= chartContext.lucks[selectedLuck].endDate
+        : level === "year"
+          ? previous[0] === selectedLuck && index === selectedYear
+          : previous[0] === selectedLuck && previous[1] === selectedYear && index === selectedMonth;
+      if (!matches) {
+        [selectedLuck, selectedYear, selectedMonth, selectedDay] = previous;
+        return false;
+      }
+      renderLuckTimeline();
+      renderFlowYears();
+      requestAnimationFrame(scrollActiveFlowIntoView);
+      return true;
+    }
+
     function flowPillarSymbols(ctx, pillar) {
       const dayStem = ctx.pillars[2].stem;
       const symbol = (char, gods) => `<span class="flow-symbol">${escapeHtml(char)}<span class="flow-gods">${gods.map((god) => `<span>${escapeHtml(tenGodShort(god))}</span>`).join("")}</span></span>`;
@@ -13066,6 +13085,7 @@
     document.getElementById("luckTimeline").addEventListener("click", (event) => {
       const btn = event.target.closest("[data-luck]");
       if (!btn || !chartContext) return;
+      if (jumpToTodayIfCurrent("luck", Number(btn.dataset.luck))) return;
       selectedLuck = Number(btn.dataset.luck);
       selectedYear = 0;
       selectedMonth = 0;
@@ -13079,6 +13099,7 @@
     document.getElementById("yearFlow").addEventListener("click", (event) => {
       const btn = event.target.closest("[data-year]");
       if (!btn || !chartContext) return;
+      if (jumpToTodayIfCurrent("year", Number(btn.dataset.year))) return;
       selectedYear = Number(btn.dataset.year);
       selectedMonth = 0;
       selectedDay = 0;
@@ -13090,6 +13111,7 @@
     document.getElementById("monthFlow").addEventListener("click", (event) => {
       const btn = event.target.closest("[data-month]");
       if (!btn || !chartContext) return;
+      if (jumpToTodayIfCurrent("month", Number(btn.dataset.month))) return;
       selectedMonth = Number(btn.dataset.month);
       selectedDay = 0;
       renderFlowMonths();
