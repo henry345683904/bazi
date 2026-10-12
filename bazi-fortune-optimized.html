@@ -3326,16 +3326,16 @@
       #xipanFineTable .lunar-range-separator { display: none; }
       #xipanFineTable tr:nth-child(2) td { vertical-align: middle; text-align: center; padding: 2px 0; font-size: 8px; line-height: 1.3; }
     }
-    body.basic-chart-only .topbar { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; }
-    .developer-credit { text-align: center; font-size: 13px; color: var(--muted); white-space: nowrap; }
-    body.basic-chart-only .top-tools { display: flex !important; justify-content: flex-end; width: auto; }
+    body.basic-chart-only .topbar { display: flex; align-items: center; gap: 8px; }
+    .brand-copy { position: relative; }
+    .developer-credit { position: absolute; right: 0; bottom: -1px; text-align: right; font-size: 9px; color: var(--muted); white-space: nowrap; line-height: 1; }
+    body.basic-chart-only .top-tools { display: flex !important; justify-content: flex-end; width: auto; margin-left: auto; }
     body.basic-chart-only .top-tools > :not(#languageToggle) { display: none !important; }
     body.basic-chart-only #languageToggle { display: block; margin: 0; padding: 5px 9px; font-size: 12px; }
     @media (max-width: 620px) {
-      body.basic-chart-only .topbar { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 8px; }
-      body.basic-chart-only .topbar .brand { grid-column: 1; grid-row: 1; min-width: 0; }
-      body.basic-chart-only .developer-credit { grid-column: 1 / -1; grid-row: 2; font-size: 11px; }
-      body.basic-chart-only .top-tools { grid-column: 2; grid-row: 1; }
+      body.basic-chart-only .topbar { gap: 4px 8px; }
+      body.basic-chart-only .topbar .brand { min-width: 0; }
+      body.basic-chart-only .developer-credit { bottom: -1px; font-size: 8px; }
     }
   </style>
 </head>
@@ -3352,9 +3352,9 @@
         <div class="brand-copy">
           <h1>八字运势测算</h1>
           <p class="subtitle">输入出生信息，直接生成应事预测。</p>
+          <span class="developer-credit no-translate">Henry开发免费使用</span>
         </div>
       </div>
-      <div class="developer-credit no-translate">Henry开发免费使用</div>
       <div class="top-tools">
         <div class="mode-switch" id="displayModeSwitch" role="group" aria-label="版本模式">
           <button type="button" data-display-mode-choice="daily" title="只看具体预测">日常版</button>
