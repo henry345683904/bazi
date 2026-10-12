@@ -3133,6 +3133,43 @@
       body.basic-chart-only #yearFlow { grid-template-columns: repeat(5, minmax(0, 1fr)); }
       body.basic-chart-only #monthFlow { grid-template-columns: repeat(6, minmax(0, 1fr)); }
     }
+    /* Keep every flow selector on one horizontal row on desktop and mobile. */
+    body.basic-chart-only #luckTimeline,
+    body.basic-chart-only #yearFlow,
+    body.basic-chart-only #monthFlow,
+    body.basic-chart-only #dayFlow {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: stretch;
+      justify-content: flex-start;
+      overflow-x: auto;
+      overflow-y: hidden;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      gap: 3px;
+      padding: 2px 1px 6px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    body.basic-chart-only #luckTimeline .pick,
+    body.basic-chart-only #yearFlow .pick,
+    body.basic-chart-only #monthFlow .pick {
+      flex: 0 0 76px;
+      width: 76px;
+      min-width: 76px;
+      white-space: normal;
+    }
+    body.basic-chart-only #dayFlow {
+      grid-auto-columns: unset;
+      gap: 3px;
+      padding-top: 2px;
+    }
+    body.basic-chart-only #dayFlow .pick {
+      flex: 0 0 44px;
+      width: 44px;
+      min-width: 44px;
+    }
   </style>
 </head>
   <body class="basic-chart-only">
