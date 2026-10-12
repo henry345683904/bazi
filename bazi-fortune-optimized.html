@@ -12836,10 +12836,10 @@
 
     function heavenlyEarthlyClashImpact(affected) {
       const impact = {
-        年: "父亲、母亲和家族长辈容易出现健康、住处、工作、经济或家庭安排的明显变化，命主也容易为长辈奔波协调。",
-        月: "兄弟姐妹、父母和家庭事务容易出现意见冲突、距离变化、工作变动或钱款分担，家中原有安排容易被打乱。",
-        日: "命主本人和配偶容易出现健康、情绪、出行、工作与居住变化，夫妻之间也容易因钱款、责任或决定方式发生冲突。",
-        时: "子女、晚辈和下属相关事项容易反复，重点表现为健康、学习、工作、出行或照顾责任增加，命主需要投入更多时间。"
+        年: "父亲容易出现健康、住处、工作或经济方面的明显变化；母亲容易出现健康、情绪、家庭安排或生活环境方面的明显变化；家族长辈也容易发生需要命主参与处理的事件。",
+        月: "兄弟姐妹容易出现工作、住处、钱款分担或关系变化；父亲和母亲容易因家庭安排、经济分配或意见不合产生波动。",
+        日: "命主本人容易出现健康、情绪、出行、工作或居住变化；配偶容易出现健康、工作、钱款和夫妻关系方面的明显波动。",
+        时: "子女容易出现健康、学习、工作或出行方面的变化；晚辈和下属容易出现反复、冲突或需要命主承担责任的事情。"
       };
       return affected.map((pillar) => impact[pillar] || "对应家庭宫位的人事安排容易发生明显变化。").join(" ");
     }
@@ -12867,7 +12867,7 @@
       });
       const uniqueHits = hits.filter((hit, index, list) => index === list.findIndex((item) => `${item.type}-${item.years}-${item.pillar.text}` === `${hit.type}-${hit.years}-${hit.pillar.text}`));
       const text = uniqueHits.length
-        ? uniqueHits.map((hit) => `<p class="${hit.concurrent ? "clash-high-risk" : ""}"><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}${hit.concurrent ? "　岁运并临" : ""}<br><span>与原局${hit.affected.join("、")}形成天克地冲。${hit.concurrent ? `${heavenlyEarthlyClashImpact(hit.affected)}岁运并临使冲克力量明显叠加，相关亲属出现重病、住院、急性健康恶化、重大家庭变故或丧亲风险的可能性显著上升，应尽早核查现实中的健康和安全情况。` : heavenlyEarthlyClashImpact(hit.affected)}</span></p>`).join("")
+        ? uniqueHits.map((hit) => `<p class="${hit.concurrent ? "clash-high-risk" : ""}"><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}${hit.concurrent ? "　岁运并临" : ""}<br><span>与原局${hit.affected.join("、")}形成天克地冲。${hit.concurrent ? `${heavenlyEarthlyClashImpact(hit.affected)}岁运并临使冲克力量明显叠加，死亡或重大健康恶化风险上升。` : heavenlyEarthlyClashImpact(hit.affected)}</span></p>`).join("")
         : "<p>暂未找到与原局同时形成天克地冲的大运或流年。</p>";
       content.innerHTML = `<details class="clash-prediction-details"><summary>天克地冲（${uniqueHits.length}项）</summary><div class="clash-prediction-list">${text}</div></details>`;
     }
