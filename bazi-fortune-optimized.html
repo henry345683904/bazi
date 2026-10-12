@@ -3278,6 +3278,37 @@
     .basic-record-open { flex: 1; min-width: 0; text-align: left; background: transparent; border: 0; padding: 5px 0; font-size: 12px; overflow-wrap: anywhere; cursor: pointer; }
     .basic-record-action { width: 28px; height: 28px; padding: 5px; background: transparent; border: 1px solid var(--line); border-radius: 4px; flex-shrink: 0; cursor: pointer; }
     .basic-record-action svg { width: 16px; height: 16px; }
+    @media (max-width: 620px) and (orientation: portrait) {
+      body.basic-chart-only[data-bazi-view="chart"] .app {
+        padding-left: 0;
+        padding-right: 0;
+      }
+      body.basic-chart-only[data-bazi-view="chart"] .topbar {
+        margin-left: 8px;
+        margin-right: 8px;
+      }
+      body.basic-chart-only #fullChart {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        padding-left: 0;
+        padding-right: 0;
+        border-left: 0;
+        border-right: 0;
+        border-radius: 0;
+        box-sizing: border-box;
+      }
+      body.basic-chart-only #xipanFineTable,
+      body.basic-chart-only #luckTimeline,
+      body.basic-chart-only .flow-layout {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        margin-left: 0;
+        margin-right: 0;
+      }
+      body.basic-chart-only #fullChart .small-title { padding-left: 3px; }
+    }
   </style>
 </head>
   <body class="basic-chart-only">
