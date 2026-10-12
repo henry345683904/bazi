@@ -3273,6 +3273,11 @@
       body.basic-chart-only #xipanMainTable th { font-size: 11px; }
       body.basic-chart-only #xipanMainTable .gz-big { font-size: 21px; }
     }
+    #basicSavedRecords { margin-top: 12px; }
+    .basic-record-row { display: flex; align-items: center; gap: 4px; border-bottom: 1px solid var(--line); padding: 6px 0; }
+    .basic-record-open { flex: 1; min-width: 0; text-align: left; background: transparent; border: 0; padding: 5px 0; font-size: 12px; overflow-wrap: anywhere; cursor: pointer; }
+    .basic-record-action { width: 28px; height: 28px; padding: 5px; background: transparent; border: 1px solid var(--line); border-radius: 4px; flex-shrink: 0; cursor: pointer; }
+    .basic-record-action svg { width: 16px; height: 16px; }
   </style>
 </head>
   <body class="basic-chart-only">
@@ -3336,7 +3341,6 @@
           </button>
         </div>
 
-        <details id="basicSavedRecords"><summary>保存记录</summary><div id="basicSavedList"></div></details>
         <form id="baziForm">
           <div class="field">
             <label for="name">姓名或称呼</label>
@@ -3439,6 +3443,8 @@
             </button>
           </div>
         </form>
+
+        <section id="basicSavedRecords"><h3 class="small-title">常用八字记录</h3><div id="basicSavedList"></div></section>
 
           <p class="hint" id="calibrationNote">出生时间请使用24小时制；年柱按立春、月柱按节气换月。</p>
       </section>
@@ -12712,20 +12718,51 @@
       button.setAttribute("aria-label", label);
     }
 
+    let editingBasicRecordId = null;
+    function readBasicRecords() {
+      try {
+        const records = JSON.parse(localStorage.getItem("baziBasicRecords") || "[]");
+        return Array.isArray(records) ? records.map((record, i) => ({ ...record, _id: record._id || `legacy-${i}` })) : [];
+      } catch (_) { return []; }
+    }
+
+    function writeBasicRecords(records) {
+      localStorage.setItem("baziBasicRecords", JSON.stringify(records));
+      renderBasicSavedRecords();
+    }
+
     function renderBasicSavedRecords() {
       const list = document.getElementById("basicSavedList");
       list.replaceChildren();
-      let records = [];
-      try { records = JSON.parse(localStorage.getItem("baziBasicRecords") || "[]"); } catch (_) {}
+      const records = readBasicRecords().sort((a, b) => Number(!!b._pinned) - Number(!!a._pinned));
       records.forEach((state) => {
+        const row = document.createElement("div");
+        row.className = "basic-record-row";
         const button = document.createElement("button");
         button.type = "button";
-        button.className = "btn secondary";
-        button.textContent = `${state.name || "命主"} ${state.birthDate} ${state.birthTime}`;
-        button.addEventListener("click", () => { applyState(state); generate(); });
-        list.append(button);
+        button.className = "basic-record-open";
+        button.textContent = `${state._pinned ? "★ " : ""}${state.name || "命主"} ${state.birthDate} ${state.birthTime}`;
+        button.addEventListener("click", () => { editingBasicRecordId = null; applyState(state); generate(); });
+        row.append(button);
+        const actions = [
+          [state._pinned ? "取消置顶" : "置顶常用", "pin", () => writeBasicRecords(readBasicRecords().map((r) => r._id === state._id ? { ...r, _pinned: !r._pinned } : r))],
+          ["编辑", "pencil", () => { editingBasicRecordId = state._id; applyState(state); setBaziView("home", true, true); document.getElementById("name").focus(); showToast("修改资料后点击生成报告保存"); }],
+          ["删除", "trash-2", () => { if (editingBasicRecordId === state._id) editingBasicRecordId = null; writeBasicRecords(readBasicRecords().filter((r) => r._id !== state._id)); }]
+        ];
+        actions.forEach(([label, icon, action]) => {
+          const control = document.createElement("button");
+          control.type = "button";
+          control.className = "basic-record-action";
+          control.title = label;
+          control.setAttribute("aria-label", label);
+          control.innerHTML = `<i data-lucide="${icon}" aria-hidden="true"></i>`;
+          control.addEventListener("click", action);
+          row.append(control);
+        });
+        list.append(row);
       });
       if (!records.length) list.textContent = "暂无保存记录";
+      if (window.lucide?.createIcons) window.lucide.createIcons();
     }
 
     function generate(options = {}) {
@@ -12838,10 +12875,12 @@
       setBirthFormCollapsed(true);
       if (!options.skipHistory) {
         try {
-          const records = JSON.parse(localStorage.getItem("baziBasicRecords") || "[]");
-          const filtered = records.filter((item) => JSON.stringify(item) !== JSON.stringify(state));
-          localStorage.setItem("baziBasicRecords", JSON.stringify([state, ...filtered].slice(0, 100)));
-          renderBasicSavedRecords();
+          const records = readBasicRecords();
+          const signature = (item) => JSON.stringify(Object.fromEntries(Object.entries(item).filter(([key]) => !key.startsWith("_")).sort(([a], [b]) => a.localeCompare(b))));
+          const existing = records.find((item) => item._id === editingBasicRecordId) || records.find((item) => signature(item) === signature(state));
+          const saved = { ...state, _id: existing?._id || crypto.randomUUID(), _pinned: existing?._pinned || false };
+          writeBasicRecords([saved, ...records.filter((item) => item._id !== saved._id && signature(item) !== signature(state))]);
+          editingBasicRecordId = null;
         } catch (_) {}
       }
       if (!options.skipHistory) saveCurrentQueryRecord(ctx);
