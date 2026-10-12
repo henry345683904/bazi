@@ -3282,6 +3282,8 @@
     .clash-nested { border-left: 3px solid #d6b647; padding-left: 6px; background: #fff8d6; }
     .clash-high-risk { border-left-color: #c43d3d; background: #ffe1e1; }
     .five-ghost-details { margin-top: 8px; }
+    .flow-title { position: relative; text-align: center; }
+    .flow-title small { margin-left: 4px; color: #9a6a00; font-size: 10px; font-weight: 700; }
     @media (max-width: 620px) {
       body.basic-chart-only #xipanMainTable td,
       body.basic-chart-only #xipanMainTable th { font-size: 11px; }
@@ -3577,21 +3579,21 @@
           <div class="xipan-table-wrap" id="xipanFineTable"></div>
           <div class="mingpan-grid" id="mingpanGrid"></div>
           <div>
-            <div class="small-title">大运</div>
+            <div class="small-title flow-title">大运 <small id="luckStrengthLabel"></small></div>
             <div class="timeline" id="luckTimeline"></div>
           </div>
           <div class="flow-layout">
             <div class="flow-stack">
               <div>
-                <div class="small-title">流年</div>
+                <div class="small-title flow-title">流年 <small id="yearStrengthLabel"></small></div>
                 <div class="scroll-row" id="yearFlow"></div>
               </div>
               <div>
-                <div class="small-title">流月</div>
+                <div class="small-title flow-title">流月 <small id="monthStrengthLabel"></small></div>
                 <div class="scroll-row" id="monthFlow"></div>
               </div>
               <div>
-                <div class="small-title">流日</div>
+                <div class="small-title flow-title">流日 <small id="dayStrengthLabel"></small></div>
                 <div class="scroll-row" id="dayFlow"></div>
               </div>
             </div>
@@ -12073,6 +12075,25 @@
         </button>
       `).join("");
       colorizeGanzhi(timeline);
+      updateFlowStrengthLabels();
+    }
+
+    function simpleStrengthLabel(ctx, date) {
+      const label = dynamicStrengthProfile(ctx, date).current.label;
+      return ["偏旺", "从强", "从旺"].includes(label) ? "身强" : ["偏弱", "从弱"].includes(label) ? "身弱" : "中和";
+    }
+
+    function updateFlowStrengthLabels() {
+      if (!chartContext) return;
+      const luck = chartContext.lucks[selectedLuck];
+      const year = chartContext.flowYears?.[selectedYear];
+      const month = chartContext.flowMonths?.[selectedMonth];
+      const day = chartContext.flowDays?.[selectedDay];
+      const set = (id, date) => { const node = document.getElementById(id); if (node && date) node.textContent = simpleStrengthLabel(chartContext, date); };
+      set("luckStrengthLabel", luck?.startDate);
+      set("yearStrengthLabel", year ? new Date(year.year, 0, 1, 12) : null);
+      set("monthStrengthLabel", month?.startDate);
+      set("dayStrengthLabel", day?.date);
     }
 
     function renderFlowYears() {
@@ -12108,6 +12129,7 @@
       renderFlowDays();
       renderXipanFineTable(chartContext);
       renderXipanAttention(chartContext);
+      updateFlowStrengthLabels();
     }
 
     function renderFlowDays() {
@@ -12123,6 +12145,7 @@
       colorizeGanzhi(dayFlow);
       renderXipanFineTable(chartContext);
       renderXipanAttention(chartContext);
+      updateFlowStrengthLabels();
     }
 
     function scrollActiveFlowIntoView() {
