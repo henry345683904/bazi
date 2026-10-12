@@ -328,6 +328,20 @@
       padding: 14px;
     }
 
+    .small-luck-collapse > summary {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      background: #f4f6f5;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .small-luck-collapse[open] > summary {
+      margin-bottom: 8px;
+    }
+
     .basic-chart-only #fullChart {
       display: grid !important;
       visibility: visible !important;
@@ -3167,7 +3181,10 @@
           <div class="xipan-table-wrap" id="xipanFineTable"></div>
           <div class="mingpan-grid" id="mingpanGrid"></div>
           <div class="xipan-table-wrap" id="xipanLuckTable"></div>
-          <div class="xipan-table-wrap" id="xipanSmallLuckTable"></div>
+          <details class="small-luck-collapse">
+            <summary>小运表</summary>
+            <div class="xipan-table-wrap" id="xipanSmallLuckTable"></div>
+          </details>
           <div>
             <div class="small-title">大运</div>
             <div class="timeline" id="luckTimeline"></div>
