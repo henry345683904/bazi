@@ -5577,6 +5577,7 @@
 
     function setBaziView(view, persist = true, shouldScroll = false) {
       const validViews = ["chart", "fortune", "report", "records", "me"];
+      if (document.body.classList.contains("basic-chart-only")) view = "chart";
       currentBaziView = validViews.includes(view) ? view : "chart";
       document.body.dataset.baziView = currentBaziView;
       const isBaziActive = currentActiveTool === "bazi";
@@ -11958,7 +11959,10 @@
       refreshLanguage(document.body);
       setBirthFormCollapsed(true);
       if (!options.skipHistory) saveCurrentQueryRecord(ctx);
-      if (!options.skipNavigation) setBaziView("fortune", true, true);
+      if (!options.skipNavigation) {
+        const basicChartMode = document.body.classList.contains("basic-chart-only");
+        setBaziView(basicChartMode ? "chart" : "fortune", true, true);
+      }
     }
 
     function showToast(text) {
