@@ -3328,14 +3328,14 @@
     }
     body.basic-chart-only .topbar { display: flex; align-items: center; gap: 8px; }
     .brand-copy { position: relative; }
-    .developer-credit { position: absolute; right: 0; bottom: -1px; text-align: right; font-size: 9px; color: var(--muted); white-space: nowrap; line-height: 1; }
-    body.basic-chart-only .top-tools { display: flex !important; justify-content: flex-end; width: auto; margin-left: auto; }
+    .developer-credit { position: static; text-align: right; font-size: 8px; color: var(--muted); white-space: nowrap; line-height: 1; margin-top: 2px; }
+    body.basic-chart-only .top-tools { display: flex !important; flex-direction: column; align-items: flex-end; justify-content: flex-start; width: auto; margin-left: auto; }
     body.basic-chart-only .top-tools > :not(#languageToggle) { display: none !important; }
-    body.basic-chart-only #languageToggle { display: block; margin: 0; padding: 5px 9px; font-size: 12px; }
+    body.basic-chart-only #languageToggle { display: block; align-self: flex-start; margin: -6px 0 0; padding: 3px 6px; font-size: 10px; line-height: 1.1; }
     @media (max-width: 620px) {
       body.basic-chart-only .topbar { gap: 4px 8px; }
       body.basic-chart-only .topbar .brand { min-width: 0; }
-      body.basic-chart-only .developer-credit { bottom: -1px; font-size: 8px; }
+      body.basic-chart-only .developer-credit { font-size: 7px; }
     }
   </style>
 </head>
@@ -3352,7 +3352,6 @@
         <div class="brand-copy">
           <h1>八字运势测算</h1>
           <p class="subtitle">输入出生信息，直接生成应事预测。</p>
-          <span class="developer-credit no-translate">Henry开发免费使用</span>
         </div>
       </div>
       <div class="top-tools">
@@ -3361,6 +3360,7 @@
           <button type="button" data-display-mode-choice="pro" title="显示完整分析过程">专业版</button>
         </div>
         <button class="language-toggle" type="button" id="languageToggle" title="切换中英文">English</button>
+        <span class="developer-credit no-translate">Henry开发免费使用</span>
         <button class="account-shortcut" type="button" id="accountToggle" aria-expanded="false" title="账号与查询记录">
           <i data-lucide="user-round" aria-hidden="true"></i>
           <span class="account-toggle-label" id="accountToggleLabel">账号</span>
