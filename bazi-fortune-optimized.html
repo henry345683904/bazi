@@ -10994,7 +10994,7 @@
             const arrows = natalRelationDiagram(ctx, label === "天干" ? "stem" : "branch");
             const laneCount = arrows ? Number(arrows.match(/height="(\d+)"/)[1]) / 44 : 1;
             const symbols = `<div class="natal-inline-symbols">${cells.map((cell) => `<div>${cell}</div>`).join("")}</div>`;
-            return `<tr><td class="label">${escapeHtml(label)}</td><td colspan="4" class="natal-inline-cell">${symbols.repeat(laneCount)}${arrows}</td></tr>`;
+            return `<tr><td class="label">${escapeHtml(label)}</td><td colspan="4" class="natal-inline-cell" style="height:${laneCount * 44}px">${symbols}${arrows}</td></tr>`;
           }
           return `<tr><td class="label">${escapeHtml(label)}</td>${cells.map((cell) => `<td>${cell}</td>`).join("")}</tr>`;
         }).join("")}
