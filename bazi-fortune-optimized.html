@@ -3057,6 +3057,31 @@
     body.basic-chart-only[data-display-mode="pro"] .result > .hero-card {
       display: none !important;
     }
+    body.basic-chart-only #luckTimeline .pick strong,
+    body.basic-chart-only #yearFlow .pick strong,
+    body.basic-chart-only #monthFlow .pick strong,
+    body.basic-chart-only #dayFlow .pick strong {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.2;
+      font-size: 15px;
+    }
+    body.basic-chart-only #dayFlow {
+      display: grid;
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: 46px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-x: contain;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x proximity;
+      padding: 3px 1px 7px;
+      min-width: 0;
+      max-width: 100%;
+    }
+    #dayFlow .pick { scroll-snap-align: start; }
   </style>
 </head>
   <body class="basic-chart-only">
@@ -11679,7 +11704,7 @@
       const timeline = document.getElementById("luckTimeline");
       timeline.innerHTML = lucks.map((l, i) => `
         <button class="pick ${i === selectedLuck ? "active" : ""}" type="button" data-luck="${i}">
-          <strong>${l.pillar.text}</strong>
+          <strong>${l.pillar.stem}<br>${l.pillar.branch}</strong>
           <span>${l.startAge}–${l.endAge}岁</span>
           <span>${l.startYear}-${l.endYear}</span>
         </button>
@@ -11694,7 +11719,7 @@
       const yearFlow = document.getElementById("yearFlow");
       yearFlow.innerHTML = years.map((y, i) => `
         <button class="pick ${i === selectedYear ? "active" : ""}" type="button" data-year="${i}">
-          <strong>${y.pillar.text}</strong><span>${chartContext.lucks[selectedLuck].startAge + i}岁</span><span>${y.year}年</span>
+          <strong>${y.pillar.stem}<br>${y.pillar.branch}</strong><span>${chartContext.lucks[selectedLuck].startAge + i}岁</span><span>${y.year}年</span>
         </button>
       `).join("");
       colorizeGanzhi(yearFlow);
@@ -11713,7 +11738,7 @@
       const monthFlow = document.getElementById("monthFlow");
       monthFlow.innerHTML = months.map((m, i) => `
         <button class="pick ${i === selectedMonth ? "active" : ""}" type="button" data-month="${i}">
-          <strong>${m.pillar.text}</strong><span>${escapeHtml(m.label || `${m.month}月`)}</span>
+          <strong>${m.pillar.stem}<br>${m.pillar.branch}</strong><span>${escapeHtml(m.label || `${m.month}月`)}</span>
         </button>
       `).join("");
       colorizeGanzhi(monthFlow);
@@ -11729,7 +11754,7 @@
       const dayFlow = document.getElementById("dayFlow");
       dayFlow.innerHTML = days.map((d, i) => `
         <button class="pick ${i === selectedDay ? "active" : ""}" type="button" data-day="${i}">
-          <strong>${d.pillar.text}</strong><span>${d.date.getMonth() + 1}/${d.date.getDate()}</span>
+          <strong>${d.pillar.stem}<br>${d.pillar.branch}</strong><span>${d.date.getMonth() + 1}/${d.date.getDate()}</span>
         </button>
       `).join("");
       colorizeGanzhi(dayFlow);
