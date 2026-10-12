@@ -9421,64 +9421,463 @@
       return "亥卯未";
     }
 
+    // Five reference bases match the public zydx.top Shen_* rule tables.
+    const symbolicStarRules = {
+      "niangan": [
+        [
+          "天乙贵人",
+          "甲戊:丑未",
+          "乙己:申子",
+          "丙丁:亥酉",
+          "壬癸:卯巳",
+          "庚辛:寅午"
+        ],
+        [
+          "太极贵人",
+          "甲乙:子午",
+          "丙丁:卯酉",
+          "戊己:辰戌丑未",
+          "庚辛:寅亥",
+          "壬癸:巳申"
+        ],
+        [
+          "文昌贵人",
+          "甲乙:巳午",
+          "丙戊:申",
+          "丁己:酉",
+          "庚:亥",
+          "辛:子",
+          "壬:寅",
+          "癸:卯"
+        ],
+        [
+          "天厨贵人",
+          "甲:巳",
+          "乙:午",
+          "丙:子",
+          "丁:巳",
+          "戊:午",
+          "己:申",
+          "庚:寅",
+          "辛:午",
+          "壬:酉",
+          "癸:亥"
+        ],
+        [
+          "国印贵人",
+          "甲:戌",
+          "乙:亥",
+          "丙:丑",
+          "丁:寅",
+          "戊:丑",
+          "己:寅",
+          "庚:辰",
+          "辛:巳",
+          "壬:未",
+          "癸:申"
+        ],
+        [
+          "学堂",
+          "甲:己亥",
+          "乙:壬午",
+          "丙:丙寅",
+          "丁:丁酉",
+          "戊:戊寅",
+          "己:己酉",
+          "庚:辛巳",
+          "辛:甲子",
+          "壬:甲申",
+          "癸:乙卯"
+        ],
+        [
+          "词馆",
+          "甲:庚寅",
+          "乙:辛卯",
+          "丙:乙巳",
+          "丁:戊午",
+          "戊:丁巳",
+          "己:庚午",
+          "庚:壬申",
+          "辛:癸酉",
+          "壬:癸亥",
+          "癸:壬戌"
+        ]
+      ],
+      "nianzhi": [
+        [
+          "红鸾",
+          "子:卯",
+          "丑:寅",
+          "寅:丑",
+          "卯:子",
+          "辰:亥",
+          "巳:戌",
+          "午:酉",
+          "未:申",
+          "申:未",
+          "酉:午",
+          "戌:巳",
+          "亥:辰"
+        ],
+        [
+          "天喜",
+          "子:酉",
+          "丑:申",
+          "寅:未",
+          "卯:午",
+          "辰:巳",
+          "巳:辰",
+          "午:卯",
+          "未:寅",
+          "申:丑",
+          "酉:子",
+          "戌:亥",
+          "亥:戌"
+        ],
+        [
+          "元辰",
+          "子:未",
+          "丑:申",
+          "寅:酉",
+          "卯:戌",
+          "辰:亥",
+          "巳:子",
+          "午:丑",
+          "未:寅",
+          "申:卯",
+          "酉:辰",
+          "戌:巳",
+          "亥:午"
+        ],
+        [
+          "元辰",
+          "子:巳",
+          "丑:午",
+          "寅:未",
+          "卯:申",
+          "辰:酉",
+          "巳:戌",
+          "午:亥",
+          "未:子",
+          "申:丑",
+          "酉:寅",
+          "戌:卯",
+          "亥:辰"
+        ],
+        [
+          "灾煞",
+          "申子辰:午",
+          "亥卯未:酉",
+          "寅午戌:子",
+          "巳酉丑:卯"
+        ],
+        [
+          "孤辰",
+          "亥子丑:寅",
+          "寅卯辰:巳",
+          "巳午未:申",
+          "申酉戌:亥"
+        ],
+        [
+          "寡宿",
+          "亥子丑:戌",
+          "寅卯辰:丑",
+          "巳午未:辰",
+          "申酉戌:未"
+        ],
+        [
+          "驿马",
+          "申子辰:寅",
+          "寅午戌:申",
+          "巳酉丑:亥",
+          "亥卯未:巳"
+        ],
+        [
+          "华盖",
+          "寅午戌:戌",
+          "亥卯未:未",
+          "申子辰:辰",
+          "巳酉丑:丑"
+        ],
+        [
+          "将星",
+          "寅午戌:午",
+          "巳酉丑:酉",
+          "申子辰:子",
+          "亥卯未:卯"
+        ],
+        [
+          "劫煞",
+          "申子辰:巳",
+          "亥卯未:申",
+          "寅午戌:亥",
+          "巳酉丑:寅"
+        ],
+        [
+          "桃花",
+          "申子辰:酉",
+          "寅午戌:卯",
+          "巳酉丑:午",
+          "亥卯未:子"
+        ],
+        [
+          "亡神",
+          "寅午戌:巳",
+          "亥卯未:寅",
+          "巳酉丑:申",
+          "申子辰:亥"
+        ],
+        [
+          "天罗地网",
+          "辰:巳",
+          "巳:辰",
+          "戌:亥",
+          "亥:戌"
+        ]
+      ],
+      "yuezhi": [
+        [
+          "天德贵人",
+          "寅:丁",
+          "卯:申",
+          "辰:壬",
+          "巳:辛",
+          "午:亥",
+          "未:甲",
+          "申:癸",
+          "酉:寅",
+          "戌:丙",
+          "亥:乙",
+          "子:己",
+          "丑:庚"
+        ],
+        [
+          "月德贵人",
+          "寅午戌:丙",
+          "申子辰:壬",
+          "亥卯未:甲",
+          "巳酉丑:庚"
+        ],
+        [
+          "天医",
+          "寅:丑",
+          "卯:寅",
+          "辰:卯",
+          "巳:辰",
+          "午:巳",
+          "未:午",
+          "申:未",
+          "酉:申",
+          "戌:酉",
+          "亥:戌",
+          "子:亥",
+          "丑:子"
+        ]
+      ],
+      "rigan": [
+        [
+          "天乙贵人",
+          "甲戊:丑未",
+          "乙己:申子",
+          "丙丁:亥酉",
+          "壬癸:卯巳",
+          "庚辛:寅午"
+        ],
+        [
+          "太极贵人",
+          "甲乙:子午",
+          "丙丁:卯酉",
+          "戊己:辰戌丑未",
+          "庚辛:寅亥",
+          "壬癸:巳申"
+        ],
+        [
+          "文昌贵人",
+          "甲乙:巳午",
+          "丙戊:申",
+          "丁己:酉",
+          "庚:亥",
+          "辛:子",
+          "壬:寅",
+          "癸:卯"
+        ],
+        [
+          "金舆",
+          "甲:辰",
+          "乙:巳",
+          "丙戊:未",
+          "丁己:申",
+          "庚:戌",
+          "辛:亥",
+          "壬:丑",
+          "癸:寅"
+        ],
+        [
+          "禄神",
+          "甲:寅",
+          "乙:卯",
+          "丙戊:巳",
+          "丁己:午",
+          "庚:申",
+          "辛:酉",
+          "壬:亥",
+          "癸:子"
+        ],
+        [
+          "羊刃",
+          "甲:卯",
+          "乙:寅",
+          "丙戊:午",
+          "丁己:巳",
+          "庚:酉",
+          "辛:申",
+          "壬:子",
+          "癸:亥"
+        ],
+        [
+          "天厨贵人",
+          "甲:巳",
+          "乙:午",
+          "丙:子",
+          "丁:巳",
+          "戊:午",
+          "己:申",
+          "庚:寅",
+          "辛:午",
+          "壬:酉",
+          "癸:亥"
+        ],
+        [
+          "国印贵人",
+          "甲:戌",
+          "乙:亥",
+          "丙:丑",
+          "丁:寅",
+          "戊:丑",
+          "己:寅",
+          "庚:辰",
+          "辛:巳",
+          "壬:未",
+          "癸:申"
+        ],
+        [
+          "学堂",
+          "甲:己亥",
+          "乙:壬午",
+          "丙:丙寅",
+          "丁:丁酉",
+          "戊:戊寅",
+          "己:己酉",
+          "庚:辛巳",
+          "辛:甲子",
+          "壬:甲申",
+          "癸:乙卯"
+        ],
+        [
+          "词馆",
+          "甲:庚寅",
+          "乙:辛卯",
+          "丙:乙巳",
+          "丁:戊午",
+          "戊:丁巳",
+          "己:庚午",
+          "庚:壬申",
+          "辛:癸酉",
+          "壬:癸亥",
+          "癸:壬戌"
+        ]
+      ],
+      "rizhi": [
+        [
+          "驿马",
+          "申子辰:寅",
+          "寅午戌:申",
+          "巳酉丑:亥",
+          "亥卯未:巳"
+        ],
+        [
+          "华盖",
+          "寅午戌:戌",
+          "亥卯未:未",
+          "申子辰:辰",
+          "巳酉丑:丑"
+        ],
+        [
+          "将星",
+          "寅午戌:午",
+          "巳酉丑:酉",
+          "申子辰:子",
+          "亥卯未:卯"
+        ],
+        [
+          "亡神",
+          "寅午戌:巳",
+          "亥卯未:寅",
+          "巳酉丑:申",
+          "申子辰:亥"
+        ],
+        [
+          "劫煞",
+          "申子辰:巳",
+          "亥卯未:申",
+          "寅午戌:亥",
+          "巳酉丑:寅"
+        ],
+        [
+          "桃花",
+          "申子辰:酉",
+          "寅午戌:卯",
+          "巳酉丑:午",
+          "亥卯未:子"
+        ],
+        [
+          "天罗地网",
+          "辰:巳",
+          "巳:辰",
+          "戌:亥",
+          "亥:戌"
+        ]
+      ]
+    };
+
     function symbolicStars(ctx, target) {
-      const yearStem = ctx.pillars[0].stem;
-      const yearBranch = ctx.pillars[0].branch;
-      const monthBranch = ctx.pillars[1].branch;
-      const dayStem = ctx.pillars[2].stem;
-      const dayBranch = ctx.pillars[2].branch;
-      const targetStem = target.stem;
-      const targetBranch = target.branch;
+      const [year, month, day] = ctx.pillars;
+      const branchOrder = "子丑寅卯辰巳午未申酉戌亥";
+      const pillarText = target.stem + target.branch;
       const stars = [];
-      const noble = {
-        甲: ["丑", "未"], 戊: ["丑", "未"], 庚: ["丑", "未"],
-        乙: ["子", "申"], 己: ["子", "申"],
-        丙: ["亥", "酉"], 丁: ["亥", "酉"],
-        壬: ["卯", "巳"], 癸: ["卯", "巳"], 辛: ["寅", "午"]
+      const matchRules = (rules, base, mode) => {
+        rules.forEach(([name, ...entries], index) => {
+          if (mode === "yearBranch" && name === "元辰") {
+            const female = ctx.state?.gender === "女";
+            if ((index === 2 && female) || (index === 3 && !female)) return;
+          }
+          const matched = entries.some((entry) => {
+            const [sources, targets] = entry.split(":");
+            if (!sources.includes(base)) return false;
+            if (name === "学堂" || name === "词馆") {
+              return sources === base && targets === pillarText
+                && stemElement[base] === pillarNayin(target).slice(-1);
+            }
+            if (mode === "month") return targets === target.stem || targets === target.branch;
+            return targets.includes(target.branch);
+          });
+          if (matched) stars.push(name);
+        });
       };
-      const taiji = {
-        甲: ["子", "午"], 乙: ["子", "午"],
-        丙: ["卯", "酉"], 丁: ["卯", "酉"],
-        戊: ["辰", "戌", "丑", "未"], 己: ["辰", "戌", "丑", "未"],
-        庚: ["寅", "亥"], 辛: ["寅", "亥"],
-        壬: ["巳", "申"], 癸: ["巳", "申"]
+      matchRules(symbolicStarRules.niangan, year.stem, "stem");
+      matchRules(symbolicStarRules.nianzhi, year.branch, "yearBranch");
+      const addBranchOffsets = (branch) => {
+        const index = branchOrder.indexOf(branch);
+        [[3, "披麻"], [2, "吊客"], [10, "丧门"]].forEach(([offset, name]) => {
+          if (branchOrder[(index + offset) % 12] === target.branch) stars.push(name);
+        });
       };
-      const wenchang = { 甲: "巳", 乙: "午", 丙: "申", 丁: "酉", 戊: "申", 己: "酉", 庚: "亥", 辛: "子", 壬: "寅", 癸: "卯" };
-      const lu = { 甲: "寅", 乙: "卯", 丙: "巳", 丁: "午", 戊: "巳", 己: "午", 庚: "申", 辛: "酉", 壬: "亥", 癸: "子" };
-      const yangren = { 甲: "卯", 丙: "午", 戊: "午", 庚: "酉", 壬: "子", 乙: "寅", 丁: "巳", 己: "巳", 辛: "申", 癸: "亥" };
-      const jinyu = { 甲: "辰", 乙: "巳", 丙: "未", 丁: "申", 戊: "未", 己: "申", 庚: "戌", 辛: "亥", 壬: "丑", 癸: "寅" };
-      const tianchu = { 甲: "巳", 乙: "午", 丙: "午", 丁: "巳", 戊: "申", 己: "酉", 庚: "亥", 辛: "子", 壬: "寅", 癸: "卯" };
-      const tiande = { 寅: "丁", 卯: "申", 辰: "壬", 巳: "辛", 午: "亥", 未: "甲", 申: "癸", 酉: "寅", 戌: "丙", 亥: "乙", 子: "巳", 丑: "庚" };
-      const yuede = { 寅午戌: "丙", 申子辰: "壬", 亥卯未: "甲", 巳酉丑: "庚" };
-      const xueren = { 甲: "卯", 乙: "辰", 丙: "午", 丁: "未", 戊: "午", 己: "未", 庚: "酉", 辛: "戌", 壬: "子", 癸: "丑" };
-      const peach = { 申子辰: "酉", 寅午戌: "卯", 巳酉丑: "午", 亥卯未: "子" };
-      const horse = { 申子辰: "寅", 寅午戌: "申", 巳酉丑: "亥", 亥卯未: "巳" };
-      const huagai = { 申子辰: "辰", 寅午戌: "戌", 巳酉丑: "丑", 亥卯未: "未" };
-      const general = { 申子辰: "子", 寅午戌: "午", 巳酉丑: "酉", 亥卯未: "卯" };
-      const tianxi = { 子: "酉", 丑: "申", 寅: "未", 卯: "午", 辰: "巳", 巳: "辰", 午: "卯", 未: "寅", 申: "丑", 酉: "子", 戌: "亥", 亥: "戌" };
-      const group = branchGroup(dayBranch);
-      const yearDayGroups = uniqueList([branchGroup(yearBranch), group]);
-      const yearGroup = branchGroup(ctx.pillars[0].branch);
-      const refStems = uniqueList([dayStem, yearStem, targetStem].filter(Boolean));
-      const refBranches = uniqueList([dayBranch, yearBranch]);
-      if (refStems.some((stem) => (noble[stem] || []).includes(targetBranch))) stars.push("天乙贵人");
-      if ([targetStem, targetBranch].includes(tiande[monthBranch])) stars.push("天德贵人");
-      if (yuede[branchGroup(monthBranch)] === targetStem) stars.push("月德贵人");
-      if (refBranches.some((branch) => tianxi[branch] === targetBranch)) stars.push("天喜");
-      if (refStems.some((stem) => (taiji[stem] || []).includes(targetBranch))) stars.push("太极贵人");
-      if (refStems.some((stem) => jinyu[stem] === targetBranch)) stars.push("金舆");
-      if (refStems.some((stem) => tianchu[stem] === targetBranch)) stars.push("天厨贵人");
-      if (yearDayGroups.some((item) => general[item] === targetBranch)) stars.push("将星");
-      if (wenchang[dayStem] === targetBranch) stars.push("文昌");
-      if (lu[dayStem] === targetBranch) stars.push("禄神");
-      if (yangren[dayStem] === targetBranch) stars.push("羊刃");
-      if (xueren[dayStem] === targetBranch) stars.push("血刃");
-      if (peach[group] === targetBranch) stars.push("桃花");
-      if (horse[group] === targetBranch) stars.push("驿马");
-      if (huagai[group] === targetBranch) stars.push("华盖");
-      if (disasterBranchByGroup[yearGroup] === targetBranch) stars.push("灾煞");
-      if (targetBranch === dayBranch) stars.push("伏吟");
-      return stars.length ? uniqueList(stars) : ["无明显常用神煞"];
+      addBranchOffsets(year.branch);
+      matchRules(symbolicStarRules.yuezhi, month.branch, "month");
+      matchRules(symbolicStarRules.rigan, day.stem, "stem");
+      matchRules(symbolicStarRules.rizhi, day.branch, "branch");
+      addBranchOffsets(day.branch);
+      return stars.length ? uniqueList(stars).sort() : ["无明显常用神煞"];
     }
 
     function branchEffects(ctx, target) {
