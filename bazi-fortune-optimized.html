@@ -9124,9 +9124,10 @@
       const god = ghostStem ? tenGod(ctx.pillars[2].stem, ghostStem) : "";
       const periods = [];
       (ctx.lucks || []).forEach((luck) => {
-        if (luck.pillar.branch === ghostBranch) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${luck.endYear}`, age: `${luck.startAge}–${luck.endAge}岁` });
+        if (luck.startAge < 80 && luck.pillar.branch === ghostBranch) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${luck.endYear}`, age: `${luck.startAge}–${luck.endAge}岁` });
         buildFlowYears(ctx, luck).forEach((year) => {
-          if (year.pillar.branch === ghostBranch) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${luck.startAge + (year.year - luck.startYear)}岁` });
+          const age = luck.startAge + (year.year - luck.startYear);
+          if (age < 80 && year.pillar.branch === ghostBranch) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${age}岁` });
         });
       });
       return { branch: ghostBranch, god, text: fiveGhostWealthText(god), periods };
@@ -9136,9 +9137,10 @@
       const luBranch = { 甲: "寅", 乙: "卯", 丙: "巳", 丁: "午", 戊: "巳", 己: "午", 庚: "申", 辛: "酉", 壬: "亥", 癸: "子" }[ctx.pillars[2].stem];
       const periods = [];
       (ctx.lucks || []).forEach((luck) => {
-        if (luck.pillar.branch === luBranch) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${luck.endYear}`, age: `${luck.startAge}–${luck.endAge}岁` });
+        if (luck.startAge < 80 && luck.pillar.branch === luBranch) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${luck.endYear}`, age: `${luck.startAge}–${luck.endAge}岁` });
         buildFlowYears(ctx, luck).forEach((year) => {
-          if (year.pillar.branch === luBranch) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${luck.startAge + (year.year - luck.startYear)}岁` });
+          const age = luck.startAge + (year.year - luck.startYear);
+          if (age < 80 && year.pillar.branch === luBranch) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${age}岁` });
         });
       });
       return { branch: luBranch, periods };
@@ -9166,9 +9168,10 @@
       const periods = [];
       if (!strong) return { strong, periods };
       (ctx.lucks || []).forEach((luck) => {
-        if (["正财", "偏财"].includes(tenGod(ctx.pillars[2].stem, luck.pillar.stem))) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${luck.endYear}`, age: `${luck.startAge}–${luck.endAge}岁`, effects: wealthEnergyEffects(ctx, luck.pillar) });
+        if (luck.startAge < 80 && ["正财", "偏财"].includes(tenGod(ctx.pillars[2].stem, luck.pillar.stem))) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${luck.endYear}`, age: `${luck.startAge}–${luck.endAge}岁`, effects: wealthEnergyEffects(ctx, luck.pillar) });
         buildFlowYears(ctx, luck).forEach((year) => {
-          if (["正财", "偏财"].includes(tenGod(ctx.pillars[2].stem, year.pillar.stem))) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${luck.startAge + (year.year - luck.startYear)}岁`, effects: wealthEnergyEffects(ctx, year.pillar) });
+          const age = luck.startAge + (year.year - luck.startYear);
+          if (age < 80 && ["正财", "偏财"].includes(tenGod(ctx.pillars[2].stem, year.pillar.stem))) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${age}岁`, effects: wealthEnergyEffects(ctx, year.pillar) });
         });
       });
       return { strong, periods };
