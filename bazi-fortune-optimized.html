@@ -395,6 +395,48 @@
     }
 
     @media (max-width: 620px) {
+      html,
+      body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+      }
+
+      .basic-chart-only .app,
+      .basic-chart-only .layout,
+      .basic-chart-only .form-panel,
+      .basic-chart-only .result,
+      .basic-chart-only .hero-card {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .basic-chart-only .grid-two,
+      .basic-chart-only .calibration-fields {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+
+      .basic-chart-only input,
+      .basic-chart-only select,
+      .basic-chart-only button {
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .basic-chart-only .hero-card {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .basic-chart-only .summary,
+      .basic-chart-only .pillars {
+        min-width: 0;
+      }
+
+      .basic-chart-only .pillar .gz {
+        overflow-wrap: anywhere;
+      }
+
       .basic-chart-only .form-panel {
         padding: 10px;
         margin-bottom: 9px;
