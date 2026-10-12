@@ -11488,8 +11488,8 @@
       const columns = [
         { name: "流日", item: dayItem, age: `${dayItem.date.getMonth() + 1}/${dayItem.date.getDate()}` },
         { name: "流月", item: monthItem, age: escapeHtml(monthItem.label || `${monthItem.month}月`) },
-        { name: "流年", item: yearItem, age: `${yearItem.year}` },
-        { name: "大运", item: luck, age: `${escapeHtml(luck.startAgeText)}<br>${luck.startYear}` },
+        { name: "流年", item: yearItem, age: `${luck.startAge + selectedYear}岁<br>${yearItem.year}` },
+        { name: "大运", item: luck, age: `${luck.startAge}–${luck.endAge}岁<br>${luck.startYear}` },
         ...ctx.pillars.map((pillar, i) => ({ name: pillarLabels[i], item: { pillar }, age: "*" }))
       ];
       const row = (label, getter) => `<tr><td class="label">${escapeHtml(label)}</td>${columns.map((col) => `<td>${getter(col)}</td>`).join("")}</tr>`;
@@ -11512,7 +11512,7 @@
       const lucks = ctx.lucks || [];
       const luckRow = (label, getter) => `<tr><td class="label">${escapeHtml(label)}</td>${lucks.map((luck) => `<td>${getter(luck)}</td>`).join("")}</tr>`;
       target.innerHTML = `<table class="xipan-table">
-        <tr><th class="label">大运表</th>${lucks.map((luck) => `<th>${escapeHtml(luck.startAgeText)}<br>${luck.startYear}</th>`).join("")}</tr>
+        <tr><th class="label">大运表</th>${lucks.map((luck) => `<th>${luck.startAge}–${luck.endAge}岁<br>${luck.startYear}</th>`).join("")}</tr>
         ${luckRow("天干十神", (luck) => escapeHtml(tenGod(dayStem, luck.pillar.stem)))}
         ${luckRow("大运", (luck) => xipanCellBig(luck.pillar, "", ctx))}
         ${luckRow("地支十神", (luck) => hiddenStemDetails(ctx, luck.pillar.branch).join("<br>"))}
@@ -11643,7 +11643,7 @@
       timeline.innerHTML = lucks.map((l, i) => `
         <button class="pick ${i === selectedLuck ? "active" : ""}" type="button" data-luck="${i}">
           <strong>${l.pillar.text}</strong>
-          <span>${l.startAge}岁起</span>
+          <span>${l.startAge}–${l.endAge}岁</span>
           <span>${l.startYear}-${l.endYear}</span>
         </button>
       `).join("");
@@ -11657,7 +11657,7 @@
       const yearFlow = document.getElementById("yearFlow");
       yearFlow.innerHTML = years.map((y, i) => `
         <button class="pick ${i === selectedYear ? "active" : ""}" type="button" data-year="${i}">
-          <strong>${y.pillar.text}</strong><span>${y.year}年</span>
+          <strong>${y.pillar.text}</strong><span>${chartContext.lucks[selectedLuck].startAge + i}岁</span><span>${y.year}年</span>
         </button>
       `).join("");
       colorizeGanzhi(yearFlow);
