@@ -3276,6 +3276,10 @@
     .clash-high-risk { border-left: 3px solid #c99320; padding-left: 6px; background: #fff8dc; }
     .clash-nested { border-left: 3px solid #d6b647; padding-left: 6px; background: #fff8d6; }
     .clash-high-risk { border-left-color: #c43d3d; background: #ffe1e1; }
+    .five-ghost-details { margin-top: 8px; border: 1px solid #e5dcc5; background: #fffdf6; }
+    .five-ghost-details summary { cursor: pointer; padding: 7px 9px; font-weight: 700; }
+    .five-ghost-content { padding: 0 9px 5px; font-size: 12px; line-height: 1.5; }
+    .five-ghost-content p { margin: 5px 0; }
     @media (max-width: 620px) {
       body.basic-chart-only #xipanMainTable td,
       body.basic-chart-only #xipanMainTable th { font-size: 11px; }
@@ -9094,6 +9098,37 @@
       return uniqueList(lines).slice(0, 4);
     }
 
+    function fiveGhostWealthText(god) {
+      const texts = {
+        比肩: "五鬼运财地支本气为比肩：容易通过合作、合伙或共同项目赚钱，但收入需要分成。",
+        劫财: "五鬼运财地支本气为劫财：钱财容易快速进出，出现财来财去、投入增加或最后剩余不多的情况。",
+        偏财: "五鬼运财地支本气为偏财：容易通过生意、项目、客户、交易或临时机会赚钱。",
+        正财: "五鬼运财地支本气为正财：容易通过固定工作、稳定收入或持续经营赚钱。",
+        偏印: "五鬼运财地支本气为枭神：能够赚钱，但赚钱过程中的心理满足感较低，收入伴随压力或不情愿。",
+        食神: "五鬼运财地支本气为食神：容易在饮食、享受、服务、才艺或轻松往来中赚钱。",
+        正官: "五鬼运财地支本气为正官：容易通过领导、长辈、单位资源或正式合作获得收入。",
+        七杀: "五鬼运财地支本气为七杀：有发财机会，同时伴随疾病、意外压力或牢狱风险。",
+        正印: "五鬼运财地支本气为正印：容易通过学习、证书、教育、照顾他人或爱心服务赚钱。"
+      };
+      return texts[god] || `五鬼运财地支本气为${god}：赚钱方式会按照${god}对应的人事渠道出现。`;
+    }
+
+    function buildFiveGhostWealth(ctx) {
+      const monthBranch = ctx.pillars[1]?.branch;
+      if (!monthBranch) return { branch: "", god: "", text: "", periods: [] };
+      const ghostBranch = branches[(branches.indexOf(monthBranch) + 4) % 12];
+      const ghostStem = hiddenStems[ghostBranch]?.[0];
+      const god = ghostStem ? tenGod(ctx.pillars[2].stem, ghostStem) : "";
+      const periods = [];
+      (ctx.lucks || []).forEach((luck) => {
+        if (luck.pillar.branch === ghostBranch) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${luck.endYear}`, age: `${luck.startAge}–${luck.endAge}岁` });
+        buildFlowYears(ctx, luck).forEach((year) => {
+          if (year.pillar.branch === ghostBranch) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${luck.startAge + (year.year - luck.startYear)}岁` });
+        });
+      });
+      return { branch: ghostBranch, god, text: fiveGhostWealthText(god), periods };
+    }
+
     function reportCategoryModel(category, ctx) {
       const categoryTitles = {
         overview: "人生总览",
@@ -9120,6 +9155,7 @@
         const source = uniqueList(items.filter(Boolean));
         return (dailyMode ? source.map(dailyPredictionText).filter(Boolean) : source).slice(0, limit);
       };
+      const fiveGhostWealth = buildFiveGhostWealth(ctx);
       const makeFocusedReport = (focus, periodKey, title, salt) => {
         const focusedCtx = { ...ctx, state: { ...ctx.state, focus } };
         const report = buildReport(title, periodKey, ctx.dayElement, ctx.strength, ctx.favorable, salt, focusedCtx);
@@ -9217,7 +9253,8 @@
             yearFlow.money || tenGodScenario(yearGod, ctx),
             effectStrategy(branchEffects(ctx, currentYearPillar).join("、"), yearGod),
             ...(dailyMode ? [] : directMoneyHabitLines(ctx))
-          ])
+          ]),
+          fiveGhostWealth
         };
       }
 
@@ -9672,6 +9709,7 @@
           <ul class="report-event-list">
             ${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
           </ul>
+          ${model.fiveGhostWealth ? `<details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(chartContext.pillars[1].branch)}顺数第四支为${escapeHtml(model.fiveGhostWealth.branch)}，本气十神为${escapeHtml(model.fiveGhostWealth.god)}。</p><p>${escapeHtml(model.fiveGhostWealth.text)}</p>${model.fiveGhostWealth.periods.length ? `<div>${model.fiveGhostWealth.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}</p>`).join("")}</div>` : "<p>当前大运和流年中未出现五鬼运财地支。</p>"}</div></details>` : ""}
           ${model.healthNote ? `<p class="hint">健康内容只表示传统命理信号，不替代医学诊断。</p>` : ""}
         </div>
       `;
