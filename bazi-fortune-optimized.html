@@ -3256,6 +3256,11 @@
       body.basic-chart-only #xipanFineTable th.label,
       body.basic-chart-only #xipanFineTable td.label { display: none; }
     }
+    #xipanFineTable .star-separator { display: inline; }
+    @media (max-width: 620px) and (orientation: portrait) {
+      #xipanFineTable .chart-star { display: block; text-align: center; font-size: 8px; line-height: 1.5; white-space: nowrap; }
+      #xipanFineTable .star-separator { display: none; }
+    }
   </style>
 </head>
   <body class="basic-chart-only">
@@ -11716,7 +11721,10 @@
         ${row("天干", (col) => xipanSymbolWithGods(ctx, col.item.pillar, "stem", col.name === "日柱"))}
         ${row("地支", (col) => xipanSymbolWithGods(ctx, col.item.pillar, "branch"))}
         ${row("空亡", (col) => escapeHtml(emptyBranches(col.item.pillar)))}
-        ${row("神煞", (col) => escapeHtml(compactStars(symbolicStars(ctx, col.item.pillar)).join("、") || "无明显"))}
+        ${row("神煞", (col) => {
+          const stars = compactStars(symbolicStars(ctx, col.item.pillar));
+          return stars.length ? stars.map((star) => `<span class="chart-star">${escapeHtml(star)}</span>`).join('<span class="star-separator">、</span>') : "无明显";
+        })}
       </table>`;
       colorizeGanzhi(target);
     }
