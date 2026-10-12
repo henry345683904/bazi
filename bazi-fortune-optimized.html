@@ -3105,6 +3105,10 @@
       max-width: 100%;
     }
     #dayFlow .pick { scroll-snap-align: start; }
+    .pick .flow-symbol { display: block; position: relative; width: 1em; height: 1.35em; line-height: 1.35em; }
+    body.basic-chart-only .pick strong .flow-symbol { font-size: inherit; color: inherit; margin: 0; }
+    body.basic-chart-only .pick strong .flow-gods { position: absolute; left: calc(100% + 2px); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; font-size: 8px; line-height: 1; color: var(--ink); margin: 0; }
+    body.basic-chart-only .pick strong .flow-gods > span { font-size: 8px; line-height: 1; color: inherit; margin: 0; }
     body.basic-chart-only .flow-stack,
     body.basic-chart-only .flow-stack > div { min-width: 0; max-width: 100%; }
     body.basic-chart-only #luckTimeline,
@@ -11787,12 +11791,19 @@
       if (selectedDay < 0) selectedDay = 0;
     }
 
+    function flowPillarSymbols(ctx, pillar) {
+      const dayStem = ctx.pillars[2].stem;
+      const symbol = (char, gods) => `<span class="flow-symbol">${escapeHtml(char)}<span class="flow-gods">${gods.map((god) => `<span>${escapeHtml(tenGodShort(god))}</span>`).join("")}</span></span>`;
+      return symbol(pillar.stem, [tenGod(dayStem, pillar.stem)])
+        + symbol(pillar.branch, (hiddenStems[pillar.branch] || []).map((stem) => tenGod(dayStem, stem)));
+    }
+
     function renderLuckTimeline() {
       const lucks = chartContext.lucks;
       const timeline = document.getElementById("luckTimeline");
       timeline.innerHTML = lucks.map((l, i) => `
         <button class="pick ${i === selectedLuck ? "active" : ""}" type="button" data-luck="${i}">
-          <strong>${l.pillar.stem}<br>${l.pillar.branch}</strong>
+          <strong>${flowPillarSymbols(chartContext, l.pillar)}</strong>
           <span>${l.startAge}–${l.endAge}岁</span>
           <span>${l.startYear}-${l.endYear}</span>
         </button>
@@ -11807,7 +11818,7 @@
       const yearFlow = document.getElementById("yearFlow");
       yearFlow.innerHTML = years.map((y, i) => `
         <button class="pick ${i === selectedYear ? "active" : ""}" type="button" data-year="${i}">
-          <strong>${y.pillar.stem}<br>${y.pillar.branch}</strong><span>${chartContext.lucks[selectedLuck].startAge + i}岁</span><span>${y.year}年</span>
+          <strong>${flowPillarSymbols(chartContext, y.pillar)}</strong><span>${chartContext.lucks[selectedLuck].startAge + i}岁</span><span>${y.year}年</span>
         </button>
       `).join("");
       colorizeGanzhi(yearFlow);
@@ -11826,7 +11837,7 @@
       const monthFlow = document.getElementById("monthFlow");
       monthFlow.innerHTML = months.map((m, i) => `
         <button class="pick ${i === selectedMonth ? "active" : ""}" type="button" data-month="${i}">
-          <strong>${m.pillar.stem}<br>${m.pillar.branch}</strong><span>${escapeHtml(m.label || `${m.month}月`)}</span>
+          <strong>${flowPillarSymbols(chartContext, m.pillar)}</strong><span>${escapeHtml(m.label || `${m.month}月`)}</span>
         </button>
       `).join("");
       colorizeGanzhi(monthFlow);
@@ -11842,7 +11853,7 @@
       const dayFlow = document.getElementById("dayFlow");
       dayFlow.innerHTML = days.map((d, i) => `
         <button class="pick ${i === selectedDay ? "active" : ""}" type="button" data-day="${i}">
-          <strong>${d.pillar.stem}<br>${d.pillar.branch}</strong><span>${d.date.getMonth() + 1}/${d.date.getDate()}</span>
+          <strong>${flowPillarSymbols(chartContext, d.pillar)}</strong><span>${d.date.getMonth() + 1}/${d.date.getDate()}</span>
         </button>
       `).join("");
       colorizeGanzhi(dayFlow);
