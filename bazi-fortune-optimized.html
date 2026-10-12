@@ -13002,32 +13002,65 @@
         ? uniqueHits.map((hit) => `<p class="${hit.concurrent ? "clash-high-risk" : hit.luckClash ? "clash-nested" : ""}"><strong>${hit.type} ${hit.pillar.text}</strong>　${hit.age}　${hit.years}${hit.concurrent ? "　岁运并临" : ""}<br><span>与原局${hit.affected.join("、")}形成天克地冲。${hit.concurrent ? `${heavenlyEarthlyClashImpact(hit.affected)}岁运并临使冲克力量明显叠加，疾病、重病、住院、意外灾祸和死亡风险上升。` : heavenlyEarthlyClashImpact(hit.affected)}</span></p>`).join("")
         : "<p>暂未找到与原局同时形成天克地冲的大运或流年。</p>";
       const disasterShaHits = [];
+      const disasterEnhancement = (luck, year) => {
+        const stack = {
+          layers: [
+            { key: "luck", label: "大运", pillar: luck.pillar, weight: 1.25 },
+            { key: "year", label: "流年", pillar: year.pillar, weight: 1.2 }
+          ]
+        };
+        const branchInteractions = flowBranchInteractions(ctx, stack).filter((item) => item.target?.key === "year");
+        const groupInteractions = branchGroupCompletions(ctx, stack).filter((item) => item.target?.key === "year");
+        const stemInteractions = flowStemInteractions(ctx, stack).filter((item) => item.target?.key === "year");
+        const allBranches = ctx.pillars.map((item) => item.branch).concat(luck.pillar.branch, year.pillar.branch);
+        const hasThreePunishment = [["寅", "巳", "申"], ["丑", "未", "戌"]].some((group) => group.every((branch) => allBranches.includes(branch)) && group.includes(year.pillar.branch));
+        const hasStemGuide = (item) => stemInteractions.some((stemItem) => stemItem.type === "合" && stemItem.transformed && stemItem.element && item.element && elementParts(item.element).some((element) => elementParts(stemItem.element).includes(element)));
+        const candidates = branchInteractions.concat(groupInteractions);
+        const boosted = [];
+        candidates.forEach((item) => {
+          if (!["合", "冲", "三会", "三合"].includes(item.type)) return;
+          const guided = item.transformed || hasStemGuide(item);
+          const multiplier = item.type === "三会" ? (guided ? 15 : 7.5) : guided ? 10 : 5;
+          boosted.push({ type: item.type, multiplier, guided });
+        });
+        if (hasThreePunishment) {
+          const guided = stemInteractions.some((item) => item.type === "合" && item.transformed);
+          boosted.push({ type: "三刑", multiplier: guided ? 15 : 7.5, guided });
+        }
+        const strongest = boosted.sort((a, b) => b.multiplier - a.multiplier)[0];
+        return strongest ? `${strongest.type}${strongest.guided ? "天干引化" : ""}，灾煞能量约${strongest.multiplier}倍` : "灾煞同现，能量叠加";
+      };
       (ctx.lucks || []).forEach((luck) => {
         const luckStars = symbolicStars(ctx, luck.pillar);
         // 天乙贵人同现时作为缓解信号，该阶段不列入灾煞清单。
         if (luckStars.includes("灾煞") && !luckStars.includes("天乙贵人")) {
-          disasterShaHits.push({
-            type: "大运",
-            pillar: luck.pillar,
-            age: `${luck.startAge}–${luck.endAge}岁`,
-            years: `${luck.startYear}-${luck.endYear}`
-          });
-        }
-        buildFlowYears(ctx, luck).forEach((year) => {
-          const yearStars = symbolicStars(ctx, year.pillar);
-          if (yearStars.includes("灾煞") && !yearStars.includes("天乙贵人")) {
-            disasterShaHits.push({
+          const qualifyingYears = [];
+          buildFlowYears(ctx, luck).forEach((year) => {
+            const yearStars = symbolicStars(ctx, year.pillar);
+            if (!yearStars.includes("灾煞") || yearStars.includes("天乙贵人")) return;
+            qualifyingYears.push({
               type: "流年",
               pillar: year.pillar,
               age: `${luck.startAge + (year.year - luck.startYear)}岁`,
-              years: `${year.year}年`
+              years: `${year.year}年`,
+              enhancement: disasterEnhancement(luck, year)
             });
+          });
+          if (qualifyingYears.length) {
+            disasterShaHits.push({
+              type: "大运",
+              pillar: luck.pillar,
+              age: `${luck.startAge}–${luck.endAge}岁`,
+              years: `${luck.startYear}-${luck.endYear}`,
+              enhancement: "大运灾煞与流年灾煞叠加"
+            });
+            disasterShaHits.push(...qualifyingYears);
           }
-        });
+        }
       });
       const uniqueDisasterShaHits = disasterShaHits.filter((hit, index, list) => index === list.findIndex((item) => `${item.type}-${item.years}-${item.pillar.text}` === `${hit.type}-${hit.years}-${hit.pillar.text}`));
       const disasterShaText = uniqueDisasterShaHits.length
-        ? uniqueDisasterShaHits.map((hit) => `<p><strong>${hit.type} ${escapeHtml(hit.pillar.text)}</strong>　${escapeHtml(hit.age)}　${escapeHtml(hit.years)}<br><span>灾煞被引动，突发病痛、意外磕碰、交通风险、破财或事情突然受阻的信号增强。</span></p>`).join("")
+        ? uniqueDisasterShaHits.map((hit) => `<p><strong>${hit.type} ${escapeHtml(hit.pillar.text)}</strong>　${escapeHtml(hit.age)}　${escapeHtml(hit.years)}<br><span>灾煞被引动，${escapeHtml(hit.enhancement || "能量叠加")}；突发病痛、意外磕碰、交通风险、破财或事情突然受阻的信号增强。</span></p>`).join("")
         : "<p>当前大运流年未出现灾煞。</p>";
       content.innerHTML = `<details class="clash-prediction-details"><summary>天克地冲（${uniqueHits.length}项）</summary><div class="clash-prediction-list">${text}</div></details><details class="clash-prediction-details"><summary>灾煞（${uniqueDisasterShaHits.length}项）</summary><div class="clash-prediction-list">${disasterShaText}</div></details>`;
     }
