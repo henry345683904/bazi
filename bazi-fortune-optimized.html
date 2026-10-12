@@ -3008,6 +3008,16 @@
       body.basic-chart-only .natal-relations text { font-size: 8px; }
       body.basic-chart-only .detail-box { min-width: 0; padding: 9px; overflow-wrap: anywhere; }
     }
+    .xipan-table td.natal-inline-cell { position: relative; padding: 0; }
+    .natal-inline-symbols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .natal-inline-symbols > div { padding: 9px 0; min-width: 0; }
+    .natal-inline-symbols > div + div { border-left: 1px solid var(--line); }
+    .natal-inline-arrows { position: absolute; left: 0; top: 0; pointer-events: none; }
+    .natal-inline-cell:has(.natal-inline-arrows) { height: 58px; }
+    .natal-inline-arrows text { font-size: 10px; }
+    @media (max-width: 620px) {
+      .natal-inline-arrows text { font-size: 8px; }
+    }
   </style>
 </head>
   <body class="basic-chart-only">
@@ -10953,14 +10963,14 @@
         });
       }
       if (!links.length) return "";
-      const height = links.length * 30 + 8;
+      const height = Math.max(44, links.length * 24 + 12);
       const drawing = links.map((link, index) => {
         const xs = link.indices.map((i) => 12.5 + i * 25).sort((a, b) => a - b);
-        const y = index * 30 + 22;
-        const start = xs[0], end = xs[xs.length - 1];
+        const y = index * 24 + 30;
+        const start = xs[0] + 4, end = xs[xs.length - 1] - 4;
         return `<g style="color:${link.color}" fill="currentColor" stroke="currentColor"><line x1="${start}%" x2="${end}%" y1="${y}" y2="${y}" stroke-width="1.5"/><path d="M0 0"/> <polygon points="0,0 -6,-3 -6,3" transform="translate(0,0)" style="display:none"/><svg x="${start}%" y="${y - 4}" width="8" height="8" overflow="visible"><path d="M6 0 L0 4 L6 8" fill="none" stroke-width="1.5"/></svg><svg x="${end}%" y="${y - 4}" width="8" height="8" overflow="visible"><path d="M-6 0 L0 4 L-6 8" fill="none" stroke-width="1.5"/></svg>${xs.slice(1, -1).map((x) => `<svg x="${x}%" y="${y - 3}" width="6" height="6"><circle cx="3" cy="3" r="2"/></svg>`).join("")}<text x="${(start + end) / 2}%" y="${y - 6}" text-anchor="middle" stroke="none" font-size="11">${escapeHtml(link.label)}</text></g>`;
       }).join("");
-      return `<tr class="natal-relations"><td class="label">${kind === "stem" ? "干合冲" : "支关系"}</td><td colspan="4" style="padding:0"><svg class="no-translate" role="img" aria-label="${escapeHtml(links.map((link) => link.label).join("、"))}" width="100%" height="${height}" style="display:block">${drawing}</svg></td></tr>`;
+      return `<svg class="no-translate natal-inline-arrows" role="img" aria-label="${escapeHtml(links.map((link) => link.label).join("、"))}" width="100%" height="${height}">${drawing}</svg>`;
     }
 
     function renderXipanMainTable(ctx) {
@@ -10979,7 +10989,13 @@
       ];
       target.innerHTML = `<table class="xipan-table">
         <tr><th class="label">四柱</th>${pillarLabels.map((label) => `<th>${escapeHtml(label)}</th>`).join("")}</tr>
-        ${rows.map(([label, cells]) => `<tr><td class="label">${escapeHtml(label)}</td>${cells.map((cell) => `<td>${cell}</td>`).join("")}</tr>${label === "天干" ? natalRelationDiagram(ctx, "stem") : label === "地支" ? natalRelationDiagram(ctx, "branch") : ""}`).join("")}
+        ${rows.map(([label, cells]) => {
+          if (label === "天干" || label === "地支") {
+            const arrows = natalRelationDiagram(ctx, label === "天干" ? "stem" : "branch");
+            return `<tr><td class="label">${escapeHtml(label)}</td><td colspan="4" class="natal-inline-cell"><div class="natal-inline-symbols">${cells.map((cell) => `<div>${cell}</div>`).join("")}</div>${arrows}</td></tr>`;
+          }
+          return `<tr><td class="label">${escapeHtml(label)}</td>${cells.map((cell) => `<td>${cell}</td>`).join("")}</tr>`;
+        }).join("")}
       </table>`;
       colorizeGanzhi(target);
     }
