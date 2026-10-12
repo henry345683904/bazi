@@ -3022,7 +3022,7 @@
     .natal-inline-symbols + .natal-inline-symbols { border-top: 1px solid var(--line); }
     .natal-inline-arrows text { font-size: 10px; }
     .xipan-table .void-branch { background: #fff1a8; border-radius: 3px; }
-    .xipan-table .void-mark { margin-left: 3px; color: #9a6a00; font-size: 10px; font-weight: 700; }
+    .xipan-table .void-mark { display: inline; margin-left: 1px; background: transparent !important; color: #9a6a00; font-size: 10px; font-weight: 700; }
     @media (max-width: 620px) {
       .natal-inline-arrows text { font-size: 8px; }
     }
@@ -10946,7 +10946,7 @@
     function xipanBranchCell(ctx, pillar) {
       const dayVoid = emptyBranches(ctx.pillars[2]);
       const isVoid = ctx.pillars.includes(pillar) && dayVoid.includes(pillar.branch);
-      return `<span class="gz-big">${escapeHtml(pillar.branch)}${isVoid ? `<span class="void-mark">（空）</span>` : ""}</span>`;
+      return `<span class="gz-big" style="background:transparent">${escapeHtml(pillar.branch)}${isVoid ? `<span class="void-mark">空</span>` : ""}</span>`;
     }
 
     function renderXipanSummary(ctx) {
