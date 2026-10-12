@@ -2909,25 +2909,6 @@
             </div>
           </div>
 
-          <div class="grid-two">
-            <div class="field">
-              <label for="dayBoundary">换日规则</label>
-              <select id="dayBoundary" name="dayBoundary">
-                <option value="midnight">零点换日</option>
-                <option value="zi">子初换日（23:00）</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="focus">重点关注</label>
-              <select id="focus" name="focus">
-                <option value="overall">整体运势</option>
-                <option value="career">事业财运</option>
-                <option value="love">感情人际</option>
-                <option value="health">健康状态</option>
-              </select>
-            </div>
-          </div>
-
           <div class="actions">
             <button class="btn" type="submit" title="生成报告">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -11046,11 +11027,10 @@
     function updateCalibrationNote() {
       const calendar = document.getElementById("calendar").value;
       const timeStandard = document.getElementById("timeStandard").value;
-      const dayBoundary = document.getElementById("dayBoundary").value;
       const parts = [
         calendar === "lunar" ? "农历会先转换为公历" : "公历直接排盘",
         "年柱按立春、月柱按精确节气换月",
-        dayBoundary === "zi" ? "23:00起计入次日" : "零点换日"
+        "零点换日"
       ];
       if (timeStandard === "trueSolar") parts.push("经度、时区和夏令时会参与真太阳时校正");
       const note = document.getElementById("calibrationNote");
@@ -11085,8 +11065,8 @@
         timezoneOffset: form.timezoneOffset.value,
         longitude: form.longitude.value,
         daylightSaving: form.daylightSaving.value,
-        dayBoundary: form.dayBoundary.value,
-        focus: form.focus.value
+        dayBoundary: "midnight",
+        focus: "overall"
       };
     }
 
@@ -11101,8 +11081,6 @@
       form.timezoneOffset.value = state.timezoneOffset ?? "8";
       form.longitude.value = state.longitude ?? "116.41";
       form.daylightSaving.value = state.daylightSaving || "no";
-      form.dayBoundary.value = state.dayBoundary || "midnight";
-      form.focus.value = state.focus || "overall";
       if (state.timezoneOffset == null && state.longitude == null) applyCityPreset();
       syncBirthParameterUI();
       form.birthDate.value = state.birthDate || "";
@@ -11928,7 +11906,6 @@
 
     document.getElementById("calendar").addEventListener("change", syncBirthParameterUI);
     document.getElementById("timeStandard").addEventListener("change", syncBirthParameterUI);
-    document.getElementById("dayBoundary").addEventListener("change", updateCalibrationNote);
     document.getElementById("city").addEventListener("change", () => {
       applyCityPreset();
       updateCalibrationNote();
