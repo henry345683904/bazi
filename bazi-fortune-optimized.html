@@ -9132,6 +9132,18 @@
       return { branch: ghostBranch, god, text: fiveGhostWealthText(god), periods };
     }
 
+    function buildLuWealth(ctx) {
+      const luBranch = { 甲: "寅", 乙: "卯", 丙: "巳", 丁: "午", 戊: "巳", 己: "午", 庚: "申", 辛: "酉", 壬: "亥", 癸: "子" }[ctx.pillars[2].stem];
+      const periods = [];
+      (ctx.lucks || []).forEach((luck) => {
+        if (luck.pillar.branch === luBranch) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${luck.endYear}`, age: `${luck.startAge}–${luck.endAge}岁` });
+        buildFlowYears(ctx, luck).forEach((year) => {
+          if (year.pillar.branch === luBranch) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${luck.startAge + (year.year - luck.startYear)}岁` });
+        });
+      });
+      return { branch: luBranch, periods };
+    }
+
     function reportCategoryModel(category, ctx) {
       const categoryTitles = {
         overview: "人生总览",
@@ -9257,7 +9269,8 @@
             effectStrategy(branchEffects(ctx, currentYearPillar).join("、"), yearGod),
             ...(dailyMode ? [] : directMoneyHabitLines(ctx))
           ]),
-          fiveGhostWealth
+          fiveGhostWealth,
+          luWealth: buildLuWealth(ctx)
         };
       }
 
@@ -9713,6 +9726,7 @@
             ${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
           </ul>
           ${model.fiveGhostWealth ? `<details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(chartContext.pillars[1].branch)}顺数第四支为${escapeHtml(model.fiveGhostWealth.branch)}，本气十神为${escapeHtml(model.fiveGhostWealth.god)}。</p><p>${escapeHtml(model.fiveGhostWealth.text)}</p>${model.fiveGhostWealth.periods.length ? `<div>${model.fiveGhostWealth.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}</p>`).join("")}</div>` : "<p>当前大运和流年中未出现五鬼运财地支。</p>"}</div></details>` : ""}
+          ${model.luWealth ? `<details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(model.luWealth.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${model.luWealth.periods.length ? model.luWealth.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}</p>`).join("") : "<p>当前大运和流年中未出现禄神地支。</p>"}</div></details>` : ""}
           ${model.healthNote ? `<p class="hint">健康内容只表示传统命理信号，不替代医学诊断。</p>` : ""}
         </div>
       `;
@@ -12923,10 +12937,12 @@
       if (!block) return;
       const content = block.querySelector(".analysis-content");
       const result = buildFiveGhostWealth(ctx);
+      const luResult = buildLuWealth(ctx);
       const periods = result.periods.length
         ? result.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}</p>`).join("")
         : "<p>当前大运和流年中未出现五鬼运财地支。</p>";
-      content.innerHTML = `<details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details>`;
+      const luPeriods = luResult.periods.length ? luResult.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}</p>`).join("") : "<p>当前大运和流年中未出现禄神地支。</p>";
+      content.innerHTML = `<details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details><details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(luResult.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${luPeriods}</div></details>`;
     }
 
     function generate(options = {}) {
