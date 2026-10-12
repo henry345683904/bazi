@@ -3269,6 +3269,7 @@
     }
     body.basic-chart-only #xipanMainTable .gz-big { font-size: 25px; }
     .xipan-table .heavenly-earthly-clash { background: #fff4bf !important; }
+    .pick.heavenly-earthly-clash { background: #fff4bf !important; border-color: #e6c969 !important; }
     .clash-prediction-details { margin: 0; border: 1px solid #eadca4; background: #fffdf1; }
     .clash-prediction-details summary { cursor: pointer; padding: 6px 8px; font-weight: 700; font-size: 12px; }
     .clash-prediction-details .clash-prediction-list { padding: 0 8px 5px; }
@@ -11973,7 +11974,7 @@
       const lucks = chartContext.lucks;
       const timeline = document.getElementById("luckTimeline");
       timeline.innerHTML = lucks.map((l, i) => `
-        <button class="pick ${i === selectedLuck ? "active" : ""}" type="button" data-luck="${i}">
+        <button class="pick ${i === selectedLuck ? "active" : ""} ${natalHeavenlyClashEarthlyClash(chartContext, l.pillar).length ? "heavenly-earthly-clash" : ""}" type="button" data-luck="${i}">
           <strong>${flowPillarSymbols(chartContext, l.pillar)}</strong>
           <span>${l.startAge}–${l.endAge}岁</span>
           <span>${l.startYear}-${l.endYear}</span>
@@ -11988,7 +11989,7 @@
       selectedYear = Math.min(selectedYear, years.length - 1);
       const yearFlow = document.getElementById("yearFlow");
       yearFlow.innerHTML = years.map((y, i) => `
-        <button class="pick ${i === selectedYear ? "active" : ""}" type="button" data-year="${i}">
+        <button class="pick ${i === selectedYear ? "active" : ""} ${natalHeavenlyClashEarthlyClash(chartContext, y.pillar).length ? "heavenly-earthly-clash" : ""}" type="button" data-year="${i}">
           <strong>${flowPillarSymbols(chartContext, y.pillar)}</strong><span>${chartContext.lucks[selectedLuck].startAge + i}岁</span><span>${y.year}年</span>
         </button>
       `).join("");
