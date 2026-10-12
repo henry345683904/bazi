@@ -3230,6 +3230,29 @@
       body.basic-chart-only #monthFlow .flow-gods { left: 100%; }
       body.basic-chart-only #monthFlow .flow-gods > span { font-size: 5px; }
     }
+    body.basic-chart-only #dayFlow .pick {
+      flex-basis: 36px;
+      width: 36px;
+      min-width: 36px;
+      padding: 2px 0;
+    }
+    body.basic-chart-only #dayFlow .pick strong { font-size: 20px; line-height: 1.05; }
+    body.basic-chart-only #dayFlow .pick > span { font-size: 8px; }
+    body.basic-chart-only #dayFlow { gap: 2px; padding: 1px 0 3px; }
+    @media (max-width: 620px) {
+      body.basic-chart-only #fullChart { gap: 5px; }
+      body.basic-chart-only .flow-layout,
+      body.basic-chart-only .flow-stack { gap: 2px; }
+      body.basic-chart-only .small-title { margin: 0 0 1px; line-height: 1.15; }
+      body.basic-chart-only #luckTimeline,
+      body.basic-chart-only #yearFlow,
+      body.basic-chart-only #monthFlow { padding: 1px 0; }
+      body.basic-chart-only #dayFlow .pick { flex-basis: 30px; width: 30px; min-width: 30px; padding: 1px 0; }
+      body.basic-chart-only #dayFlow .pick strong { font-size: 14px; }
+      body.basic-chart-only #dayFlow .pick > span { font-size: 6px; line-height: 1.1; }
+      body.basic-chart-only #dayFlow .flow-gods { left: 100%; }
+      body.basic-chart-only #dayFlow .flow-gods > span { font-size: 5px; }
+    }
   </style>
 </head>
   <body class="basic-chart-only">
