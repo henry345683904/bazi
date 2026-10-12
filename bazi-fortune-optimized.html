@@ -1474,6 +1474,14 @@
       line-height: 1.1;
     }
 
+    .xipan-symbol-with-gods { display: inline-flex; align-items: center; justify-content: center; gap: 2px; }
+    .xipan-symbol-gods { display: flex; flex-direction: column; align-items: center; color: var(--ink); font-size: 10px; font-weight: 700; line-height: 1.05; }
+    #xipanFineTable .xipan-symbol-with-gods .void-mark { top: 100%; left: 50%; transform: translateX(-50%); font-size: 8px; }
+    @media (max-width: 620px) {
+      #xipanFineTable .xipan-symbol-gods { font-size: 8px; }
+      #xipanFineTable .xipan-symbol-with-gods { gap: 1px; }
+    }
+
     .xipan-table .small {
       display: block;
       margin-top: 2px;
@@ -11366,6 +11374,14 @@
       return uniqueList(marks);
     }
 
+    function xipanSymbolWithGods(ctx, pillar, kind, dayMaster = false) {
+      const symbol = kind === "stem" ? xipanStemCell(ctx, pillar, -1) : xipanBranchCell(ctx, pillar);
+      const gods = kind === "stem"
+        ? [dayMaster ? (ctx.state.gender === "女" ? "元女" : "元男") : tenGodShort(tenGod(ctx.pillars[2].stem, pillar.stem))]
+        : (hiddenStems[pillar.branch] || []).map((stem) => tenGodShort(tenGod(ctx.pillars[2].stem, stem)));
+      return `<span class="xipan-symbol-with-gods">${symbol}<span class="xipan-symbol-gods">${gods.map((god) => `<span>${escapeHtml(god)}</span>`).join("")}</span></span>`;
+    }
+
     function renderXipanSummary(ctx) {
       const target = document.getElementById("xipanSummary");
       if (!target) return;
@@ -11502,8 +11518,8 @@
       target.innerHTML = `<table class="xipan-table">
         <tr><th class="label">日期</th>${columns.map((col) => `<th>${escapeHtml(col.name)}</th>`).join("")}</tr>
         ${row("岁年", (col) => col.age)}
-        ${row("天干", (col) => xipanStemCell(ctx, col.item.pillar, col.name === "日柱" ? 2 : -1))}
-        ${row("地支", (col) => xipanBranchCell(ctx, col.item.pillar))}
+        ${row("天干", (col) => xipanSymbolWithGods(ctx, col.item.pillar, "stem", col.name === "日柱"))}
+        ${row("地支", (col) => xipanSymbolWithGods(ctx, col.item.pillar, "branch"))}
         ${row("空亡", (col) => escapeHtml(emptyBranches(col.item.pillar)))}
         ${row("神煞", (col) => escapeHtml(compactStars(symbolicStars(ctx, col.item.pillar)).join("、") || "无明显"))}
       </table>`;
