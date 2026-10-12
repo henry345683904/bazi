@@ -313,6 +313,18 @@
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
+    #basicAnalysisView[hidden] { display: none !important; }
+    #basicAnalysisView { max-width: 900px; margin: 0 auto; padding-bottom: 90px; }
+    .basic-analysis-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+    .basic-analysis-block { min-width: 0; padding: 18px; }
+    .basic-analysis-block h3 { display: flex; align-items: center; gap: 9px; }
+    .basic-analysis-block h3 svg { width: 20px; height: 20px; color: var(--jade); }
+    .analysis-content { min-height: 72px; }
+    @media (max-width: 620px) {
+      .basic-analysis-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+      .basic-analysis-block { padding: 14px; }
+    }
+
     .basic-chart-only .layout {
       grid-template-columns: minmax(0, 760px);
       justify-content: center;
@@ -3495,6 +3507,15 @@
           </div>
         </div>
       </section>
+    </section>
+    <section id="basicAnalysisView" hidden aria-labelledby="basicAnalysisTitle">
+      <h2 id="basicAnalysisTitle">分析</h2>
+      <div class="basic-analysis-grid">
+        <section class="panel basic-analysis-block"><h3><i data-lucide="heart-pulse" aria-hidden="true"></i>健康</h3><div class="analysis-content"></div></section>
+        <section class="panel basic-analysis-block"><h3><i data-lucide="heart" aria-hidden="true"></i>感情</h3><div class="analysis-content"></div></section>
+        <section class="panel basic-analysis-block"><h3><i data-lucide="wallet" aria-hidden="true"></i>财运</h3><div class="analysis-content"></div></section>
+        <section class="panel basic-analysis-block"><h3><i data-lucide="shield-alert" aria-hidden="true"></i>灾祸</h3><div class="analysis-content"></div></section>
+      </div>
     </section>
   </main>
 
@@ -12100,8 +12121,21 @@
         else item.removeAttribute("aria-current");
       });
       setActiveTool("bazi");
-      if (destination === "analysis" || destination === "resolve") {
-        showToast(destination === "analysis" ? "分析功能正在准备中" : "化解功能正在准备中");
+      const analysisView = document.getElementById("basicAnalysisView");
+      analysisView.hidden = destination !== "analysis";
+      if (destination === "analysis") {
+        document.getElementById("baziTool").hidden = true;
+        document.querySelectorAll("#baziBottomNav [data-bazi-nav]").forEach((item) => {
+          const active = item.dataset.baziNav === destination;
+          item.classList.toggle("active", active);
+          if (active) item.setAttribute("aria-current", "page");
+          else item.removeAttribute("aria-current");
+        });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      if (destination === "resolve") {
+        showToast("化解功能正在准备中");
         return;
       }
       setBaziView("chart", true, false);
