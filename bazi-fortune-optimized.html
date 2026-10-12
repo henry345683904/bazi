@@ -3309,6 +3309,13 @@
       }
       body.basic-chart-only #fullChart .small-title { padding-left: 3px; }
     }
+    #xipanAttention[hidden] { display: none !important; }
+    body.basic-chart-only #xipanAttention { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 4px; }
+    body.basic-chart-only #xipanAttention .detail-box { padding: 5px 7px; }
+    body.basic-chart-only #xipanAttention .detail-title { margin-bottom: 2px; align-items: center; }
+    body.basic-chart-only #xipanAttention h3 { font-size: 12px; margin: 0; line-height: 1.2; }
+    body.basic-chart-only #xipanAttention p { font-size: 11px; margin: 0; line-height: 1.4; }
+    body.basic-chart-only #xipanAttention .tag { font-size: 10px; padding: 1px 4px; min-height: 0; }
   </style>
 </head>
   <body class="basic-chart-only">
@@ -11720,16 +11727,11 @@
     function renderXipanAttention(ctx) {
       const target = document.getElementById("xipanAttention");
       if (!target) return;
-      target.innerHTML = `
-        <div class="detail-box">
-          <div class="detail-title"><h3>天干留意</h3><span class="tag">${escapeHtml(stemAttention(ctx).length)}条</span></div>
-          <p>${escapeHtml(stemAttention(ctx).join("；"))}</p>
-        </div>
-        <div class="detail-box">
-          <div class="detail-title"><h3>地支留意</h3><span class="tag">${escapeHtml(branchAttention(ctx).length)}条</span></div>
-          <p>${escapeHtml(branchAttention(ctx).join("；"))}</p>
-        </div>
-      `;
+      const groups = [["天干留意", stemAttention(ctx)], ["地支留意", branchAttention(ctx)]]
+        .map(([title, items]) => [title, items.filter((item) => !item.includes("无明显"))])
+        .filter(([, items]) => items.length);
+      target.hidden = !groups.length;
+      target.innerHTML = groups.map(([title, items]) => `<div class="detail-box"><div class="detail-title"><h3>${title}</h3><span class="tag">${items.length}条</span></div><p>${escapeHtml(items.join("；"))}</p></div>`).join("");
       colorizeGanzhi(target);
     }
 
