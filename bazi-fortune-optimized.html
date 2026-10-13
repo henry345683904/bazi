@@ -3901,6 +3901,7 @@
         <p><strong>联系Henry获取化解方法</strong></p>
         <p>催财，催桃花，修复感情，逢凶化吉，讨债，治病，学习，考证等。</p>
       </div>
+      <div id="resolve2026Notice" class="resolve-prediction"></div>
     </section>
   </main>
 
@@ -13462,6 +13463,54 @@
       content.innerHTML = `<details class="five-ghost-details"><summary>综合财运</summary><div class="five-ghost-content">${summaryParts.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}<p><strong>18岁至80岁发财年份</strong></p>${comprehensivePeriods}</div></details><details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details><details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(luResult.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${luPeriods}</div></details><details class="five-ghost-details"><summary>身旺财旺</summary><div class="five-ghost-content">${strongPeriods}</div></details>`;
     }
 
+    function renderBasicResolvePrediction(ctx) {
+      const target = document.getElementById("resolve2026Notice");
+      if (!target || !ctx) return;
+
+      const date2026 = new Date(2026, 6, 1, 12);
+      const year = yearPillar(date2026, ctx.birthMeta?.timezoneOffset ?? browserTimezoneOffset(date2026));
+      const luck = luckForDate(ctx, date2026);
+      const natalRelations = [];
+      ctx.pillars.forEach((pillar, index) => {
+        branchRelationObjects(year.branch, pillar.branch)
+          .filter((item) => item.type !== "同")
+          .forEach((item) => natalRelations.push({ ...item, label: ["年柱", "月柱", "日柱", "时柱"][index], branch: pillar.branch }));
+      });
+      const luckRelations = branchRelationObjects(year.branch, luck.pillar.branch).filter((item) => item.type !== "同");
+      const dayGod = tenGod(ctx.pillars[2].stem, year.stem);
+      const branchGods = (hiddenStems[year.branch] || []).map((stem) => tenGod(ctx.pillars[2].stem, stem));
+      const currentLabel = simpleStrengthLabel(ctx, date2026);
+      const events = [];
+      const add = (text, priority = 0) => events.push({ text, priority });
+      const familyByPillar = { 年柱: "父亲、母亲和家中长辈", 月柱: "兄弟姐妹及父母", 日柱: "本人和配偶", 时柱: "子女" };
+
+      natalRelations.forEach((item) => {
+        const people = familyByPillar[item.label] || "本人家庭关系";
+        if (item.type === "冲") add(`2026年午支冲${item.label}${item.branch}，${people}对应的生活安排、居住环境或身体状态容易出现突然变化；若同时出现疾病信号，表现为就医、检查或意外受伤。`, 5);
+        if (item.type === "刑") add(`2026年午支刑${item.label}${item.branch}，${people}容易出现反复的身体不适、磕碰伤痛或需要多次处理的突发事情。`, 4);
+        if (item.type === "害") add(`2026年午支害${item.label}${item.branch}，${people}之间容易出现隐性压力、误会牵连或健康方面不易及时发现的问题。`, 3);
+        if (item.type === "破") add(`2026年午支破${item.label}${item.branch}，${people}对应的计划、合作或生活节奏容易被打乱，财物和关系有反复变化。`, 2);
+        if (item.type === "合") add(`2026年午支合${item.label}${item.branch}${item.element ? `化${item.element}` : ""}，${people}相关事项被引动，容易出现关系确定、共同决定或资源集中。`, 2);
+      });
+      luckRelations.forEach((item) => {
+        if (["冲", "刑", "害", "破"].includes(item.type)) add(`2026年丙午与当前大运${luck.pillar.text}${item.type}，大运主题被明显放大，突发变动、健康压力或财务波动会比普通年份更集中。`, 5);
+        if (item.type === "合") add(`2026年丙午与当前大运${luck.pillar.text}相合${item.element ? `化${item.element}` : ""}，大运中的人际、工作和资金事项容易在本年集中落地。`, 2);
+      });
+      if (["正财", "偏财"].includes(dayGod) || branchGods.some((god) => ["正财", "偏财"].includes(god))) add(`丙火流年引动${dayGod === "正财" || dayGod === "偏财" ? dayGod : "财星"}，2026年收入、订单、交易或家庭支出明显增加，钱财进出速度加快。`, 3);
+      if (["正官", "七杀"].includes(dayGod) || branchGods.some((god) => ["正官", "七杀"].includes(god))) add(`丙午引动${dayGod === "正官" || dayGod === "七杀" ? dayGod : "官杀"}，2026年工作职责、管理压力、考试证照或规则约束明显增加，处理不当时容易出现处罚、纠纷或疾病压力。`, 3);
+      if (["伤官", "食神"].includes(dayGod) || branchGods.some((god) => ["伤官", "食神"].includes(god))) add(`丙午引动${dayGod === "伤官" || dayGod === "食神" ? dayGod : "食伤"}，2026年表达、技能、作品和社交活动增多，同时容易因说话直接、合同细节或公开表达引发争执。`, 2);
+      if (currentLabel.includes("身强") || currentLabel.includes("偏旺") || currentLabel.includes("从旺") || currentLabel.includes("从强")) add(`2026年大运流年作用后日主呈${currentLabel}，行动力和承担事务的意愿增强，事件多表现为主动扩张、竞争和资源争夺。`, 1);
+      else if (currentLabel.includes("身弱") || currentLabel.includes("偏弱") || currentLabel.includes("从弱")) add(`2026年大运流年作用后日主呈${currentLabel}，外部事务对自身消耗较大，事件多表现为工作压力、身体疲劳和财务支出集中。`, 1);
+      else add("2026年大运流年作用后日主处于中和状态，事情以阶段性变化为主，具体起伏取决于被引动的宫位和十神。", 1);
+
+      const starList = symbolicStars(ctx, year.pillar);
+      if (starList.includes("天乙贵人")) add("2026年流年带天乙贵人，遇到疾病、意外或手续阻滞时，通常会出现贵人协助、及时发现或转机。", 2);
+      if (starList.includes("灾煞")) add("2026年流年带灾煞，突发病痛、意外磕碰、交通风险或事情突然受阻的信号增强。", 4);
+      const relationText = natalRelations.length ? `${natalRelations.length}处原局宫位被丙午引动` : "原局四柱未出现直接的午支刑冲破害合";
+      const uniqueEvents = events.sort((a, b) => b.priority - a.priority).map((item) => item.text).filter((text, index, list) => list.indexOf(text) === index).slice(0, 7);
+      target.innerHTML = `<details class="five-ghost-details"><summary>2026注意事项</summary><div class="five-ghost-content"><p><strong>丙午年｜当前大运：${escapeHtml(luck.pillar.text)}（${escapeHtml(`${luck.startAge}–${luck.endAge}岁`)}）｜本年：${escapeHtml(currentLabel)}</strong></p><p>${escapeHtml(relationText)}。以下为本命、大运与2026流年的综合预测：</p>${uniqueEvents.map((text) => `<p>${escapeHtml(text)}</p>`).join("")}</div></details>`;
+    }
+
     function generate(options = {}) {
       const state = formState();
       if (!state.birthDate || !state.birthTime) return;
@@ -13529,6 +13578,7 @@
       renderBasicWealthPrediction(ctx);
       renderBasicHealthPrediction(ctx);
       renderBasicLovePrediction(ctx);
+      renderBasicResolvePrediction(ctx);
 
       document.getElementById("activeProfileName").textContent = state.name || `${state.birthDate}命盘`;
 
