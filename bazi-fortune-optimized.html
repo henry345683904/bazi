@@ -3053,7 +3053,7 @@
     }
     .xipan-table td.natal-inline-cell { position: relative; padding: 0; overflow: visible; }
     .natal-inline-symbols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .natal-inline-symbols > div { padding: 0; min-width: 0; height: 56px; display: grid; place-items: center; overflow: visible; }
+    .natal-inline-symbols > div { padding: 0; min-width: 0; height: 44px; display: grid; place-items: center; overflow: visible; }
     .natal-inline-symbols > div + div { border-left: 1px solid var(--line); }
     .natal-inline-arrows { position: absolute; left: 0; top: 0; pointer-events: auto; overflow: visible; }
     .natal-relation-link { cursor: pointer; pointer-events: auto; }
@@ -11912,14 +11912,12 @@
         lanes[lane].push({ start, end });
         link.lane = lane;
       });
-      const height = Math.max(56, lanes.length * 56);
+      const height = Math.max(44, lanes.length * 44);
       const drawing = links.map((link) => {
         const xs = link.indices.map((i) => 12.5 + i * 25).sort((a, b) => a - b);
-        const y = link.lane * 56 + 30;
+        const y = link.lane * 44 + 22;
         const start = xs[0] + 4, end = xs[xs.length - 1] - 4;
-        const curve = link.type === "合化" || link.type === "三合" || link.type === "三会" ? -16 : 16;
-        const mid = (start + end) / 2;
-        const path = `M ${start} ${y} Q ${mid} ${y + curve} ${end} ${y}`;
+        const path = `M ${start} ${y} L ${end} ${y}`;
         const arrow = `<polygon points="${end},${y} ${end - 9},${y - 5} ${end - 7},${y} ${end - 9},${y + 5}" stroke="none"/>`;
         return `<g class="natal-relation-link" tabindex="0" role="button" aria-label="${escapeHtml(link.label)}" data-relation-detail="${escapeHtml(link.detail)}" style="color:${link.color}" fill="currentColor" stroke="currentColor"><title>${escapeHtml(link.label)}</title><path d="${path}" fill="none" stroke-width="4.5" stroke-linecap="round"/>${arrow}</g>`;
       }).join("");
@@ -11966,9 +11964,9 @@
         ${rows.map(([label, cells]) => {
           if (label === "天干" || label === "地支") {
             const arrows = natalRelationDiagram(ctx, label === "天干" ? "stem" : "branch");
-            const laneCount = arrows ? Number(arrows.match(/height="(\d+)"/)[1]) / 56 : 1;
+            const laneCount = arrows ? Number(arrows.match(/height="(\d+)"/)[1]) / 44 : 1;
             const symbols = `<div class="natal-inline-symbols">${cells.map((cell) => `<div>${cell}</div>`).join("")}</div>`;
-            return `<tr><td class="label">${escapeHtml(label)}</td><td colspan="4" class="natal-inline-cell" style="height:${laneCount * 56}px">${symbols}${arrows}</td></tr>`;
+            return `<tr><td class="label">${escapeHtml(label)}</td><td colspan="4" class="natal-inline-cell" style="height:${laneCount * 44}px">${symbols}${arrows}</td></tr>`;
           }
           return `<tr><td class="label">${escapeHtml(label)}</td>${cells.map((cell) => `<td>${cell}</td>`).join("")}</tr>`;
         }).join("")}
