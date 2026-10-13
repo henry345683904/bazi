@@ -1501,6 +1501,8 @@
     .xipan-symbol-with-gods > .gz-big { vertical-align: middle; }
     .xipan-symbol-with-gods > .xipan-symbol-gods { position: absolute; left: calc(100% + 2px); top: 50%; transform: translateY(-50%); white-space: nowrap; }
     .xipan-symbol-gods { display: flex; flex-direction: column; align-items: center; color: var(--ink); font-size: 10px; font-weight: 700; line-height: 1.05; }
+    .natal-marker-cell { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; min-width: 2.4em; vertical-align: middle; }
+    .root-mark, .stem-link-mark { display: block; color: #8b6a2b; font-size: 9px; font-weight: 700; line-height: 1.1; white-space: nowrap; }
     @media (max-width: 620px) {
       #xipanFineTable .xipan-symbol-gods { font-size: 8px; }
       #xipanFineTable .xipan-symbol-with-gods { font-size: 18px; min-height: 28px; line-height: 28px; }
@@ -11867,17 +11869,17 @@
     function natalRelationDiagram(ctx, kind) {
       const links = [];
       const pillars = ctx.pillars;
-      const add = (indices, label, element) => links.push({ indices, label, color: elementColors[element] || "#8f2637" });
+      const add = (indices, label, element, type = "关系") => links.push({ indices, label, color: elementColors[element] || "#8f2637", type });
       pillars.forEach((left, i) => pillars.slice(i + 1).forEach((right, offset) => {
         const j = i + offset + 1;
         if (j !== i + 1) return;
         if (kind === "stem") {
           const element = stemCombineElement(left.stem, right.stem);
-          if (element) add([i, j], `${left.stem}${right.stem}合${element}`, element);
-          if (stemClashPairs[left.stem] === right.stem) add([i, j], `${left.stem}${right.stem}冲`);
+          if (element) add([i, j], `${left.stem}${right.stem}合${element}`, element, "合化");
+          if (stemClashPairs[left.stem] === right.stem) add([i, j], `${left.stem}${right.stem}冲`, "", "冲");
         } else {
           branchRelationObjects(left.branch, right.branch).filter((item) => item.type !== "同").forEach((item) => {
-            add([i, j], `${left.branch}${right.branch}${item.type}${item.element || ""}`, item.element?.[0]);
+            add([i, j], `${left.branch}${right.branch}${item.type}${item.element || ""}`, item.element?.[0], item.type === "合" ? "合化" : item.type);
           });
         }
       }));
@@ -11886,7 +11888,7 @@
           if (group.branches.every((branch) => pillars.some((p) => p.branch === branch))) {
             const indices = pillars.map((p, i) => group.branches.includes(p.branch) ? i : -1).filter((i) => i >= 0);
             const adjacent = indices.length === 3 && indices[1] === indices[0] + 1 && indices[2] === indices[1] + 1;
-            if (adjacent) add(indices, `${group.branches.join("")}${group.name}`, group.element);
+            if (adjacent) add(indices, `${group.branches.join("")}${group.name}`, group.element, group.name.includes("三会") ? "三会" : "三合");
           }
         });
       }
@@ -11905,7 +11907,10 @@
         const xs = link.indices.map((i) => 12.5 + i * 25).sort((a, b) => a - b);
         const y = link.lane * 44 + 22;
         const start = xs[0] + 4, end = xs[xs.length - 1] - 4;
-        return `<g style="color:${link.color}" fill="currentColor" stroke="currentColor"><line x1="${start}%" x2="${end}%" y1="${y}" y2="${y}" stroke-width="1.5"/><path d="M0 0"/> <polygon points="0,0 -6,-3 -6,3" transform="translate(0,0)" style="display:none"/><svg x="${start}%" y="${y - 4}" width="8" height="8" overflow="visible"><path d="M6 0 L0 4 L6 8" fill="none" stroke-width="1.5"/></svg><svg x="${end}%" y="${y - 4}" width="8" height="8" overflow="visible"><path d="M-6 0 L0 4 L-6 8" fill="none" stroke-width="1.5"/></svg>${xs.slice(1, -1).map((x) => `<svg x="${x}%" y="${y - 3}" width="6" height="6"><circle cx="3" cy="3" r="2"/></svg>`).join("")}<text x="${(start + end) / 2}%" y="${y - 6}" text-anchor="middle" stroke="none" font-size="11">${escapeHtml(link.label)}</text></g>`;
+        const curve = link.type === "合化" || link.type === "三合" || link.type === "三会" ? -18 : 18;
+        const mid = (start + end) / 2;
+        const path = `M ${start}% ${y} Q ${mid}% ${y + curve} ${end}% ${y}`;
+        return `<g style="color:${link.color}" fill="currentColor" stroke="currentColor"><path d="${path}" fill="none" stroke-width="1.5"/><svg x="${start}%" y="${y - 4}" width="8" height="8" overflow="visible"><path d="M6 0 L0 4 L6 8" fill="none" stroke-width="1.5"/></svg><svg x="${end}%" y="${y - 4}" width="8" height="8" overflow="visible"><path d="M-6 0 L0 4 L-6 8" fill="none" stroke-width="1.5"/></svg><text x="${mid}%" y="${y + curve - 3}" text-anchor="middle" stroke="none" font-size="10">${escapeHtml(link.label)}</text></g>`;
       }).join("");
       return `<svg class="no-translate natal-inline-arrows" role="img" aria-label="${escapeHtml(links.map((link) => link.label).join("、"))}" width="100%" height="${height}">${drawing}</svg>`;
     }
@@ -11914,10 +11919,18 @@
       const target = document.getElementById("xipanMainTable");
       if (!target) return;
       const dayStem = ctx.pillars[2].stem;
+      const rootMark = (pillar) => {
+        const stemElementValue = stemElement[pillar.stem];
+        return (hiddenStems[pillar.branch] || []).some((stem) => stemElement[stem] === stemElementValue) ? `<span class="root-mark">通根</span>` : "";
+      };
+      const stemLinkMark = (pillar) => {
+        const branchHidden = hiddenStems[pillar.branch] || [];
+        return ctx.pillars.some((other) => other !== pillar && branchHidden.some((hidden) => hidden === other.stem)) ? `<span class="stem-link-mark">通干</span>` : "";
+      };
       const rows = [
         ["十神", ctx.pillars.map((p, i) => i === 2 ? (ctx.state.gender === "女" ? "元女" : "元男") : tenGod(dayStem, p.stem))],
-        ["天干", ctx.pillars.map((p, i) => xipanStemCell(ctx, p, i))],
-        ["地支", ctx.pillars.map((p) => xipanBranchCell(ctx, p))],
+        ["天干", ctx.pillars.map((p, i) => `<span class="natal-marker-cell">${xipanStemCell(ctx, p, i)}${rootMark(p)}</span>`)],
+        ["地支", ctx.pillars.map((p) => `<span class="natal-marker-cell">${xipanBranchCell(ctx, p)}${stemLinkMark(p)}</span>`)],
         ["藏干", ctx.pillars.map((p) => hiddenStemDetails(ctx, p.branch).join("<br>"))],
         ["纳音", ctx.pillars.map((p) => pillarNayin(p))],
         ["空亡", ctx.pillars.map((p, index) => `<span class="${index === 2 && ctx.pillars.some((natal) => emptyBranches(ctx.pillars[2]).includes(natal.branch)) ? "void-branch" : ""}">${escapeHtml(emptyBranches(p))}</span>`)],
