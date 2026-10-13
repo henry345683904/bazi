@@ -9246,8 +9246,7 @@
       const totalScore = baseScore + mainPeriods.reduce((sum, item) => sum + item.score, 0) / Math.max(1, mainPeriods.length) + (ghost.periods.length ? 1 : 0) + (lu.periods.length ? 1 : 0) + (strong.periods.length ? 1.5 : 0);
       const level = totalScore >= 9 ? "很高" : totalScore >= 7 ? "高" : totalScore >= 5 ? "中高" : totalScore >= 3.5 ? "中等" : "偏低";
       const strongest = mainPeriods
-        .sort((a, b) => Number.parseInt(a.age, 10) - Number.parseInt(b.age, 10) || b.score - a.score)
-        .slice(0, 8);
+        .sort((a, b) => Number.parseInt(a.age, 10) - Number.parseInt(b.age, 10) || b.score - a.score);
       const lateStrongest = latePeriods.sort((a, b) => b.score - a.score).slice(0, 4);
       return { level, baseScore, baseReasons, strongest, lateStrongest, ghost, lu, strong };
     }
