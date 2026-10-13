@@ -3279,6 +3279,8 @@
     body.basic-chart-only #xipanMainTable .gz-big { font-size: 25px; }
     .xipan-table .heavenly-earthly-clash { background: #fff4bf !important; }
     .pick.heavenly-earthly-clash { background: #fff4bf !important; border-color: #e6c969 !important; }
+    .pick.wealth-luck-highlight { background: #e6f5e9 !important; }
+    .pick.wealth-luck-highlight:not(.active):not(.heavenly-earthly-clash) { border-color: #acd3b5; }
     .clash-prediction-details,
     .five-ghost-details { margin: 0; border: 1px solid #eadca4; background: #fffdf1; }
     .clash-prediction-details summary,
@@ -12243,11 +12245,17 @@
         + symbol(pillar.branch, (hiddenStems[pillar.branch] || []).map((stem) => tenGod(dayStem, stem)));
     }
 
+    function isWealthLuckPillar(ctx, pillar) {
+      const ghostBranch = branches[(branches.indexOf(ctx.pillars[1].branch) + 4) % 12];
+      const luBranch = { 甲: "寅", 乙: "卯", 丙: "巳", 丁: "午", 戊: "巳", 己: "午", 庚: "申", 辛: "酉", 壬: "亥", 癸: "子" }[ctx.pillars[2].stem];
+      return pillar.branch === ghostBranch || pillar.branch === luBranch;
+    }
+
     function renderLuckTimeline() {
       const lucks = chartContext.lucks;
       const timeline = document.getElementById("luckTimeline");
       timeline.innerHTML = lucks.map((l, i) => `
-        <button class="pick ${i === selectedLuck ? "active" : ""} ${natalHeavenlyClashEarthlyClash(chartContext, l.pillar).length ? "heavenly-earthly-clash" : ""}" type="button" data-luck="${i}">
+        <button class="pick ${i === selectedLuck ? "active" : ""} ${isWealthLuckPillar(chartContext, l.pillar) ? "wealth-luck-highlight" : ""} ${natalHeavenlyClashEarthlyClash(chartContext, l.pillar).length ? "heavenly-earthly-clash" : ""}" type="button" data-luck="${i}">
           <strong>${flowPillarSymbols(chartContext, l.pillar)}</strong>
           <span>${l.startAge}–${l.endAge}岁</span>
           <span>${l.startYear}-${l.endYear}</span>
@@ -12281,7 +12289,7 @@
       selectedYear = Math.min(selectedYear, years.length - 1);
       const yearFlow = document.getElementById("yearFlow");
       yearFlow.innerHTML = years.map((y, i) => `
-        <button class="pick ${i === selectedYear ? "active" : ""} ${natalHeavenlyClashEarthlyClash(chartContext, y.pillar).length ? "heavenly-earthly-clash" : ""}" type="button" data-year="${i}">
+        <button class="pick ${i === selectedYear ? "active" : ""} ${isWealthLuckPillar(chartContext, y.pillar) ? "wealth-luck-highlight" : ""} ${natalHeavenlyClashEarthlyClash(chartContext, y.pillar).length ? "heavenly-earthly-clash" : ""}" type="button" data-year="${i}">
           <strong>${flowPillarSymbols(chartContext, y.pillar)}</strong><span>${chartContext.lucks[selectedLuck].startAge + i}岁</span><span>${y.year}年</span>
         </button>
       `).join("");
