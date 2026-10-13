@@ -3055,8 +3055,13 @@
     .natal-inline-symbols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .natal-inline-symbols > div { padding: 0; min-width: 0; height: 44px; display: grid; place-items: center; overflow: visible; }
     .natal-inline-symbols > div + div { border-left: 1px solid var(--line); }
-    .natal-inline-arrows { position: absolute; left: 0; top: 0; pointer-events: auto; overflow: visible; }
-    .natal-relation-link { cursor: pointer; pointer-events: auto; }
+    .natal-inline-arrows { position: absolute; left: 0; top: 0; width: 100%; pointer-events: none; overflow: visible; }
+    .natal-relation-link { position: absolute; height: 24px; cursor: pointer; pointer-events: auto; color: var(--ink); }
+    .natal-relation-line { position: absolute; left: 7px; right: 7px; top: 13px; height: 3px; border-radius: 3px; background: currentColor; }
+    .natal-relation-head { position: absolute; top: 9px; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+    .natal-relation-head.start { left: 0; border-right: 7px solid currentColor; }
+    .natal-relation-head.end { right: 0; border-left: 7px solid currentColor; }
+    .natal-relation-label { position: absolute; left: 50%; top: -2px; transform: translate(-50%, -100%); color: currentColor; font-size: 10px; font-weight: 700; line-height: 1; white-space: nowrap; }
     .natal-inline-symbols + .natal-inline-symbols { border-top: 1px solid var(--line); }
     .natal-inline-arrows text { font-size: 10px; }
     .xipan-table .void-branch { background: #fff1a8; border-radius: 3px; }
@@ -11917,13 +11922,10 @@
         const xs = link.indices.map((i) => 12.5 + i * 25).sort((a, b) => a - b);
         const y = link.lane * 44 + 22;
         const start = xs[0] + 8, end = xs[xs.length - 1] - 8;
-        const path = `M ${start} ${y} L ${end} ${y}`;
-        const arrowEnd = `<polygon points="${end},${y} ${end - 5},${y - 3} ${end - 5},${y + 3}" stroke="none"/>`;
-        const arrowStart = `<polygon points="${start},${y} ${start + 5},${y - 3} ${start + 5},${y + 3}" stroke="none"/>`;
         const arrowLabel = link.type === "合化" ? "合" : ["三合", "三会"].includes(link.type) ? "会" : link.type;
-        return `<g class="natal-relation-link" tabindex="0" role="button" aria-label="${escapeHtml(link.label)}" data-relation-detail="${escapeHtml(link.detail)}" style="color:${link.color}" fill="currentColor" stroke="currentColor"><title>${escapeHtml(link.label)}</title><path d="${path}" fill="none" stroke-width="2.5" stroke-linecap="round"/>${arrowStart}${arrowEnd}<text x="${(start + end) / 2}" y="${y - 5}" text-anchor="middle" stroke="none" font-size="9" font-weight="700">${escapeHtml(arrowLabel)}</text></g>`;
+        return `<div class="natal-relation-link" tabindex="0" role="button" aria-label="${escapeHtml(link.label)}" data-relation-detail="${escapeHtml(link.detail)}" style="left:${start}%;width:${end - start}%;top:${link.lane * 44 + 10}px;color:${link.color}"><span class="natal-relation-label">${escapeHtml(arrowLabel)}</span><span class="natal-relation-line"></span><span class="natal-relation-head start"></span><span class="natal-relation-head end"></span></div>`;
       }).join("");
-      return `<svg class="no-translate natal-inline-arrows" role="img" aria-label="${escapeHtml(links.map((link) => link.label).join("、"))}" width="100%" height="${height}" viewBox="0 0 100 ${height}" preserveAspectRatio="none">${drawing}</svg>`;
+      return `<div class="natal-inline-arrows" role="img" aria-label="${escapeHtml(links.map((link) => link.label).join("、"))}" style="height:${height}px">${drawing}</div>`;
     }
 
     function renderXipanMainTable(ctx) {
@@ -11966,7 +11968,7 @@
         ${rows.map(([label, cells]) => {
           if (label === "天干" || label === "地支") {
             const arrows = natalRelationDiagram(ctx, label === "天干" ? "stem" : "branch");
-            const laneCount = arrows ? Number(arrows.match(/height="(\d+)"/)[1]) / 44 : 1;
+            const laneCount = arrows ? Number(arrows.match(/height:(\d+)px/)[1]) / 44 : 1;
             const symbols = `<div class="natal-inline-symbols">${cells.map((cell) => `<div>${cell}</div>`).join("")}</div>`;
             return `<tr><td class="label">${escapeHtml(label)}</td><td colspan="4" class="natal-inline-cell" style="height:${laneCount * 44}px">${symbols}${arrows}</td></tr>`;
           }
