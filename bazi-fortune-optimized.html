@@ -13318,6 +13318,34 @@
         });
       }
       const stars = uniqueList(ctx.pillars.flatMap((pillar) => symbolicStars(ctx, pillar)));
+      const cautionYears = [];
+      (ctx.lucks || []).forEach((luck) => {
+        const luckSpouse = spouseGods.includes(tenGod(dayStem, luck.pillar.stem)) || (hiddenStems[luck.pillar.branch] || []).some((stem) => spouseGods.includes(tenGod(dayStem, stem)));
+        buildFlowYears(ctx, luck).forEach((year) => {
+          const age = luck.startAge + (year.year - luck.startYear);
+          if (age < 18 || age >= 80) return;
+          const yearSpouse = spouseGods.includes(tenGod(dayStem, year.pillar.stem)) || (hiddenStems[year.pillar.branch] || []).some((stem) => spouseGods.includes(tenGod(dayStem, stem)));
+          const dayBranchRelations = branchRelationObjects(year.pillar.branch, dayBranch).filter((item) => ["合", "冲", "刑", "破", "害"].includes(item.type));
+          const luckRelations = branchRelationObjects(luck.pillar.branch, dayBranch).filter((item) => ["合", "冲", "刑", "破", "害"].includes(item.type));
+          const yearStars = symbolicStars(ctx, year.pillar);
+          let score = 0;
+          const reasons = [];
+          if (yearSpouse) { score += 3; reasons.push(`${spouseLabel}被流年引动`); }
+          if (luckSpouse) { score += 1.5; reasons.push(`${spouseLabel}大运引动`); }
+          if (dayBranchRelations.length) {
+            score += dayBranchRelations.some((item) => ["冲", "刑", "破", "害"].includes(item.type)) ? 3 : 2;
+            reasons.push(`日支${dayBranchRelations.map((item) => item.type).join("、")}`);
+          }
+          if (luckRelations.length) { score += 1.5; reasons.push(`大运牵动日支${luckRelations.map((item) => item.type).join("、")}`); }
+          if (yearStars.includes("桃花")) { score += 1.5; reasons.push("桃花引动"); }
+          if (yearStars.includes("天喜")) { score += 1; reasons.push("天喜引动"); }
+          if (score >= 3) cautionYears.push({ year: year.year, age, score, reasons });
+        });
+      });
+      const cautionLines = cautionYears
+        .sort((a, b) => a.age - b.age || b.score - a.score)
+        .slice(0, 10)
+        .map((item) => `${item.age}岁（${item.year}年）：${item.reasons.join("、")}；感情关系容易出现确定、分合、争执或现实选择。`);
       const lines = [
         `配偶星看${spouseLabel}：${spouseHits.length ? spouseHits.join("、") : `原局${spouseLabel}不透，感情机会需要等大运流年引动。`}`,
         `日支${dayBranch}为配偶宫，${relation(dayStem === ctx.pillars[2].stem ? ctx.dayElement : stemElement[dayStem], branchElement[dayBranch]) === "官星" ? "配偶宫带官杀压力" : "配偶宫按本命五行承载关系"}；感情稳定度还要看运年是否再次引动。`,
@@ -13325,7 +13353,8 @@
         stars.includes("桃花") ? "原局见桃花，异性接触、社交吸引或关系机会更容易被看见。" : "原局未见明显桃花神煞，感情更依赖现实接触、工作往来和运年引动。",
         stars.includes("天喜") ? "天喜同现，感情互动、确定关系或喜庆事件的信号增强。" : "感情关键仍取决于配偶星、日支和运年合冲的共同变化。"
       ];
-      content.innerHTML = `<details class="five-ghost-details"><summary>感情综合分析</summary><div class="five-ghost-content">${uniqueList(lines).map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div></details>`;
+      const cautionContent = cautionLines.length ? cautionLines : ["18岁至80岁之间暂未发现需要重点留意的感情年份。"];
+      content.innerHTML = `<details class="five-ghost-details"><summary>感情综合分析</summary><div class="five-ghost-content">${uniqueList(lines).map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div></details><details class="five-ghost-details"><summary>需注意的年份（${cautionLines.length}项）</summary><div class="five-ghost-content">${cautionContent.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div></details>`;
     }
 
     function renderBasicWealthPrediction(ctx) {
