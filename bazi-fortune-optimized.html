@@ -3068,6 +3068,7 @@
     .xipan-table .void-branch { background: #fff1a8; border-radius: 3px; }
     .xipan-table .void-mark { position: absolute; left: calc(100% + 1px); top: 50%; transform: translateY(-50%); white-space: nowrap; background: transparent !important; color: #9a6a00; font-size: 10px; font-weight: 700; }
     .xipan-table .branch-left-mark { position: absolute; right: calc(100% + 2px); top: 50%; transform: translateY(-50%); white-space: nowrap; color: #9a6a00; font-size: 10px; font-weight: 700; }
+    .xipan-table .branch-left-mark.stacked { display: flex; flex-direction: column; align-items: center; gap: 0; line-height: 1; font-size: 9px; }
     @media (max-width: 620px) {
       .natal-inline-arrows text { font-size: 8px; }
     }
@@ -11850,8 +11851,8 @@
     }
 
     function xipanCellBig(pillar, small = "", ctx = null) {
-      const marks = ctx ? branchMarks(ctx, pillar).join("、") : "";
-      return `<span class="gz-big">${escapeHtml(pillar.stem)}${marks ? `<span class="branch-mark-wrap"><span class="branch-left-mark">${marks}</span>${escapeHtml(pillar.branch)}</span>` : escapeHtml(pillar.branch)}</span>`;
+      const marks = ctx ? branchMarks(ctx, pillar) : [];
+      return `<span class="gz-big">${escapeHtml(pillar.stem)}${marks.length ? `<span class="branch-mark-wrap">${branchMarkLabel(marks)}${escapeHtml(pillar.branch)}</span>` : escapeHtml(pillar.branch)}</span>`;
     }
 
     function xipanStemCell(ctx, pillar, index) {
@@ -11862,7 +11863,12 @@
       const dayVoid = emptyBranches(ctx.pillars[2]);
       const isVoid = showVoid && ctx.pillars.includes(pillar) && dayVoid.includes(pillar.branch);
       const marks = branchMarks(ctx, pillar);
-      return `<span class="gz-big" style="background:transparent">${marks.length ? `<span class="branch-left-mark">${escapeHtml(marks.join("、"))}</span>` : ""}${escapeHtml(pillar.branch)}${isVoid ? `<span class="void-mark">空</span>` : ""}</span>`;
+      return `<span class="gz-big" style="background:transparent">${branchMarkLabel(marks)}${escapeHtml(pillar.branch)}${isVoid ? `<span class="void-mark">空</span>` : ""}</span>`;
+    }
+
+    function branchMarkLabel(marks) {
+      if (!marks.length) return "";
+      return `<span class="branch-left-mark${marks.length > 1 ? " stacked" : ""}">${marks.map((mark) => `<span>${escapeHtml(mark)}</span>`).join("")}</span>`;
     }
 
     function branchMarks(ctx, pillar) {
