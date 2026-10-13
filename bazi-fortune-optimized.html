@@ -3284,6 +3284,8 @@
     .pick.wealth-luck-highlight:not(.active):not(.heavenly-earthly-clash) { border-color: #acd3b5; }
     .pick.double-seven-killings { background: #fff4bf !important; }
     .pick.double-seven-killings:not(.active) { border-color: #e6c969 !important; }
+    .xipan-table .wealth-luck-highlight { background: #e6f5e9 !important; }
+    .xipan-table .double-seven-killings { background: #fff4bf !important; }
     .clash-prediction-details,
     .five-ghost-details { margin: 0; border: 1px solid #eadca4; background: #fffdf1; }
     .clash-prediction-details summary,
@@ -12098,10 +12100,12 @@
       ];
       columns.forEach((col) => {
         col.clash = (col.name === "大运" || col.name === "流年") && natalHeavenlyClashEarthlyClash(ctx, col.item.pillar).length > 0;
+        const isFlow = col.name === "大运" || col.name === "流年";
+        col.highlight = `${col.clash ? "heavenly-earthly-clash" : ""} ${isFlow && isWealthLuckPillar(ctx, col.item.pillar) ? "wealth-luck-highlight" : ""} ${isFlow && isDoubleSevenKillings(ctx, col.item.pillar) ? "double-seven-killings" : ""}`;
       });
-      const row = (label, getter) => `<tr><td class="label">${escapeHtml(label)}</td>${columns.map((col) => `<td class="${col.clash ? "heavenly-earthly-clash" : ""}">${getter(col)}</td>`).join("")}</tr>`;
+      const row = (label, getter) => `<tr><td class="label">${escapeHtml(label)}</td>${columns.map((col) => `<td class="${col.highlight}">${getter(col)}</td>`).join("")}</tr>`;
       target.innerHTML = `<table class="xipan-table">
-        <tr><th class="label">日期</th>${columns.map((col) => `<th class="${col.clash ? "heavenly-earthly-clash" : ""}">${escapeHtml(col.name)}</th>`).join("")}</tr>
+        <tr><th class="label">日期</th>${columns.map((col) => `<th class="${col.highlight}">${escapeHtml(col.name)}</th>`).join("")}</tr>
         ${row("岁年", (col) => col.age)}
         ${row("天干", (col) => xipanSymbolWithGods(ctx, col.item.pillar, "stem", col.name === "日柱"))}
         ${row("地支", (col) => xipanSymbolWithGods(ctx, col.item.pillar, "branch"))}
@@ -12282,7 +12286,14 @@
     function isWealthLuckPillar(ctx, pillar) {
       const ghostBranch = branches[(branches.indexOf(ctx.pillars[1].branch) + 4) % 12];
       const luBranch = { 甲: "寅", 乙: "卯", 丙: "巳", 丁: "午", 戊: "巳", 己: "午", 庚: "申", 辛: "酉", 壬: "亥", 癸: "子" }[ctx.pillars[2].stem];
-      return pillar.branch === ghostBranch || pillar.branch === luBranch;
+      if (pillar.branch === ghostBranch || pillar.branch === luBranch) return true;
+      const wealthElement = { 木: "土", 火: "金", 土: "水", 金: "木", 水: "火" }[ctx.dayElement];
+      const vault = { 木: "未", 火: "戌", 土: "戌", 金: "丑", 水: "辰" }[wealthElement];
+      const opener = clashPairs[vault];
+      const isLuck = ctx.lucks.some((luck) => luck.pillar === pillar);
+      const counterparts = ctx.pillars.map((item) => item.branch);
+      if (!isLuck && ctx.lucks[selectedLuck]) counterparts.push(ctx.lucks[selectedLuck].pillar.branch);
+      return (pillar.branch === vault && counterparts.includes(opener)) || (pillar.branch === opener && counterparts.includes(vault));
     }
 
     function renderLuckTimeline() {
