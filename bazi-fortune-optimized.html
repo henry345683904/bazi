@@ -11864,12 +11864,17 @@
         add(`${pillarLabels[index]}天干`, stemScore, stemGod);
         const hidden = hiddenStems[pillar.branch] || [];
         if (index === 1) {
-          [24, 12, 4].forEach((points, hiddenIndex) => {
-            const stem = hidden[hiddenIndex];
-            if (!stem) return;
-            const god = tenGod(dayStem, stem);
-            add(`${pillarLabels[index]}月令${["本气", "中气", "余气"][hiddenIndex]}`, scoreGod(god, points, true), god);
-          });
+          const monthMainGod = hidden[0] ? tenGod(dayStem, hidden[0]) : "";
+          if (supportGod(monthMainGod)) {
+            add(`${pillarLabels[index]}月令`, 40, `${monthMainGod}，月令比劫`);
+          } else {
+            [24, 12, 4].forEach((points, hiddenIndex) => {
+              const stem = hidden[hiddenIndex];
+              if (!stem) return;
+              const god = tenGod(dayStem, stem);
+              if (resourceGod(god)) add(`${pillarLabels[index]}月令${["本气", "中气", "余气"][hiddenIndex]}`, points, `${god}，月令印枭`);
+            });
+          }
         } else {
           const points = index === 0 ? 4 : 12;
           const god = hidden[0] ? tenGod(dayStem, hidden[0]) : tenGod(dayStem, pillar.stem);
@@ -11965,7 +11970,14 @@
         const stemScore = index === 2 ? 0 : (stemGod === "比肩" || stemGod === "劫财" ? stemPoints : ["正印", "偏印"].includes(stemGod) ? 0 : -stemPoints);
         const hidden = hiddenStems[pillar.branch] || [];
         if (index === 1) {
-          return { stem: stemScore, branch: hidden.slice(0, 3).map((stem, hiddenIndex) => ({ score: ((god) => god === "比肩" || god === "劫财" ? [24, 12, 4][hiddenIndex] : ["正印", "偏印"].includes(god) ? 0 : -[24, 12, 4][hiddenIndex])(tenGod(dayStem, stem)), god: tenGod(dayStem, stem) })) };
+          const monthMainGod = hidden[0] ? tenGod(dayStem, hidden[0]) : "";
+          if (monthMainGod === "比肩" || monthMainGod === "劫财") {
+            return { stem: stemScore, branch: [{ score: 40, god: `${monthMainGod}，月令` }] };
+          }
+          return { stem: stemScore, branch: hidden.slice(0, 3).map((stem, hiddenIndex) => {
+            const god = tenGod(dayStem, stem);
+            return { score: ["正印", "偏印"].includes(god) ? [24, 12, 4][hiddenIndex] : 0, god };
+          }).filter((item) => item.score !== 0) };
         }
         const god = hidden[0] ? tenGod(dayStem, hidden[0]) : stemGod;
         const points = index === 0 ? 4 : 12;
