@@ -13020,10 +13020,17 @@
         buildFlowYears(ctx, luck).forEach((year) => {
           const yearLayer = { key: "year", label: "流年", pillar: year.pillar, weight: 1.2 };
           const item = scorePillar(year.pillar, [luckLayer, yearLayer], "流年", `${luck.startAge + (year.year - luck.startYear)}岁`, `${year.year}年`);
+          const luckHasSevenKillings = tenGod(dayStem, luck.pillar.stem) === "七杀" || (hiddenStems[luck.pillar.branch] || []).some((stem) => tenGod(dayStem, stem) === "七杀");
+          const yearHasSevenKillings = tenGod(dayStem, year.pillar.stem) === "七杀" || (hiddenStems[year.pillar.branch] || []).some((stem) => tenGod(dayStem, stem) === "七杀");
+          if (item && luckHasSevenKillings && yearHasSevenKillings) {
+            item.score += 8;
+            item.reasons.push("大运与流年七杀同现");
+          }
           if (item) periods.push(item);
         });
       });
-      return periods.sort((a, b) => b.score - a.score).slice(0, 12);
+      // 灾祸七杀只保留一生中综合能量最高的一个阶段。
+      return periods.sort((a, b) => b.score - a.score).slice(0, 1);
     }
 
     function renderBasicDisasterPrediction(ctx) {
