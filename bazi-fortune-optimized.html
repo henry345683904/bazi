@@ -13291,6 +13291,43 @@
         + section("刑冲克害牵动", profile.tensions.length ? profile.tensions : ["相邻原局柱未见明显刑冲克破害信号。"]);
     }
 
+    function renderBasicLovePrediction(ctx) {
+      const block = Array.from(document.querySelectorAll("#basicAnalysisView .basic-analysis-block"))
+        .find((item) => item.querySelector("h3")?.textContent.includes("感情"));
+      if (!block) return;
+      const content = block.querySelector(".analysis-content");
+      const dayStem = ctx.pillars[2].stem;
+      const dayBranch = ctx.pillars[2].branch;
+      const spouseGods = ctx.state.gender === "女" ? ["正官", "七杀"] : ["正财", "偏财"];
+      const spouseLabel = ctx.state.gender === "女" ? "官杀" : "财星";
+      const spouseHits = [];
+      ctx.pillars.forEach((pillar, index) => {
+        if (spouseGods.includes(tenGod(dayStem, pillar.stem))) spouseHits.push(`${pillarLabels[index]}天干透${tenGod(dayStem, pillar.stem)}`);
+        (hiddenStems[pillar.branch] || []).forEach((stem) => {
+          if (spouseGods.includes(tenGod(dayStem, stem))) spouseHits.push(`${pillarLabels[index]}藏${tenGod(dayStem, stem)}`);
+        });
+      });
+      const relationLines = [];
+      const natal = ctx.pillars.map((pillar) => pillar.branch);
+      for (let index = 0; index < 3; index += 1) {
+        const left = ctx.pillars[index];
+        const right = ctx.pillars[index + 1];
+        branchRelationObjects(left.branch, right.branch).forEach((item) => {
+          if (item.type === "合") relationLines.push(`${pillarLabels[index]}与${pillarLabels[index + 1]}${left.branch}${right.branch}相合，关系容易因互动、牵挂或共同事务靠近${item.element ? `，有合化${item.element}倾向` : ""}。`);
+          if (["冲", "刑", "破", "害"].includes(item.type)) relationLines.push(`${pillarLabels[index]}与${pillarLabels[index + 1]}${left.branch}${right.branch}${item.type}，感情中容易出现距离变化、反复争执、冷处理或现实压力。`);
+        });
+      }
+      const stars = uniqueList(ctx.pillars.flatMap((pillar) => symbolicStars(ctx, pillar)));
+      const lines = [
+        `配偶星看${spouseLabel}：${spouseHits.length ? spouseHits.join("、") : `原局${spouseLabel}不透，感情机会需要等大运流年引动。`}`,
+        `日支${dayBranch}为配偶宫，${relation(dayStem === ctx.pillars[2].stem ? ctx.dayElement : stemElement[dayStem], branchElement[dayBranch]) === "官星" ? "配偶宫带官杀压力" : "配偶宫按本命五行承载关系"}；感情稳定度还要看运年是否再次引动。`,
+        relationLines.length ? relationLines.slice(0, 3).join(" ") : "原局相邻地支未见明显合化或刑冲破害，关系发展较少由突发冲合主导。",
+        stars.includes("桃花") ? "原局见桃花，异性接触、社交吸引或关系机会更容易被看见。" : "原局未见明显桃花神煞，感情更依赖现实接触、工作往来和运年引动。",
+        stars.includes("天喜") ? "天喜同现，感情互动、确定关系或喜庆事件的信号增强。" : "感情关键仍取决于配偶星、日支和运年合冲的共同变化。"
+      ];
+      content.innerHTML = `<details class="five-ghost-details"><summary>感情综合分析</summary><div class="five-ghost-content">${uniqueList(lines).map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div></details>`;
+    }
+
     function renderBasicWealthPrediction(ctx) {
       const block = Array.from(document.querySelectorAll("#basicAnalysisView .basic-analysis-block"))
         .find((item) => item.querySelector("h3")?.textContent.includes("财运"));
@@ -13381,6 +13418,7 @@
       renderBasicDisasterPrediction(ctx);
       renderBasicWealthPrediction(ctx);
       renderBasicHealthPrediction(ctx);
+      renderBasicLovePrediction(ctx);
 
       document.getElementById("activeProfileName").textContent = state.name || `${state.birthDate}命盘`;
 
