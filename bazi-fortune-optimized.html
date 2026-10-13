@@ -11910,16 +11910,16 @@
         if (!element || !["合化", "三合", "三会"].includes(type)) return "";
         const stems = indices.map((index) => pillars[index].stem);
         const branches = indices.map((index) => pillars[index].branch);
-        const root = branches.some((branch) => (hiddenStems[branch] || []).some((stem) => stemElement[stem] === element));
-        const stem = stems.some((stemChar) => stemElement[stemChar] === element);
+        const root = kind === "stem" && branches.some((branch) => (hiddenStems[branch] || []).some((stem) => stemElement[stem] === element));
+        const stem = kind === "branch" && stems.some((stemChar) => stemElement[stemChar] === element);
         const base = type === "三会" ? 7.5 : 5;
-        return `，${root ? "通根" : ""}${stem ? "通干" : ""}能量${stem ? base * 2 : base}倍`;
+        return `，${root ? "通根" : ""}${stem ? "通干" : ""}能量${root || stem ? base * 2 : base}倍`;
       };
       const add = (indices, label, element, type = "关系") => {
         const stems = indices.map((index) => pillars[index].stem);
         const branches = indices.map((index) => pillars[index].branch);
         const root = kind === "stem" && branches.some((branch) => (hiddenStems[branch] || []).some((stem) => element && stemElement[stem] === element));
-        const stem = branches.some((branch) => (hiddenStems[branch] || []).some((hidden) => stems.includes(hidden)));
+        const stem = kind === "branch" && stems.some((stemChar) => element && stemElement[stemChar] === element);
         const marks = [root ? "通根" : "", stem ? "通干" : ""].filter(Boolean);
         links.push({ indices, label, detail: `${label}${energySuffix(indices, element, type)}`, marks, color: elementColors[element] || "#8f2637", type });
       };
