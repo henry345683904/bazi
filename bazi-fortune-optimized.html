@@ -3367,6 +3367,8 @@
     .events-2026-trigger:active { background: #f7d9d2; box-shadow: inset 0 1px 2px rgba(117, 56, 49, .12); }
     .events-2026-trigger:focus-visible { outline: 2px solid #a14b4b; outline-offset: 3px; }
     #basicAnalysisTitle, #basicResolveTitle, #basicResolveView .resolve-message { text-align: center; }
+    .analysis-title-row { display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .analysis-notice-button { padding: 5px 9px; border: 1px solid #dfb6b2; border-radius: 6px; background: #fff1ee; color: #923d39; font-size: 12px; cursor: pointer; }
     .resolve-contact-qr { display: block; width: min(240px, 100%); height: auto; aspect-ratio: 1; box-sizing: border-box; margin: 16px auto; padding: 12px; background: #fff; }
     .events-2026-content { display: grid; gap: 9px; }
     .events-2026-content h3 { margin: 0; color: #8d3838; font-size: 18px; text-align: center; }
@@ -3926,7 +3928,7 @@
       </section>
     </section>
     <section id="basicAnalysisView" hidden aria-labelledby="basicAnalysisTitle">
-      <h2 id="basicAnalysisTitle">分析</h2>
+      <div class="analysis-title-row"><h2 id="basicAnalysisTitle">分析</h2><button type="button" class="analysis-notice-button" id="personal2026Btn">2026注意事项</button></div>
       <div class="basic-analysis-grid">
         <section class="panel basic-analysis-block"><h3><i data-lucide="heart-pulse" aria-hidden="true"></i>健康</h3><div class="analysis-content"></div></section>
         <section class="panel basic-analysis-block"><h3><i data-lucide="heart" aria-hidden="true"></i>感情</h3><div class="analysis-content"></div></section>
@@ -3945,6 +3947,12 @@
     </section>
   </main>
 
+  <dialog class="qimen-dialog" id="personal2026Dialog" aria-labelledby="personal2026Title">
+    <div class="qimen-dialog-shell">
+      <div class="qimen-dialog-head"><h2 id="personal2026Title">2026注意事项</h2><button class="qimen-dialog-close" type="button" id="personal2026Close" aria-label="关闭弹窗">×</button></div>
+      <div class="qimen-dialog-body" id="personal2026Content"></div>
+    </div>
+  </dialog>
   <nav class="app-bottom-nav" id="baziBottomNav" aria-label="八字页面导航">
     <button type="button" class="active" data-bazi-nav="home" aria-current="page">
       <i data-lucide="house" aria-hidden="true"></i>
@@ -13613,6 +13621,32 @@
       content.insertAdjacentHTML("beforeend", `<details class="five-ghost-details"><summary>财库冲开</summary><div class="five-ghost-content"><p>命主财星为${escapeHtml(result.wealthElement)}，财库为${escapeHtml(result.vault)}。</p>${periods}</div></details>`);
     }
 
+    function buildPersonal2026Notice(ctx) {
+      const year = ganzhi(2026 - 1984);
+      const luck = luckForDate(ctx, new Date(2026, 6, 1, 12));
+      const slots = baziBodySlots(ctx);
+      const sections = [];
+      const zodiac = ctx.pillars[0].branch;
+      const taiSui = { 午: "值太岁、午午自刑", 子: "冲太岁", 丑: "害太岁", 卯: "破太岁" };
+      sections.push({ title: "犯太岁", lines: [taiSui[zodiac] ? `出生年支${zodiac}：2026年${taiSui[zodiac]}。下方按实际受作用的原局宫位细分。` : `出生年支${zodiac}与午未构成值、冲、刑、害、破太岁关系。`] });
+      const family = ["父亲、母亲及长辈", "父母、兄弟姐妹", "本人和配偶", "子女"];
+      const effects = { 冲: "生活安排突变、搬迁或关系波动", 刑: "事情反复、压力和纠纷", 破: "原有计划或合作中断", 害: "隐性矛盾、误会或事情受阻" };
+      const lines = [];
+      ctx.pillars.forEach((pillar, index) => {
+        branchRelationObjects(year.branch, pillar.branch).filter((item) => effects[item.type]).forEach((item) => {
+          const organ = baziDiseaseOrganByElement(branchElement[pillar.branch]);
+          lines.push(`午${pillar.branch}${item.type}，落在${pillarLabels[index]}：传统宫位涉及${family[index]}，事件倾向为${effects[item.type]}。身体象意对应${slots[index + 4].area}，五行对应${organ}；这些对应不能据此认定本人或亲属会患病或发生事故。`);
+        });
+        if (stemClashPairs[year.stem] === pillar.stem || stemControlType(year.stem, pillar.stem) === "克") {
+          lines.push(`流年丙火${stemClashPairs[year.stem] === pillar.stem ? "冲克" : "克"}${pillar.stem}，落在${pillarLabels[index]}天干；传统身体象意为${slots[index].area}、${baziStemOrgan(pillar.stem)}。是否形成压力还需结合大运${luck.pillar.text}及原局生扶，不能单凭此项判断疾病。`);
+        }
+      });
+      sections.push({ title: "原局宫位与身体对应", lines: lines.length ? uniqueList(lines) : ["2026午支未与原局构成直接刑冲破害，丙干也未形成上述冲克；不生成相应风险条目。"] });
+      const luckEffects = branchRelationObjects(year.branch, luck.pillar.branch).filter((item) => effects[item.type]);
+      sections.push({ title: "2026大运背景", lines: [`所在大运${luck.pillar.text}。${luckEffects.length ? luckEffects.map((item) => `午${luck.pillar.branch}${item.type}：${effects[item.type]}`).join("；") : "流年午与大运支未构成直接刑冲破害。"}`] });
+      return sections;
+    }
+
     function renderBasicResolvePrediction(ctx) {
       const target = document.getElementById("resolve2026Notice");
       if (!target || !ctx) return;
@@ -13921,6 +13955,14 @@
     document.getElementById("qimenDialogClose").addEventListener("click", closeQimenDialog);
 
     const events2026Dialog = document.getElementById("events2026Dialog");
+    const personal2026Dialog = document.getElementById("personal2026Dialog");
+    document.getElementById("personal2026Btn").addEventListener("click", () => {
+      const content = document.getElementById("personal2026Content");
+      content.innerHTML = chartContext ? `<p><strong>${escapeHtml(chartContext.state.name || "命主")} · 2026丙午年</strong></p><p class="hint">以下是传统命理解释，无法可靠预测具体疾病、事故或亲属遭遇，不属于医学诊断。</p>${buildPersonal2026Notice(chartContext).map((section) => `<section><h3>${escapeHtml(section.title)}</h3>${section.lines.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</section>`).join("")}` : "<p>请先在首页输入生日并生成命盘。</p>";
+      personal2026Dialog.showModal();
+    });
+    document.getElementById("personal2026Close").addEventListener("click", () => personal2026Dialog.close());
+    personal2026Dialog.addEventListener("click", (event) => { if (event.target === personal2026Dialog) personal2026Dialog.close(); });
     // Keep the global popup outside hidden tool views.
     document.body.appendChild(events2026Dialog);
     const closeEvents2026Dialog = () => {
