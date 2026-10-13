@@ -11855,7 +11855,8 @@
       const add = (label, score, detail = "") => {
         total += score;
         scoreEntries.push({ label, score, detail });
-        return `<span class="energy-score ${score > 0 ? "positive" : score < 0 ? "negative" : "neutral"}">${score > 0 ? "+" : ""}${score}</span>`;
+        const displayScore = Number(score).toFixed(1);
+        return `<span class="energy-score ${score > 0 ? "positive" : score < 0 ? "negative" : "neutral"}">${score > 0 ? "+" : ""}${displayScore}</span>`;
       };
       ctx.pillars.forEach((pillar, index) => {
         const stemGod = tenGod(dayStem, pillar.stem);
@@ -11889,12 +11890,13 @@
           }
         }
       });
-      const scoreText = `${total > 0 ? "+" : ""}${total}分`;
+      const scoreText = `${total > 0 ? "+" : ""}${total.toFixed(1)}分`;
       return { total, scoreText, scoreEntries };
     }
 
     function energyScoreMarkup(score, detail = "") {
-      return `<span class="energy-score ${score > 0 ? "positive" : score < 0 ? "negative" : "neutral"}" title="${escapeHtml(detail)}">${score > 0 ? "+" : ""}${score}</span>`;
+      const displayScore = Number(score).toFixed(1);
+      return `<span class="energy-score ${score > 0 ? "positive" : score < 0 ? "negative" : "neutral"}" title="${escapeHtml(detail)}">${score > 0 ? "+" : ""}${displayScore}</span>`;
     }
 
     function renderXipanSummary(ctx) {
