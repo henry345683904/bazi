@@ -13507,6 +13507,42 @@
       content.innerHTML = `<details class="five-ghost-details"><summary>感情综合分析</summary><div class="five-ghost-content">${uniqueList(lines).map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div></details><details class="five-ghost-details"><summary>需注意的年份（${cautionLines.length}项）</summary><div class="five-ghost-content">${cautionContent.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div></details>`;
     }
 
+    function buildWealthVaultPeriods(ctx) {
+      const wealthElement = { 木: "土", 火: "金", 土: "水", 金: "木", 水: "火" }[ctx.dayElement];
+      const vault = { 木: "未", 火: "戌", 土: "戌", 金: "丑", 水: "辰" }[wealthElement];
+      const opener = clashPairs[vault];
+      const periods = [];
+      const natal = ctx.pillars.map((pillar, index) => ({ pillar, label: pillarLabels[index] }));
+      const reasonsFor = (layers) => {
+        const reasons = [];
+        const all = natal.concat(layers);
+        all.filter((item) => item.pillar.branch === vault).forEach((source) => {
+          all.filter((item) => item.pillar.branch === opener).forEach((hit) => {
+            if (!layers.includes(source) && !layers.includes(hit)) return;
+            reasons.push(`${source.label}${vault}财库被${hit.label}${opener}冲开（${vault}${opener}冲）`);
+          });
+        });
+        return uniqueList(reasons);
+      };
+      (ctx.lucks || []).forEach((luck) => {
+        const luckLayer = { pillar: luck.pillar, label: "大运" };
+        const luckReasons = reasonsFor([luckLayer]);
+        if (luck.endAge >= 18 && luck.startAge < 80 && luckReasons.length) {
+          periods.push({ type: "大运", pillar: luck.pillar.text, age: `${Math.max(18, luck.startAge)}–${Math.min(80, luck.endAge)}岁`, years: `${luck.startYear}-${luck.endYear}`, order: Math.max(luck.startYear, luck.startYear + 18 - luck.startAge), reasons: luckReasons });
+        }
+        buildFlowYears(ctx, luck).forEach((year) => {
+          const age = luck.startAge + year.year - luck.startYear;
+          if (age < 18 || age >= 80) return;
+          const yearLayer = { pillar: year.pillar, label: "流年" };
+          const reasons = reasonsFor([luckLayer, yearLayer]);
+          // List annual activations, not every year of an already-open luck cycle.
+          const annualReasons = reasons.filter((reason) => reason.includes("流年"));
+          if (annualReasons.length) periods.push({ type: "流年", pillar: year.pillar.text, age: `${age}岁`, years: `${year.year}年`, order: year.year, reasons: annualReasons });
+        });
+      });
+      return { wealthElement, vault, periods: periods.sort((a, b) => a.order - b.order).filter((period, index, list) => index === list.findIndex((item) => item.type === period.type && item.years === period.years && item.pillar === period.pillar)) };
+    }
+
     function renderBasicWealthPrediction(ctx) {
       const block = Array.from(document.querySelectorAll("#basicAnalysisView .basic-analysis-block"))
         .find((item) => item.querySelector("h3")?.textContent.includes("财运"));
@@ -13530,6 +13566,16 @@
         luResult.periods.length ? `禄神为${luResult.branch}，命中大运流年时收入、工作和赚钱机会增强。` : "当前大运流年未出现禄神地支。"
       ];
       content.innerHTML = `<details class="five-ghost-details"><summary>综合财运</summary><div class="five-ghost-content">${summaryParts.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}<p><strong>18岁至80岁发财年份</strong></p>${comprehensivePeriods}</div></details><details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details><details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(luResult.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${luPeriods}</div></details><details class="five-ghost-details"><summary>身旺财旺</summary><div class="five-ghost-content">${strongPeriods}</div></details>`;
+    }
+
+    function renderWealthVaultPrediction(ctx) {
+      const block = Array.from(document.querySelectorAll("#basicAnalysisView .basic-analysis-block"))
+        .find((item) => item.querySelector("h3")?.textContent.includes("财运"));
+      const content = block?.querySelector(".analysis-content");
+      if (!content) return;
+      const result = buildWealthVaultPeriods(ctx);
+      const periods = result.periods.length ? result.periods.map((period) => `<p><strong>${escapeHtml(`${period.type} ${period.pillar}`)}</strong>　${escapeHtml(period.age)}　${escapeHtml(period.years)}<br>${escapeHtml(period.reasons.join("；"))}。传统命理对应积存资金释放、资产变现、回款或收入增加的可能，不等于必然发财。</p>`).join("") : "<p>18岁至80岁之间暂未发现财库被大运或流年冲开的阶段。</p>";
+      content.insertAdjacentHTML("beforeend", `<details class="five-ghost-details"><summary>财库冲开</summary><div class="five-ghost-content"><p>命主财星为${escapeHtml(result.wealthElement)}，财库为${escapeHtml(result.vault)}。</p>${periods}</div></details>`);
     }
 
     function renderBasicResolvePrediction(ctx) {
@@ -13645,6 +13691,7 @@
       chartContext = ctx;
       renderBasicDisasterPrediction(ctx);
       renderBasicWealthPrediction(ctx);
+      renderWealthVaultPrediction(ctx);
       renderBasicHealthPrediction(ctx);
       renderBasicLovePrediction(ctx);
       renderBasicResolvePrediction(ctx);
