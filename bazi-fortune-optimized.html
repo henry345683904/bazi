@@ -3354,6 +3354,13 @@
     body.basic-chart-only .topbar { display: flex; align-items: center; gap: 8px; }
     .brand-copy { position: relative; }
     .developer-credit { position: static; text-align: right; font-size: 8px; color: var(--muted); white-space: nowrap; line-height: 1; margin-top: 2px; }
+    .events-2026-trigger { display: block; width: fit-content; margin: 1px auto 0; padding: 0; border: 0; background: transparent; color: #a14b4b; font-size: 11px; line-height: 1.2; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+    .events-2026-trigger:hover { color: #7e3030; }
+    .events-2026-content { display: grid; gap: 9px; }
+    .events-2026-content h3 { margin: 0; color: #8d3838; font-size: 18px; text-align: center; }
+    .events-2026-content p { margin: 0; padding: 8px 10px; border-left: 3px solid #d85b52; background: #fff6f4; color: #3f3432; line-height: 1.55; }
+    .events-2026-content p strong { color: #9f3535; }
+    @media (max-width: 620px) { .events-2026-trigger { font-size: 10px; } .events-2026-content h3 { font-size: 16px; } .events-2026-content p { font-size: 13px; padding: 7px 8px; } }
     body.basic-chart-only .top-tools { display: flex !important; flex-direction: column; align-items: flex-end; justify-content: flex-start; width: auto; margin-left: auto; }
     body.basic-chart-only .top-tools > :not(#languageToggle) { display: none !important; }
     body.basic-chart-only #languageToggle { display: block; align-self: flex-start; margin: -6px 0 0; padding: 3px 6px; font-size: 10px; line-height: 1.1; }
@@ -3376,6 +3383,7 @@
         </div>
         <div class="brand-copy">
           <h1>八字运势测算</h1>
+          <button class="events-2026-trigger" type="button" id="events2026Btn">2026大事件</button>
           <p class="subtitle">输入出生信息，直接生成应事预测。</p>
         </div>
       </div>
@@ -3828,6 +3836,25 @@
             <div class="qimen-dialog-body">
               <div class="qimen-detail" id="qimenDetail">
                 <div class="empty-state">点击任意宫位，会显示这个宫位对应的人事、身体信号和可能发生的具体事情。</div>
+              </div>
+            </div>
+          </div>
+        </dialog>
+        <dialog class="qimen-dialog" id="events2026Dialog" aria-labelledby="events2026DialogTitle">
+          <div class="qimen-dialog-shell">
+            <div class="qimen-dialog-head">
+              <div class="qimen-dialog-title"><h2 id="events2026DialogTitle">2026大事件</h2><span class="tag">丙午年预测</span></div>
+              <button class="qimen-dialog-close" type="button" id="events2026DialogClose" title="关闭弹窗" aria-label="关闭弹窗">×</button>
+            </div>
+            <div class="qimen-dialog-body">
+              <div class="events-2026-content" id="events2026Content">
+                <h3>2025年底对2026年一些新的预测</h3>
+                <p><strong>丙辛合水</strong><br>寒冬大雪</p>
+                <p><strong>午午自刑、寅午合火、午戌合火、午未合火</strong><br>战争、火山爆发、太阳异常活动</p>
+                <p><strong>午为桃花</strong><br>离卦、离婚、丑闻，将出现情色事件新闻</p>
+                <p><strong>午为将星</strong><br>新的行业洗牌，新人商业领袖出现，影视明星、网红、新人爆火</p>
+                <p><strong>丙午为烈火</strong><br>旧疾复发，心脑血管、肠胃疾病大量出现，多喝凉茶，提前预防</p>
+                <p><strong>火旺克金</strong><br>金为西方，欧美国家频发战争，逐渐衰败；火旺克金，谁露头、谁倒霉，适宜躺平</p>
               </div>
             </div>
           </div>
@@ -13767,6 +13794,21 @@
     });
 
     document.getElementById("qimenDialogClose").addEventListener("click", closeQimenDialog);
+
+    const events2026Dialog = document.getElementById("events2026Dialog");
+    const closeEvents2026Dialog = () => {
+      if (!events2026Dialog) return;
+      if (typeof events2026Dialog.close === "function") events2026Dialog.close();
+      else events2026Dialog.removeAttribute("open");
+    };
+    document.getElementById("events2026Btn").addEventListener("click", () => {
+      if (typeof events2026Dialog.showModal === "function") events2026Dialog.showModal();
+      else events2026Dialog.setAttribute("open", "");
+    });
+    document.getElementById("events2026DialogClose").addEventListener("click", closeEvents2026Dialog);
+    events2026Dialog.addEventListener("click", (event) => {
+      if (event.target === event.currentTarget) closeEvents2026Dialog();
+    });
 
     document.getElementById("qimenPalaceDialog").addEventListener("click", (event) => {
       if (event.target === event.currentTarget) closeQimenDialog();
