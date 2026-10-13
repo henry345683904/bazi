@@ -11916,10 +11916,10 @@
       const drawing = links.map((link) => {
         const xs = link.indices.map((i) => 12.5 + i * 25).sort((a, b) => a - b);
         const y = link.lane * 44 + 22;
-        const start = xs[0] + 4, end = xs[xs.length - 1] - 4;
+        const start = xs[0] + 8, end = xs[xs.length - 1] - 8;
         const path = `M ${start} ${y} L ${end} ${y}`;
-        const arrowEnd = `<polygon points="${end},${y} ${end - 7},${y - 4} ${end - 7},${y + 4}" stroke="none"/>`;
-        const arrowStart = `<polygon points="${start},${y} ${start + 7},${y - 4} ${start + 7},${y + 4}" stroke="none"/>`;
+        const arrowEnd = `<polygon points="${end},${y} ${end - 5},${y - 3} ${end - 5},${y + 3}" stroke="none"/>`;
+        const arrowStart = `<polygon points="${start},${y} ${start + 5},${y - 3} ${start + 5},${y + 3}" stroke="none"/>`;
         return `<g class="natal-relation-link" tabindex="0" role="button" aria-label="${escapeHtml(link.label)}" data-relation-detail="${escapeHtml(link.detail)}" style="color:${link.color}" fill="currentColor" stroke="currentColor"><title>${escapeHtml(link.label)}</title><path d="${path}" fill="none" stroke-width="2.5" stroke-linecap="round"/>${arrowStart}${arrowEnd}</g>`;
       }).join("");
       return `<svg class="no-translate natal-inline-arrows" role="img" aria-label="${escapeHtml(links.map((link) => link.label).join("、"))}" width="100%" height="${height}" viewBox="0 0 100 ${height}" preserveAspectRatio="none">${drawing}</svg>`;
