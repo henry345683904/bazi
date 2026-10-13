@@ -9172,10 +9172,10 @@
       const god = ghostStem ? tenGod(ctx.pillars[2].stem, ghostStem) : "";
       const periods = [];
       (ctx.lucks || []).forEach((luck) => {
-        if (luck.startAge < 80 && luck.pillar.branch === ghostBranch) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${luck.endYear}`, age: `${luck.startAge}–${luck.endAge}岁` });
+        if (luck.startAge <= 70 && luck.pillar.branch === ghostBranch) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${Math.min(luck.endYear, luck.startYear + 70 - luck.startAge)}`, age: `${luck.startAge}–${Math.min(70, luck.endAge)}岁` });
         buildFlowYears(ctx, luck).forEach((year) => {
           const age = luck.startAge + (year.year - luck.startYear);
-          if (age < 80 && year.pillar.branch === ghostBranch) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${age}岁` });
+          if (age <= 70 && year.pillar.branch === ghostBranch) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${age}岁` });
         });
       });
       return { branch: ghostBranch, god, text: fiveGhostWealthText(god), periods };
@@ -9185,10 +9185,10 @@
       const luBranch = { 甲: "寅", 乙: "卯", 丙: "巳", 丁: "午", 戊: "巳", 己: "午", 庚: "申", 辛: "酉", 壬: "亥", 癸: "子" }[ctx.pillars[2].stem];
       const periods = [];
       (ctx.lucks || []).forEach((luck) => {
-        if (luck.startAge < 80 && luck.pillar.branch === luBranch) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${luck.endYear}`, age: `${luck.startAge}–${luck.endAge}岁` });
+        if (luck.startAge <= 70 && luck.pillar.branch === luBranch) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${Math.min(luck.endYear, luck.startYear + 70 - luck.startAge)}`, age: `${luck.startAge}–${Math.min(70, luck.endAge)}岁` });
         buildFlowYears(ctx, luck).forEach((year) => {
           const age = luck.startAge + (year.year - luck.startYear);
-          if (age < 80 && year.pillar.branch === luBranch) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${age}岁` });
+          if (age <= 70 && year.pillar.branch === luBranch) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${age}岁` });
         });
       });
       return { branch: luBranch, periods };
@@ -9216,10 +9216,10 @@
       const periods = [];
       if (!strong) return { strong, periods };
       (ctx.lucks || []).forEach((luck) => {
-        if (luck.startAge < 80 && ["正财", "偏财"].includes(tenGod(ctx.pillars[2].stem, luck.pillar.stem))) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${luck.endYear}`, age: `${luck.startAge}–${luck.endAge}岁`, effects: wealthEnergyEffects(ctx, luck.pillar) });
+        if (luck.startAge <= 70 && ["正财", "偏财"].includes(tenGod(ctx.pillars[2].stem, luck.pillar.stem))) periods.push({ type: "大运", pillar: luck.pillar.text, years: `${luck.startYear}-${Math.min(luck.endYear, luck.startYear + 70 - luck.startAge)}`, age: `${luck.startAge}–${Math.min(70, luck.endAge)}岁`, effects: wealthEnergyEffects(ctx, luck.pillar) });
         buildFlowYears(ctx, luck).forEach((year) => {
           const age = luck.startAge + (year.year - luck.startYear);
-          if (age < 80 && ["正财", "偏财"].includes(tenGod(ctx.pillars[2].stem, year.pillar.stem))) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${age}岁`, effects: wealthEnergyEffects(ctx, year.pillar) });
+          if (age <= 70 && ["正财", "偏财"].includes(tenGod(ctx.pillars[2].stem, year.pillar.stem))) periods.push({ type: "流年", pillar: year.pillar.text, years: `${year.year}年`, age: `${age}岁`, effects: wealthEnergyEffects(ctx, year.pillar) });
         });
       });
       return { strong, periods };
@@ -9268,8 +9268,8 @@
           else { luckScore += 1; luckSignals.push("财星大运但承财压力较大"); }
         }
         if (luckScore) {
-          const item = { type: "大运", pillar: luck.pillar, age: `${luck.startAge}–${luck.endAge}岁`, years: `${luck.startYear}-${luck.endYear}`, score: luckScore, signals: luckSignals, effects: wealthEnergyEffects(ctx, luck.pillar) };
-          (luckAge >= 80 ? latePeriods : luckAge + 10 < 18 ? null : mainPeriods)?.push(item);
+          const item = { type: "大运", pillar: luck.pillar, age: `${luck.startAge}–${Math.min(70, luck.endAge)}岁`, years: `${luck.startYear}-${Math.min(luck.endYear, luck.startYear + 70 - luck.startAge)}`, score: luckScore, signals: luckSignals, effects: wealthEnergyEffects(ctx, luck.pillar) };
+          (luckAge > 70 ? latePeriods : luckAge + 10 < 18 ? null : mainPeriods)?.push(item);
         }
         buildFlowYears(ctx, luck).forEach((year) => {
           const age = luck.startAge + (year.year - luck.startYear);
@@ -9290,7 +9290,7 @@
             signals.push(...luckSignals);
           }
           const item = { type: "流年", pillar: year.pillar, age: `${age}岁`, years: `${year.year}年`, score, signals, effects: wealthEnergyEffects(ctx, year.pillar) };
-          if (age >= 80) latePeriods.push(item);
+          if (age > 70) latePeriods.push(item);
           else if (age >= 18) mainPeriods.push(item);
         });
       });
@@ -13529,12 +13529,12 @@
       (ctx.lucks || []).forEach((luck) => {
         const luckLayer = { pillar: luck.pillar, label: "大运" };
         const luckReasons = reasonsFor([luckLayer]);
-        if (luck.endAge >= 18 && luck.startAge < 80 && luckReasons.length) {
-          periods.push({ type: "大运", pillar: luck.pillar.text, age: `${Math.max(18, luck.startAge)}–${Math.min(80, luck.endAge)}岁`, years: `${luck.startYear}-${luck.endYear}`, order: Math.max(luck.startYear, luck.startYear + 18 - luck.startAge), reasons: luckReasons });
+        if (luck.endAge >= 18 && luck.startAge <= 70 && luckReasons.length) {
+          periods.push({ type: "大运", pillar: luck.pillar.text, age: `${Math.max(18, luck.startAge)}–${Math.min(70, luck.endAge)}岁`, years: `${luck.startYear}-${Math.min(luck.endYear, luck.startYear + 70 - luck.startAge)}`, order: Math.max(luck.startYear, luck.startYear + 18 - luck.startAge), reasons: luckReasons });
         }
         buildFlowYears(ctx, luck).forEach((year) => {
           const age = luck.startAge + year.year - luck.startYear;
-          if (age < 18 || age >= 80) return;
+          if (age < 18 || age > 70) return;
           const yearLayer = { pillar: year.pillar, label: "流年" };
           const reasons = reasonsFor([luckLayer, yearLayer]);
           // List annual activations, not every year of an already-open luck cycle.
@@ -13561,13 +13561,13 @@
       const strongPeriods = strongResult.periods.length ? strongResult.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}<br>${escapeHtml(period.effects.join("；") || "财星能量稳定增强")}</p>`).join("") : strongResult.strong ? "<p>身强但当前大运、流年天干未出现正财或偏财。</p>" : "<p>本命身强条件未满足，暂不列入身旺财旺。</p>";
       const comprehensivePeriods = comprehensive.strongest.length
         ? comprehensive.strongest.map((period) => `<p><strong>${period.type} ${escapeHtml(period.pillar.text)}</strong>　${escapeHtml(period.age)}　${escapeHtml(period.years)}<br><span>财富能量${period.score.toFixed(1)}分：${escapeHtml(period.signals.join("、"))}${period.effects.length ? `；${escapeHtml(period.effects.join("、"))}` : ""}</span></p>`).join("")
-        : "<p>18岁至80岁之间暂未发现明显发财年份。</p>";
+        : "<p>18岁至70岁之间暂未发现明显发财年份。</p>";
       const summaryParts = [
         `财富等级：${comprehensive.level}。${comprehensive.baseReasons.join("；")}。${ctx.pillars[2].stem === "丁" ? "丁火日主不论身强身弱，均按可承财处理。" : ""}`,
         result.periods.length ? `五鬼运财落在${result.branch}，本气为${result.god}，${result.text.replace(`五鬼运财地支本气为${result.god}：`, "")}` : "当前大运流年未出现五鬼运财地支。",
         luResult.periods.length ? `禄神为${luResult.branch}，命中大运流年时收入、工作和赚钱机会增强。` : "当前大运流年未出现禄神地支。"
       ];
-      content.innerHTML = `<details class="five-ghost-details"><summary>综合财运</summary><div class="five-ghost-content">${summaryParts.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}<p><strong>18岁至80岁发财年份</strong></p>${comprehensivePeriods}</div></details><details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details><details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(luResult.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${luPeriods}</div></details><details class="five-ghost-details"><summary>身旺财旺</summary><div class="five-ghost-content">${strongPeriods}</div></details>`;
+      content.innerHTML = `<details class="five-ghost-details"><summary>综合财运</summary><div class="five-ghost-content">${summaryParts.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}<p><strong>18岁至70岁发财年份</strong></p>${comprehensivePeriods}</div></details><details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details><details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(luResult.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${luPeriods}</div></details><details class="five-ghost-details"><summary>身旺财旺</summary><div class="five-ghost-content">${strongPeriods}</div></details>`;
     }
 
     function renderWealthVaultPrediction(ctx) {
@@ -13576,7 +13576,7 @@
       const content = block?.querySelector(".analysis-content");
       if (!content) return;
       const result = buildWealthVaultPeriods(ctx);
-      const periods = result.periods.length ? result.periods.map((period) => `<p><strong>${escapeHtml(`${period.type} ${period.pillar}`)}</strong>　${escapeHtml(period.age)}　${escapeHtml(period.years)}<br>${escapeHtml(period.reasons.join("；"))}。传统命理对应积存资金释放、资产变现、回款或收入增加的可能，不等于必然发财。</p>`).join("") : "<p>18岁至80岁之间暂未发现财库被大运或流年冲开的阶段。</p>";
+      const periods = result.periods.length ? result.periods.map((period) => `<p><strong>${escapeHtml(`${period.type} ${period.pillar}`)}</strong>　${escapeHtml(period.age)}　${escapeHtml(period.years)}<br>${escapeHtml(period.reasons.join("；"))}。传统命理对应积存资金释放、资产变现、回款或收入增加的可能，不等于必然发财。</p>`).join("") : "<p>18岁至70岁之间暂未发现财库被大运或流年冲开的阶段。</p>";
       content.insertAdjacentHTML("beforeend", `<details class="five-ghost-details"><summary>财库冲开</summary><div class="five-ghost-content"><p>命主财星为${escapeHtml(result.wealthElement)}，财库为${escapeHtml(result.vault)}。</p>${periods}</div></details>`);
     }
 
