@@ -10941,8 +10941,13 @@
       };
     }
 
-    function dynamicStrengthProfile(ctx, date = new Date()) {
+    function dynamicStrengthProfile(ctx, date = new Date(), selectedFlow = null) {
       const stack = flowStackForDate(ctx, date);
+      if (selectedFlow) {
+        stack.luck = selectedFlow.luck;
+        stack.year = selectedFlow.year;
+        stack.layers = stack.layers.map((layer) => layer.key === "luck" ? { ...layer, pillar: selectedFlow.luck.pillar } : layer.key === "year" ? { ...layer, pillar: selectedFlow.year.pillar } : layer);
+      }
       // 身强身弱的动态标签只由大运和流年决定；流月、流日继续保留给日期和事件分析。
       const strengthStack = {
         ...stack,
@@ -12189,7 +12194,7 @@
           <span class="tag">取格：${escapeHtml(pattern.stem)}</span>
           <span class="tag">本命：${escapeHtml(ctx.baseStrength?.label || ctx.strength.label)}</span>
           <span class="tag">本年：${escapeHtml(ctx.currentYearStrengthLabel || simpleStrengthLabel(ctx, new Date(new Date().getFullYear(), 0, 1, 12)))}</span>
-          <span class="tag" title="按本命强弱推算的候选五行，尚未完成调候、格局和通关核验">喜用参考：${escapeHtml(pattern.useful)}</span>
+          <span class="tag" id="selectedFlowFavorable" title="按原局与所选大运、流年的动态强弱推算，不计流月流日">喜用：${escapeHtml(ctx.favorable.join("、"))}</span>
         </div>
       `;
       colorizeGanzhi(box);
@@ -12323,6 +12328,16 @@
       const year = chartContext.flowYears?.[selectedYear];
       const month = chartContext.flowMonths?.[selectedMonth];
       const day = chartContext.flowDays?.[selectedDay];
+      if (luck && year) {
+        const profile = dynamicStrengthProfile(chartContext, new Date(year.year, 6, 1, 12), { luck, year });
+        const favorable = favorableElements(chartContext.dayElement, profile.current);
+        const text = `喜用：${favorable.join("、")}`;
+        const tag = document.getElementById("selectedFlowFavorable");
+        if (tag) { tag.textContent = text; colorizeGanzhi(tag); }
+        document.querySelectorAll("#metaTags .tag").forEach((node) => {
+          if (node.textContent.startsWith("喜用")) { node.textContent = text; colorizeGanzhi(node); }
+        });
+      }
       const set = (id, date) => { const node = document.getElementById(id); if (node && date) node.textContent = simpleStrengthLabel(chartContext, date); };
       set("luckStrengthLabel", luck?.startDate);
       set("yearStrengthLabel", year ? new Date(year.year, 0, 1, 12) : null);
@@ -13734,7 +13749,7 @@
         `日主：${dayElement}`,
         `本命：${strengthDisplay(baseStrength)}`,
         `本年：${ctx.currentYearStrengthLabel}`,
-        `喜用参考：${ctx.natalFavorable.join("、")}`
+        `喜用：${ctx.favorable.join("、")}`
       ].map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join("");
 
       renderBars(counts);
