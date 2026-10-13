@@ -13958,7 +13958,7 @@
     const personal2026Dialog = document.getElementById("personal2026Dialog");
     document.getElementById("personal2026Btn").addEventListener("click", () => {
       const content = document.getElementById("personal2026Content");
-      content.innerHTML = chartContext ? `<p><strong>${escapeHtml(chartContext.state.name || "命主")} · 2026丙午年</strong></p><p class="hint">以下是传统命理解释，无法可靠预测具体疾病、事故或亲属遭遇，不属于医学诊断。</p>${buildPersonal2026Notice(chartContext).map((section) => `<section><h3>${escapeHtml(section.title)}</h3>${section.lines.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</section>`).join("")}` : "<p>请先在首页输入生日并生成命盘。</p>";
+      content.innerHTML = chartContext ? `<p><strong>${escapeHtml(chartContext.state.name || "命主")} · 2026丙午年</strong></p>${buildPersonal2026Notice(chartContext).map((section) => `<section><h3>${escapeHtml(section.title)}</h3>${section.lines.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</section>`).join("")}` : "<p>请先在首页输入生日并生成命盘。</p>";
       personal2026Dialog.showModal();
     });
     document.getElementById("personal2026Close").addEventListener("click", () => personal2026Dialog.close());
