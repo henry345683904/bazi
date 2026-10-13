@@ -13215,15 +13215,12 @@
       const comprehensivePeriods = comprehensive.strongest.length
         ? comprehensive.strongest.map((period) => `<p><strong>${period.type} ${escapeHtml(period.pillar.text)}</strong>　${escapeHtml(period.age)}　${escapeHtml(period.years)}<br><span>财富能量${period.score.toFixed(1)}分：${escapeHtml(period.signals.join("、"))}${period.effects.length ? `；${escapeHtml(period.effects.join("、"))}` : ""}</span></p>`).join("")
         : "<p>18岁至80岁之间暂未发现明显发财年份。</p>";
-      const lateWealthText = comprehensive.lateStrongest.length
-        ? comprehensive.lateStrongest.map((period) => `<p><strong>${period.type} ${escapeHtml(period.pillar.text)}</strong>　${escapeHtml(period.age)}　${escapeHtml(period.years)}<br>${escapeHtml(period.signals.join("、"))}</p>`).join("")
-        : "<p>80岁以后未发现明显晚年财运信号。</p>";
       const summaryParts = [
         `财富等级：${comprehensive.level}。${comprehensive.baseReasons.join("；")}。${ctx.pillars[2].stem === "丁" ? "丁火日主不论身强身弱，均按可承财处理。" : ""}`,
         result.periods.length ? `五鬼运财落在${result.branch}，本气为${result.god}，${result.text.replace(`五鬼运财地支本气为${result.god}：`, "")}` : "当前大运流年未出现五鬼运财地支。",
         luResult.periods.length ? `禄神为${luResult.branch}，命中大运流年时收入、工作和赚钱机会增强。` : "当前大运流年未出现禄神地支。"
       ];
-      content.innerHTML = `<details class="five-ghost-details"><summary>综合财运</summary><div class="five-ghost-content">${summaryParts.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}<p><strong>18岁至80岁发财年份</strong></p>${comprehensivePeriods}<p><strong>晚年财运</strong></p>${lateWealthText}</div></details><details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details><details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(luResult.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${luPeriods}</div></details><details class="five-ghost-details"><summary>身旺财旺</summary><div class="five-ghost-content">${strongPeriods}</div></details>`;
+      content.innerHTML = `<details class="five-ghost-details"><summary>综合财运</summary><div class="five-ghost-content">${summaryParts.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}<p><strong>18岁至80岁发财年份</strong></p>${comprehensivePeriods}</div></details><details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details><details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(luResult.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${luPeriods}</div></details><details class="five-ghost-details"><summary>身旺财旺</summary><div class="five-ghost-content">${strongPeriods}</div></details>`;
     }
 
     function generate(options = {}) {
