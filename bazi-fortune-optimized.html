@@ -12975,6 +12975,57 @@
       return affected.map((pillar) => impact[pillar] || "对应家庭宫位的人事安排容易发生明显变化。").join(" ");
     }
 
+    function buildSevenKillingsPeriods(ctx) {
+      const dayStem = ctx.pillars[2].stem;
+      const scorePillar = (pillar, stackLayers, type, age, years) => {
+        const hiddenGods = (hiddenStems[pillar.branch] || []).map((stem) => tenGod(dayStem, stem));
+        const stemGod = tenGod(dayStem, pillar.stem);
+        let score = 0;
+        const reasons = [];
+        if (stemGod === "七杀") {
+          score += 6;
+          reasons.push("天干透七杀");
+        }
+        const hiddenCount = hiddenGods.filter((god) => god === "七杀").length;
+        if (hiddenCount) {
+          score += hiddenCount * 2.5;
+          reasons.push(`地支藏${hiddenCount}重七杀`);
+        }
+        if (relation(dayStem === ctx.pillars[2].stem ? ctx.dayElement : stemElement[dayStem], branchElement[pillar.branch]) === "官星") {
+          score += 1.5;
+          reasons.push("地支官杀根气");
+        }
+        const stack = { layers: stackLayers };
+        const branchInteractions = flowBranchInteractions(ctx, stack).filter((item) => item.target?.pillar?.text === pillar.text || item.base?.pillar?.text === pillar.text);
+        const stemInteractions = flowStemInteractions(ctx, stack).filter((item) => item.target?.pillar?.text === pillar.text || item.base?.pillar?.text === pillar.text);
+        const groupInteractions = branchGroupCompletions(ctx, stack).filter((item) => item.target?.pillar?.text === pillar.text);
+        const relationNames = uniqueList(branchInteractions.concat(groupInteractions).map((item) => item.type));
+        if (relationNames.length) {
+          score += branchInteractions.reduce((sum, item) => sum + (["冲", "刑"].includes(item.type) ? 2.4 : item.type === "合" ? 1.5 : 1), 0);
+          score += groupInteractions.reduce((sum, item) => sum + (item.type === "三会" ? 3 : 2.5), 0);
+          reasons.push(`与原局或运年${relationNames.join("、")}`);
+        }
+        if (stemInteractions.some((item) => item.type === "合" && item.transformed)) {
+          score += 2.5;
+          reasons.push("天干合化引动");
+        }
+        if (!score) return null;
+        return { type, pillar, age, years, score, reasons };
+      };
+      const periods = [];
+      (ctx.lucks || []).forEach((luck) => {
+        const luckLayer = { key: "luck", label: "大运", pillar: luck.pillar, weight: 1.25 };
+        const luckItem = scorePillar(luck.pillar, [luckLayer], "大运", `${luck.startAge}–${luck.endAge}岁`, `${luck.startYear}-${luck.endYear}`);
+        if (luckItem) periods.push(luckItem);
+        buildFlowYears(ctx, luck).forEach((year) => {
+          const yearLayer = { key: "year", label: "流年", pillar: year.pillar, weight: 1.2 };
+          const item = scorePillar(year.pillar, [luckLayer, yearLayer], "流年", `${luck.startAge + (year.year - luck.startYear)}岁`, `${year.year}年`);
+          if (item) periods.push(item);
+        });
+      });
+      return periods.sort((a, b) => b.score - a.score).slice(0, 12);
+    }
+
     function renderBasicDisasterPrediction(ctx) {
       const block = Array.from(document.querySelectorAll("#basicAnalysisView .basic-analysis-block"))
         .find((item) => item.querySelector("h3")?.textContent.includes("灾祸"));
@@ -13062,7 +13113,11 @@
       const disasterShaText = uniqueDisasterShaHits.length
         ? uniqueDisasterShaHits.map((hit) => `<p><strong>${hit.type} ${escapeHtml(hit.pillar.text)}</strong>　${escapeHtml(hit.age)}　${escapeHtml(hit.years)}<br><span>灾煞被引动，${escapeHtml(hit.enhancement || "能量叠加")}；突发病痛、意外磕碰、交通风险、破财或事情突然受阻的信号增强。</span></p>`).join("")
         : "<p>当前大运流年未出现灾煞。</p>";
-      content.innerHTML = `<details class="clash-prediction-details"><summary>天克地冲（${uniqueHits.length}项）</summary><div class="clash-prediction-list">${text}</div></details><details class="clash-prediction-details"><summary>灾煞（${uniqueDisasterShaHits.length}项）</summary><div class="clash-prediction-list">${disasterShaText}</div></details>`;
+      const sevenKillings = buildSevenKillingsPeriods(ctx);
+      const sevenKillingsText = sevenKillings.length
+        ? sevenKillings.map((hit) => `<p><strong>${hit.type} ${escapeHtml(hit.pillar.text)}</strong>　${escapeHtml(hit.age)}　${escapeHtml(hit.years)}<br><span>七杀能量约${hit.score.toFixed(1)}分，${escapeHtml(hit.reasons.join("、"))}；压力、疾病、意外伤灾、处罚或突发责任事件信号增强。</span></p>`).join("")
+        : "<p>大运流年中未发现明显七杀能量。</p>";
+      content.innerHTML = `<details class="clash-prediction-details"><summary>天克地冲（${uniqueHits.length}项）</summary><div class="clash-prediction-list">${text}</div></details><details class="clash-prediction-details"><summary>灾煞（${uniqueDisasterShaHits.length}项）</summary><div class="clash-prediction-list">${disasterShaText}</div></details><details class="clash-prediction-details"><summary>七杀（${sevenKillings.length}项）</summary><div class="clash-prediction-list">${sevenKillingsText}</div></details>`;
     }
 
     function renderBasicWealthPrediction(ctx) {
