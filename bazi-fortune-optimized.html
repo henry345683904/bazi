@@ -13503,7 +13503,7 @@
       else if (currentLabel.includes("身弱") || currentLabel.includes("偏弱") || currentLabel.includes("从弱")) add(`2026年大运流年作用后日主呈${currentLabel}，外部事务对自身消耗较大，事件多表现为工作压力、身体疲劳和财务支出集中。`, 1);
       else add("2026年大运流年作用后日主处于中和状态，事情以阶段性变化为主，具体起伏取决于被引动的宫位和十神。", 1);
 
-      const starList = symbolicStars(ctx, year.pillar);
+      const starList = symbolicStars(ctx, year);
       if (starList.includes("天乙贵人")) add("2026年流年带天乙贵人，遇到疾病、意外或手续阻滞时，通常会出现贵人协助、及时发现或转机。", 2);
       if (starList.includes("灾煞")) add("2026年流年带灾煞，突发病痛、意外磕碰、交通风险或事情突然受阻的信号增强。", 4);
       const relationText = natalRelations.length ? `${natalRelations.length}处原局宫位被丙午引动` : "原局四柱未出现直接的午支刑冲破害合";
