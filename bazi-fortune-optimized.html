@@ -3062,6 +3062,7 @@
     .natal-relation-head.start { left: 0; border-right: 7px solid currentColor; }
     .natal-relation-head.end { right: 0; border-left: 7px solid currentColor; }
     .natal-relation-label { position: absolute; left: 50%; top: 8px; transform: translate(-50%, -100%); color: currentColor; font-size: 10px; font-weight: 700; line-height: 1; white-space: nowrap; }
+    .natal-relation-support { position: absolute; left: 50%; top: 18px; transform: translateX(-50%); color: currentColor; font-size: 8px; font-weight: 700; line-height: 1; white-space: nowrap; }
     .natal-inline-symbols + .natal-inline-symbols { border-top: 1px solid var(--line); }
     .natal-inline-arrows text { font-size: 10px; }
     .xipan-table .void-branch { background: #fff1a8; border-radius: 3px; }
@@ -11884,7 +11885,14 @@
         const base = type === "三会" ? 7.5 : 5;
         return `，${root ? "通根" : ""}${stem ? "通干" : ""}能量${stem ? base * 2 : base}倍`;
       };
-      const add = (indices, label, element, type = "关系") => links.push({ indices, label, detail: `${label}${energySuffix(indices, element, type)}`, color: elementColors[element] || "#8f2637", type });
+      const add = (indices, label, element, type = "关系") => {
+        const stems = indices.map((index) => pillars[index].stem);
+        const branches = indices.map((index) => pillars[index].branch);
+        const root = branches.some((branch) => (hiddenStems[branch] || []).some((stem) => element && stemElement[stem] === element));
+        const stem = branches.some((branch) => (hiddenStems[branch] || []).some((hidden) => stems.includes(hidden)));
+        const marks = [root ? "通根" : "", stem ? "通干" : ""].filter(Boolean);
+        links.push({ indices, label, detail: `${label}${energySuffix(indices, element, type)}`, marks, color: elementColors[element] || "#8f2637", type });
+      };
       pillars.forEach((left, i) => pillars.slice(i + 1).forEach((right, offset) => {
         const j = i + offset + 1;
         if (j !== i + 1) return;
@@ -11923,7 +11931,7 @@
         const y = link.lane * 44 + 22;
         const start = xs[0] + 8, end = xs[xs.length - 1] - 8;
         const arrowLabel = link.type === "合化" ? "合" : ["三合", "三会"].includes(link.type) ? "会" : link.type;
-        return `<div class="natal-relation-link" tabindex="0" role="button" aria-label="${escapeHtml(link.label)}" data-relation-detail="${escapeHtml(link.detail)}" style="left:${start}%;width:${end - start}%;top:${link.lane * 44 + 10}px;color:${link.color}"><span class="natal-relation-label">${escapeHtml(arrowLabel)}</span><span class="natal-relation-line"></span><span class="natal-relation-head start"></span><span class="natal-relation-head end"></span></div>`;
+        return `<div class="natal-relation-link" tabindex="0" role="button" aria-label="${escapeHtml(link.label)}" data-relation-detail="${escapeHtml(link.detail)}" style="left:${start}%;width:${end - start}%;top:${link.lane * 44 + 10}px;color:${link.color}"><span class="natal-relation-label">${escapeHtml(arrowLabel)}</span><span class="natal-relation-line"></span><span class="natal-relation-head start"></span><span class="natal-relation-head end"></span>${link.marks.length ? `<span class="natal-relation-support">${link.marks.join("、")}</span>` : ""}</div>`;
       }).join("");
       return `<div class="natal-inline-arrows" role="img" aria-label="${escapeHtml(links.map((link) => link.label).join("、"))}" style="height:${height}px">${drawing}</div>`;
     }
@@ -11944,14 +11952,10 @@
         if (indices.length === 3 && indices[1] === indices[0] + 1 && indices[2] === indices[1] + 1) indices.forEach((index) => relationIndexes.add(index));
       });
       const rootMark = (pillar, index) => {
-        if (!relationIndexes.has(index)) return "";
-        const stemElementValue = stemElement[pillar.stem];
-        return (hiddenStems[pillar.branch] || []).some((stem) => stemElement[stem] === stemElementValue) ? `<span class="root-mark">通根</span>` : "";
+        return "";
       };
       const stemLinkMark = (pillar, index) => {
-        if (!relationIndexes.has(index)) return "";
-        const branchHidden = hiddenStems[pillar.branch] || [];
-        return ctx.pillars.some((other) => other !== pillar && branchHidden.some((hidden) => hidden === other.stem)) ? `<span class="stem-link-mark">通干</span>` : "";
+        return "";
       };
       const rows = [
         ["十神", ctx.pillars.map((p, i) => i === 2 ? (ctx.state.gender === "女" ? "元女" : "元男") : tenGod(dayStem, p.stem))],
