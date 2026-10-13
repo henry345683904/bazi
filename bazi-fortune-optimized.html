@@ -13205,6 +13205,92 @@
       content.innerHTML = `<details class="clash-prediction-details"><summary>天克地冲（${uniqueHits.length}项）</summary><div class="clash-prediction-list">${text}</div></details><details class="clash-prediction-details"><summary>灾煞（${uniqueDisasterShaHits.length}项）</summary><div class="clash-prediction-list">${disasterShaText}</div></details><details class="clash-prediction-details"><summary>七杀（${sevenKillings.length}项）</summary><div class="clash-prediction-list">${sevenKillingsText}</div></details>`;
     }
 
+    function buildNatalHealthProfile(ctx) {
+      const power = { ...countElements(ctx.pillars) };
+      const changes = [];
+      const tensions = [];
+      const slots = baziBodySlots(ctx);
+      const exposed = (element) => ctx.pillars.some((pillar) => stemElement[pillar.stem] === element);
+      const transfer = (elements, result, amount) => {
+        const outputs = elementParts(result);
+        if (!outputs.length) return;
+        let moved = 0;
+        elements.forEach((element) => {
+          const reduction = Math.min(power[element] * 0.2, amount);
+          power[element] -= reduction;
+          moved += reduction;
+        });
+        outputs.forEach((element) => { power[element] += moved / outputs.length; });
+      };
+      // 本命两柱关系只取相邻柱；成局必须由连续三柱补齐。
+      for (let index = 0; index < 3; index += 1) {
+        const left = ctx.pillars[index];
+        const right = ctx.pillars[index + 1];
+        const stemResult = stemCombinePairs[left.stem] === right.stem ? stemCombineElement(left.stem, right.stem) : "";
+        if (stemResult && exposed(stemResult)) {
+          transfer([stemElement[left.stem], stemElement[right.stem]], stemResult, 0.35);
+          changes.push(`${left.stem}${right.stem}合化${stemResult}`);
+        }
+        branchRelationObjects(left.branch, right.branch).forEach((item) => {
+          if (item.type === "合" && elementParts(item.element).some(exposed)) {
+            transfer([branchElement[left.branch], branchElement[right.branch]], item.element, 0.4);
+            changes.push(`${left.branch}${right.branch}合化${item.element}`);
+          }
+          if (["冲", "刑", "破", "害"].includes(item.type)) {
+            const injured = baziClashInjuredElement(branchElement[left.branch], branchElement[right.branch]);
+            power[injured] *= 0.9;
+            tensions.push(`${pillarLabels[index]}、${pillarLabels[index + 1]}地支${item.type}，传统对应${slots[index + 4].area}与${slots[index + 5].area}，牵动${baziDiseaseOrganByElement(injured)}`);
+          }
+        });
+        const controlled = stemControlType(left.stem, right.stem);
+        if (controlled) {
+          const injured = controlled === "克" ? stemElement[right.stem] : stemElement[left.stem];
+          power[injured] *= 0.95;
+          tensions.push(`${pillarLabels[index]}、${pillarLabels[index + 1]}天干相克，传统对应${slots[index].area}与${slots[index + 1].area}，牵动${baziDiseaseOrganByElement(injured)}`);
+        }
+      }
+      [...branchMeetings, ...branchCombinations].forEach((group) => {
+        const complete = [0, 1].some((start) => group.branches.every((branch) => ctx.pillars.slice(start, start + 3).some((pillar) => pillar.branch === branch)));
+        if (complete) {
+          power[group.element] += exposed(group.element) ? 1.5 : 0.75;
+          changes.push(`${group.name}${exposed(group.element) ? "透干引化" : "聚气"}`);
+        }
+      });
+      const total = Object.values(power).reduce((sum, value) => sum + value, 0);
+      const excess = elementCycle.filter((element) => power[element] / total >= 0.32);
+      const weak = elementCycle.filter((element) => power[element] / total < 0.08);
+      const absent = elementCycle.filter((element) => !ctx.pillars.some((pillar) => stemElement[pillar.stem] === element || (hiddenStems[pillar.branch] || []).some((stem) => stemElement[stem] === element)));
+      const yang = ctx.pillars.reduce((sum, pillar) => sum + (stems.indexOf(pillar.stem) % 2 === 0 ? 1 : 0) + (branches.indexOf(pillar.branch) % 2 === 0 ? 1 : 0), 0);
+      const dry = power.火 + ctx.pillars.filter((pillar) => ["未", "戌"].includes(pillar.branch)).length;
+      const wet = power.水 + ctx.pillars.filter((pillar) => ["丑", "辰"].includes(pillar.branch)).length;
+      const climate = dry > wet * 1.5 ? "偏燥热，传统对应口鼻干燥、睡眠及消化节律的倾向" : wet > dry * 1.5 ? "偏寒湿，传统对应困重、消化及恢复节律的倾向" : "燥湿相对均衡";
+      const blocked = elementCycle.filter((element, index) => power[element] / total >= 0.2 && power[elementCycle[(index + 1) % 5]] / total < 0.08);
+      const killing = slots.flatMap((slot) => {
+        const targets = slot.source === "stem" ? [slot.stem] : hiddenStems[slot.branch] || [];
+        return targets.filter((stem) => tenGod(ctx.pillars[2].stem, stem) === "七杀").map((stem) => `${slot.label}见七杀，传统对应${slot.area}及${baziStemOrgan(stem)}；${power[stemElement[stem]] / total >= 0.32 ? "该五行偏盛" : "需与受克和失衡信号合看"}`);
+      });
+      return { power, changes: uniqueList(changes), tensions: uniqueList(tensions), killing: uniqueList(killing), excess, weak, absent, yang, climate, blocked };
+    }
+
+    function renderBasicHealthPrediction(ctx) {
+      const content = document.querySelector("#basicAnalysisView .basic-analysis-block .analysis-content");
+      if (!content) return;
+      const profile = buildNatalHealthProfile(ctx);
+      const section = (title, lines) => `<details class="five-ghost-details"><summary>${title}</summary><div class="five-ghost-content">${lines.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div></details>`;
+      const elementLines = [
+        ...profile.excess.map((element) => `${element}偏盛：传统对应${baziDiseaseOrganByElement(element)}的负担倾向`),
+        ...profile.weak.map((element) => `${element}偏弱：传统对应${baziDiseaseOrganByElement(element)}的敏感或恢复倾向`),
+        profile.absent.length ? `原局含藏干仍缺${profile.absent.join("、")}；缺失不等于对应器官患病。` : "五行含藏干齐全。",
+        `调整后五行占比：${elementCycle.map((element) => `${element}${(profile.power[element] / Object.values(profile.power).reduce((a, b) => a + b, 0) * 100).toFixed(0)}%`).join("、")}`,
+        profile.changes.length ? `本命能量调整：${profile.changes.join("、")}` : "相邻柱未见透干支持的合化或连续三柱成局。"
+      ];
+      content.innerHTML = `<p>以下为传统命理健康倾向，不能判断是否患病或替代医学诊断。</p>`
+        + section("五行偏盛偏缺", elementLines)
+        + section("阴阳、燥湿与流通", [`阳${profile.yang}、阴${8 - profile.yang}：${profile.yang >= 6 ? "偏阳" : profile.yang <= 2 ? "偏阴" : "相对均衡"}`, profile.climate, profile.blocked.length ? `${profile.blocked.join("、")}旺而后续生化五行偏弱，流通衔接不足。` : "未见明显旺气后续生化断点。"])
+        + section("七杀部位与宫位", profile.killing.length ? profile.killing : ["本命天干及藏干未见七杀。"])
+        + section("刑冲克害牵动", profile.tensions.length ? profile.tensions : ["相邻原局柱未见明显刑冲克破害信号。"]);
+    }
+
     function renderBasicWealthPrediction(ctx) {
       const block = Array.from(document.querySelectorAll("#basicAnalysisView .basic-analysis-block"))
         .find((item) => item.querySelector("h3")?.textContent.includes("财运"));
@@ -13294,6 +13380,7 @@
       chartContext = ctx;
       renderBasicDisasterPrediction(ctx);
       renderBasicWealthPrediction(ctx);
+      renderBasicHealthPrediction(ctx);
 
       document.getElementById("activeProfileName").textContent = state.name || `${state.birthDate}命盘`;
 
