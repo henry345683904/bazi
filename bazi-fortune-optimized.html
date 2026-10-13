@@ -11952,13 +11952,31 @@
             if (adjacent) add(indices, `${group.branches.join("")}${group.name}`, group.element, group.name.includes("三会") ? "三会" : "三合");
           }
         });
+        [["寅", "巳", "申"], ["丑", "未", "戌"]].forEach((group) => {
+          for (let start = 0; start <= 1; start += 1) {
+            const indices = [start, start + 1, start + 2];
+            if (group.every((branch) => indices.some((index) => pillars[index].branch === branch))) {
+              add(indices, `${group.join("")}三刑`, "", "三刑");
+            }
+          }
+        });
+        // A complete group replaces its redundant pairwise labels.
+        const groups = links.filter((link) => link.indices.length === 3);
+        for (let index = links.length - 1; index >= 0; index -= 1) {
+          const link = links[index];
+          if (link.indices.length === 2 && groups.some((group) =>
+            link.indices.every((slot) => group.indices.includes(slot)) &&
+            (group.type === "三刑" ? link.type === "刑" : link.type === "合化" && link.color === group.color))) {
+            links.splice(index, 1);
+          }
+        }
       }
       if (!links.length) return "";
       const lanes = [];
       links.forEach((link) => {
         const start = Math.min(...link.indices);
         const end = Math.max(...link.indices);
-        let lane = lanes.findIndex((ranges) => ranges.every((range) => end < range.start || start > range.end));
+        let lane = lanes.findIndex((ranges) => ranges.every((range) => end <= range.start || start >= range.end));
         if (lane < 0) { lane = lanes.length; lanes.push([]); }
         lanes[lane].push({ start, end });
         link.lane = lane;
@@ -11968,7 +11986,7 @@
         const xs = link.indices.map((i) => 12.5 + i * 25).sort((a, b) => a - b);
         const y = link.lane * 44 + 22;
         const start = xs[0] + 8, end = xs[xs.length - 1] - 8;
-        const arrowLabel = link.type === "合化" ? "合" : ["三合", "三会"].includes(link.type) ? "会" : link.type;
+        const arrowLabel = link.type === "合化" ? "合" : link.type;
         return `<div class="natal-relation-link" tabindex="0" role="button" aria-label="${escapeHtml(link.label)}" data-relation-detail="${escapeHtml(link.detail)}" style="left:${start}%;width:${end - start}%;top:${link.lane * 44 + 10}px;color:${link.color}"><span class="natal-relation-label">${escapeHtml(arrowLabel)}</span><span class="natal-relation-line"></span><span class="natal-relation-head start"></span><span class="natal-relation-head end"></span>${link.marks.length ? `<span class="natal-relation-support">${link.marks.join("、")}</span>` : ""}</div>`;
       }).join("");
       return `<div class="natal-inline-arrows" role="img" aria-label="${escapeHtml(links.map((link) => link.label).join("、"))}" style="height:${height}px">${drawing}</div>`;
