@@ -1501,6 +1501,11 @@
     .xipan-symbol-with-gods > .gz-big { vertical-align: middle; }
     .xipan-symbol-with-gods > .xipan-symbol-gods { position: absolute; left: calc(100% + 2px); top: 50%; transform: translateY(-50%); white-space: nowrap; }
     .xipan-symbol-gods { display: flex; flex-direction: column; align-items: center; color: var(--ink); font-size: 10px; font-weight: 700; line-height: 1.05; }
+    .energy-score { display: inline-block; margin-left: 3px; font-size: 10px; font-weight: 800; line-height: 1; vertical-align: middle; white-space: nowrap; }
+    .energy-score.positive { color: #16843a; }
+    .energy-score.negative { color: #d92f2f; }
+    .energy-score.neutral { color: #8b7d65; }
+    .energy-total { color: #6f263d; font-size: 13px; white-space: nowrap; }
     @media (max-width: 620px) {
       #xipanFineTable .xipan-symbol-gods { font-size: 8px; }
       #xipanFineTable .xipan-symbol-with-gods { font-size: 18px; min-height: 28px; line-height: 28px; }
@@ -11840,6 +11845,45 @@
       return `<span class="xipan-symbol-with-gods">${symbol}<span class="xipan-symbol-gods">${gods.map((god) => `<span>${escapeHtml(god)}</span>`).join("")}</span></span>`;
     }
 
+    function dayMasterEnergyProfile(ctx) {
+      const dayStem = ctx.pillars[2].stem;
+      const supportGod = (god) => god === "比肩" || god === "劫财";
+      const resourceGod = (god) => god === "正印" || god === "偏印";
+      const scoreGod = (god, points, resourceNeutral = true) => supportGod(god) ? points : resourceNeutral && resourceGod(god) ? 0 : -points;
+      const scoreEntries = [];
+      let total = 0;
+      const add = (label, score, detail = "") => {
+        total += score;
+        scoreEntries.push({ label, score, detail });
+        return `<span class="energy-score ${score > 0 ? "positive" : score < 0 ? "negative" : "neutral"}">${score > 0 ? "+" : ""}${score}</span>`;
+      };
+      ctx.pillars.forEach((pillar, index) => {
+        const stemGod = tenGod(dayStem, pillar.stem);
+        const stemPoints = index === 0 ? 8 : index === 1 ? 12 : index === 3 ? 12 : 0;
+        const stemScore = index === 2 ? 0 : scoreGod(stemGod, stemPoints);
+        add(`${pillarLabels[index]}天干`, stemScore, stemGod);
+        const hidden = hiddenStems[pillar.branch] || [];
+        if (index === 1) {
+          [24, 12, 4].forEach((points, hiddenIndex) => {
+            const stem = hidden[hiddenIndex];
+            if (!stem) return;
+            const god = tenGod(dayStem, stem);
+            add(`${pillarLabels[index]}月令${["本气", "中气", "余气"][hiddenIndex]}`, scoreGod(god, points, true), god);
+          });
+        } else {
+          const points = index === 0 ? 4 : 12;
+          const god = hidden[0] ? tenGod(dayStem, hidden[0]) : tenGod(dayStem, pillar.stem);
+          add(`${pillarLabels[index]}地支`, scoreGod(god, points), god);
+        }
+      });
+      const scoreText = `${total > 0 ? "+" : ""}${total}分`;
+      return { total, scoreText, scoreEntries };
+    }
+
+    function energyScoreMarkup(score, detail = "") {
+      return `<span class="energy-score ${score > 0 ? "positive" : score < 0 ? "negative" : "neutral"}" title="${escapeHtml(detail)}">${score > 0 ? "+" : ""}${score}</span>`;
+    }
+
     function renderXipanSummary(ctx) {
       const target = document.getElementById("xipanSummary");
       if (!target) return;
@@ -11914,15 +11958,30 @@
       const target = document.getElementById("xipanMainTable");
       if (!target) return;
       const dayStem = ctx.pillars[2].stem;
+      const energy = dayMasterEnergyProfile(ctx);
+      const energyByPillar = ctx.pillars.map((pillar, index) => {
+        const stemGod = tenGod(dayStem, pillar.stem);
+        const stemPoints = index === 0 ? 8 : index === 1 ? 12 : index === 3 ? 12 : 0;
+        const stemScore = index === 2 ? 0 : (stemGod === "比肩" || stemGod === "劫财" ? stemPoints : ["正印", "偏印"].includes(stemGod) ? 0 : -stemPoints);
+        const hidden = hiddenStems[pillar.branch] || [];
+        if (index === 1) {
+          return { stem: stemScore, branch: hidden.slice(0, 3).map((stem, hiddenIndex) => ({ score: ((god) => god === "比肩" || god === "劫财" ? [24, 12, 4][hiddenIndex] : ["正印", "偏印"].includes(god) ? 0 : -[24, 12, 4][hiddenIndex])(tenGod(dayStem, stem)), god: tenGod(dayStem, stem) })) };
+        }
+        const god = hidden[0] ? tenGod(dayStem, hidden[0]) : stemGod;
+        const points = index === 0 ? 4 : 12;
+        return { stem: stemScore, branch: [{ score: god === "比肩" || god === "劫财" ? points : ["正印", "偏印"].includes(god) ? 0 : -points, god }] };
+      });
+      const scoreMark = (score, god) => energyScoreMarkup(score, god);
       const rows = [
         ["十神", ctx.pillars.map((p, i) => i === 2 ? (ctx.state.gender === "女" ? "元女" : "元男") : tenGod(dayStem, p.stem))],
-        ["天干", ctx.pillars.map((p, i) => xipanStemCell(ctx, p, i))],
-        ["地支", ctx.pillars.map((p) => xipanBranchCell(ctx, p))],
+        ["天干", ctx.pillars.map((p, i) => `${xipanStemCell(ctx, p, i)}${scoreMark(energyByPillar[i].stem, tenGod(dayStem, p.stem))}`)],
+        ["地支", ctx.pillars.map((p, i) => `${xipanBranchCell(ctx, p)}${energyByPillar[i].branch.map((item) => scoreMark(item.score, item.god)).join("")}`)],
         ["藏干", ctx.pillars.map((p) => hiddenStemDetails(ctx, p.branch).join("<br>"))],
         ["纳音", ctx.pillars.map((p) => pillarNayin(p))],
         ["空亡", ctx.pillars.map((p, index) => `<span class="${index === 2 && ctx.pillars.some((natal) => emptyBranches(ctx.pillars[2]).includes(natal.branch)) ? "void-branch" : ""}">${escapeHtml(emptyBranches(p))}</span>`)],
         ["十二长生", ctx.pillars.map((p) => lifeStage(dayStem, p.branch))],
-        ["神煞", ctx.pillars.map((p) => compactStars(symbolicStars(ctx, p)).join("<br>") || "无明显")]
+        ["神煞", ctx.pillars.map((p) => compactStars(symbolicStars(ctx, p)).join("<br>") || "无明显")],
+        ["日元能量", ctx.pillars.map((p, i) => i === 2 ? `<strong class="energy-total">${energy.scoreText}</strong>` : "")]
       ];
       target.innerHTML = `<table class="xipan-table">
         <tr><th class="label">四柱</th>${pillarLabels.map((label) => `<th>${escapeHtml(label)}</th>`).join("")}</tr>
