@@ -11877,8 +11877,16 @@
           }
         } else {
           const points = index === 0 ? 4 : 12;
-          const god = hidden[0] ? tenGod(dayStem, hidden[0]) : tenGod(dayStem, pillar.stem);
-          add(`${pillarLabels[index]}地支`, scoreGod(god, points), god);
+          const hiddenWeights = [0.6, 0.3, 0.1];
+          if (hidden.length) {
+            hidden.forEach((stem, hiddenIndex) => {
+              const god = tenGod(dayStem, stem);
+              add(`${pillarLabels[index]}地支${["本气", "中气", "余气"][hiddenIndex]}`, scoreGod(god, points * (hiddenWeights[hiddenIndex] || 0.1)), god);
+            });
+          } else {
+            const god = tenGod(dayStem, pillar.stem);
+            add(`${pillarLabels[index]}地支`, scoreGod(god, points), god);
+          }
         }
       });
       const scoreText = `${total > 0 ? "+" : ""}${total}分`;
@@ -11979,9 +11987,16 @@
             return { score: ["正印", "偏印"].includes(god) ? [24, 12, 4][hiddenIndex] : 0, god };
           }).filter((item) => item.score !== 0) };
         }
-        const god = hidden[0] ? tenGod(dayStem, hidden[0]) : stemGod;
         const points = index === 0 ? 4 : 12;
-        return { stem: stemScore, branch: [{ score: god === "比肩" || god === "劫财" ? points : ["正印", "偏印"].includes(god) ? 0 : -points, god }] };
+        const hiddenWeights = [0.6, 0.3, 0.1];
+        const branch = hidden.length
+          ? hidden.map((stem, hiddenIndex) => {
+            const god = tenGod(dayStem, stem);
+            const weightedPoints = points * (hiddenWeights[hiddenIndex] || 0.1);
+            return { score: god === "比肩" || god === "劫财" ? weightedPoints : ["正印", "偏印"].includes(god) ? 0 : -weightedPoints, god };
+          })
+          : [{ score: stemGod === "比肩" || stemGod === "劫财" ? points : ["正印", "偏印"].includes(stemGod) ? 0 : -points, god: stemGod }];
+        return { stem: stemScore, branch };
       });
       const scoreMark = (score, god) => energyScoreMarkup(score, god);
       const rows = [
