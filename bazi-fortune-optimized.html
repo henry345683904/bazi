@@ -13319,6 +13319,9 @@
       }
       const stars = uniqueList(ctx.pillars.flatMap((pillar) => symbolicStars(ctx, pillar)));
       const cautionYears = [];
+      const natalSpouseElements = uniqueList(ctx.pillars.flatMap((pillar) => [pillar.stem, ...(hiddenStems[pillar.branch] || [])])
+        .filter((stem) => spouseGods.includes(tenGod(dayStem, stem)))
+        .map((stem) => stemElement[stem]));
       (ctx.lucks || []).forEach((luck) => {
         const luckSpouse = spouseGods.includes(tenGod(dayStem, luck.pillar.stem)) || (hiddenStems[luck.pillar.branch] || []).some((stem) => spouseGods.includes(tenGod(dayStem, stem)));
         buildFlowYears(ctx, luck).forEach((year) => {
@@ -13328,23 +13331,44 @@
           const dayBranchRelations = branchRelationObjects(year.pillar.branch, dayBranch).filter((item) => ["合", "冲", "刑", "破", "害"].includes(item.type));
           const luckRelations = branchRelationObjects(luck.pillar.branch, dayBranch).filter((item) => ["合", "冲", "刑", "破", "害"].includes(item.type));
           const yearStars = symbolicStars(ctx, year.pillar);
+          const periodGods = [luck.pillar.stem, year.pillar.stem]
+            .concat(hiddenStems[luck.pillar.branch] || [], hiddenStems[year.pillar.branch] || [])
+            .map((stem) => tenGod(dayStem, stem));
+          const yearElement = stemElement[year.pillar.stem];
+          const luckElement = stemElement[luck.pillar.stem];
           let score = 0;
           const reasons = [];
-          if (yearSpouse) { score += 3; reasons.push(`${spouseLabel}被流年引动`); }
-          if (luckSpouse) { score += 1.5; reasons.push(`${spouseLabel}大运引动`); }
-          if (dayBranchRelations.length) {
-            score += dayBranchRelations.some((item) => ["冲", "刑", "破", "害"].includes(item.type)) ? 3 : 2;
-            reasons.push(`日支${dayBranchRelations.map((item) => item.type).join("、")}`);
+          if (yearSpouse) { score += 2; reasons.push(`${spouseLabel}被流年引动`); }
+          if (luckSpouse) { score += 1; reasons.push(`${spouseLabel}大运引动`); }
+          if (ctx.state.gender === "女") {
+            const officerControlled = natalSpouseElements.some((element) => controlsElement(yearElement, element) || controlsElement(luckElement, element));
+            const officerClashed = natalSpouseElements.some((element) => stemClashPairs[year.pillar.stem] && controlsElement(yearElement, element));
+            const hurtingCount = periodGods.filter((god) => god === "伤官").length;
+            if (officerControlled) { score += 4; reasons.push("正官被流年或大运克制"); }
+            if (officerClashed) { score += 2; reasons.push("官星受流年冲克"); }
+            if (hurtingCount >= 2) { score += 3; reasons.push("伤官能量大量增加"); }
+            else if (hurtingCount === 1) { score += 1.5; reasons.push("伤官出现"); }
+          } else {
+            const wealthControlled = natalSpouseElements.some((element) => controlsElement(element, yearElement) || controlsElement(element, luckElement));
+            const robCount = periodGods.filter((god) => god === "劫财" || god === "比肩").length;
+            if (wealthControlled) { score += 4; reasons.push("财星被流年或大运克制"); }
+            if (robCount >= 2) { score += 3; reasons.push("比劫夺财能量大量增加"); }
+            else if (robCount === 1) { score += 1.5; reasons.push("比劫分夺财星"); }
           }
-          if (luckRelations.length) { score += 1.5; reasons.push(`大运牵动日支${luckRelations.map((item) => item.type).join("、")}`); }
-          if (yearStars.includes("桃花")) { score += 1.5; reasons.push("桃花引动"); }
-          if (yearStars.includes("天喜")) { score += 1; reasons.push("天喜引动"); }
-          if (score >= 3) cautionYears.push({ year: year.year, age, score, reasons });
+          if (dayBranchRelations.length) {
+            const severe = dayBranchRelations.filter((item) => ["冲", "刑", "破", "害"].includes(item.type));
+            score += severe.length ? 5 : 1.5;
+            reasons.push(`日支${dayBranchRelations.map((item) => item.type).join("、")}${severe.length ? "重动" : "引动"}`);
+          }
+          if (luckRelations.length) { score += 2; reasons.push(`大运牵动日支${luckRelations.map((item) => item.type).join("、")}`); }
+          if (yearStars.includes("桃花")) { score += 1; reasons.push("桃花引动"); }
+          if (yearStars.includes("天喜")) { score += 0.5; reasons.push("天喜引动"); }
+          if (score >= 5) cautionYears.push({ year: year.year, age, score, reasons });
         });
       });
       const cautionLines = cautionYears
-        .sort((a, b) => a.age - b.age || b.score - a.score)
-        .slice(0, 10)
+        .sort((a, b) => b.score - a.score || a.age - b.age)
+        .slice(0, 1)
         .map((item) => `${item.age}岁（${item.year}年）：${item.reasons.join("、")}；感情关系容易出现确定、分合、争执或现实选择。`);
       const lines = [
         `配偶星看${spouseLabel}：${spouseHits.length ? spouseHits.join("、") : `原局${spouseLabel}不透，感情机会需要等大运流年引动。`}`,
