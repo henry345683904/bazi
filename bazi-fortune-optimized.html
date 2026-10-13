@@ -5642,10 +5642,9 @@
 
     function favorableElements(dayElement, strength) {
       const i = elementCycle.indexOf(dayElement);
-      if (strength.label === "偏弱") return [dayElement, elementCycle[(i + 4) % 5]];
+      if (["偏弱", "从弱", "身弱"].includes(strength.label)) return [dayElement, elementCycle[(i + 4) % 5]];
       if (strength.label === "从强") return [dayElement, elementCycle[(i + 4) % 5]];
       if (strength.label === "偏旺") return [elementCycle[(i + 1) % 5], elementCycle[(i + 2) % 5], elementCycle[(i + 3) % 5]];
-      if (strength.label === "从弱") return [elementCycle[(i + 1) % 5], elementCycle[(i + 2) % 5], elementCycle[(i + 3) % 5]];
       return [elementCycle[(i + 1) % 5], elementCycle[(i + 4) % 5]];
     }
 
@@ -12331,16 +12330,22 @@
       if (luck && year) {
         const profile = dynamicStrengthProfile(chartContext, new Date(year.year, 6, 1, 12), { luck, year });
         const favorable = favorableElements(chartContext.dayElement, profile.current);
+        const strengthText = ["偏旺", "从强", "从旺"].includes(profile.current.label) ? "身强" : ["偏弱", "从弱"].includes(profile.current.label) ? "身弱" : "中和";
         const text = `喜用：${favorable.join("、")}`;
         const tag = document.getElementById("selectedFlowFavorable");
         if (tag) { tag.textContent = text; colorizeGanzhi(tag); }
         document.querySelectorAll("#metaTags .tag").forEach((node) => {
           if (node.textContent.startsWith("喜用")) { node.textContent = text; colorizeGanzhi(node); }
+          if (node.textContent.startsWith("本年：")) node.textContent = `本年：${strengthText}`;
         });
+        document.querySelectorAll("#patternBox .tag").forEach((node) => {
+          if (node.textContent.startsWith("本年：")) node.textContent = `本年：${strengthText}`;
+        });
+        const yearLabel = document.getElementById("yearStrengthLabel");
+        if (yearLabel) yearLabel.textContent = strengthText;
       }
       const set = (id, date) => { const node = document.getElementById(id); if (node && date) node.textContent = simpleStrengthLabel(chartContext, date); };
       set("luckStrengthLabel", luck?.startDate);
-      set("yearStrengthLabel", year ? new Date(year.year, 0, 1, 12) : null);
       set("monthStrengthLabel", month?.startDate);
       set("dayStrengthLabel", day?.date);
     }
