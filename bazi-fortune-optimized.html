@@ -12122,7 +12122,7 @@
         <div class="meta">
           <span class="tag">取格：${escapeHtml(pattern.stem)}</span>
           <span class="tag">本命：${escapeHtml(ctx.baseStrength?.label || ctx.strength.label)}</span>
-          <span class="tag">当前：${escapeHtml(ctx.strength.label)}</span>
+          <span class="tag">本年：${escapeHtml(ctx.currentYearStrengthLabel || simpleStrengthLabel(ctx, new Date(new Date().getFullYear(), 0, 1, 12)))}</span>
           <span class="tag">喜用：${escapeHtml(pattern.useful)}</span>
         </div>
       `;
@@ -13521,6 +13521,7 @@
       ctx.lucks = buildLuckCycles(ctx);
       ctx.dynamicStrength = dynamicStrengthProfile(ctx, new Date());
       ctx.strength = ctx.dynamicStrength.current;
+      ctx.currentYearStrengthLabel = simpleStrengthLabel(ctx, new Date(new Date().getFullYear(), 0, 1, 12));
       ctx.favorable = favorableElements(dayElement, ctx.strength);
       ctx.pattern = buildPattern(ctx);
       chartContext = ctx;
@@ -13535,13 +13536,13 @@
       const englishElements = { 木: "Wood", 火: "Fire", 土: "Earth", 金: "Metal", 水: "Water" };
       const englishStrengths = { 偏旺: "strong", 偏弱: "weak", 从旺: "following strong", 从强: "following strong", 从弱: "following weak", 中和: "balanced" };
       if (currentLanguage === "en") {
-        document.getElementById("summaryTitle").innerHTML = `<span class="no-translate">${escapeHtml(summaryName)}</span>: ${escapeHtml(d.stem)} ${englishElements[dayElement]} day master, natal ${englishStrengths[baseStrength.label] || baseStrength.label}, currently ${englishStrengths[ctx.strength.label] || ctx.strength.label}`;
+        document.getElementById("summaryTitle").innerHTML = `<span class="no-translate">${escapeHtml(summaryName)}</span>: ${escapeHtml(d.stem)} ${englishElements[dayElement]} day master, natal ${englishStrengths[baseStrength.label] || baseStrength.label}, this year ${ctx.currentYearStrengthLabel}`;
         document.getElementById("summaryText").textContent = `Birth pillars: ${y.text}, ${m.text}, ${d.text}, ${h.text}. Events become most visible when ${ctx.favorable.map((element) => englishElements[element]).join(" and ")} are active.`;
       } else {
-        document.getElementById("summaryTitle").innerHTML = `<span class="no-translate">${escapeHtml(summaryName)}</span>：${escapeHtml(d.stem)}${dayElement}日主，本命${strengthDisplay(baseStrength)}，当前${strengthDisplay(ctx.strength)}`;
+        document.getElementById("summaryTitle").innerHTML = `<span class="no-translate">${escapeHtml(summaryName)}</span>：${escapeHtml(d.stem)}${dayElement}日主，本命${strengthDisplay(baseStrength)}，本年${ctx.currentYearStrengthLabel}`;
         document.getElementById("summaryText").textContent = `${y.text}年、${m.text}月、${d.text}日、${h.text}时。${ctx.dynamicStrength.short}`;
       }
-      document.getElementById("balanceTag").textContent = `本命${strengthDisplay(baseStrength)}｜当前${strengthDisplay(ctx.strength)}`;
+      document.getElementById("balanceTag").textContent = `本命${strengthDisplay(baseStrength)}｜本年${ctx.currentYearStrengthLabel}`;
       document.getElementById("metaTags").innerHTML = [
         state.gender,
         state.city || "未填出生地",
@@ -13550,7 +13551,7 @@
         focusLabels[state.focus] || "整体运势",
         `日主：${dayElement}`,
         `本命：${strengthDisplay(baseStrength)}`,
-        `当前：${strengthDisplay(ctx.strength)}`,
+        `本年：${ctx.currentYearStrengthLabel}`,
         `喜用：${ctx.favorable.join("、")}`
       ].map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join("");
 
