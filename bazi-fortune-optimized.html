@@ -13796,6 +13796,8 @@
     document.getElementById("qimenDialogClose").addEventListener("click", closeQimenDialog);
 
     const events2026Dialog = document.getElementById("events2026Dialog");
+    // Keep the global popup outside hidden tool views.
+    document.body.appendChild(events2026Dialog);
     const closeEvents2026Dialog = () => {
       if (!events2026Dialog) return;
       if (typeof events2026Dialog.close === "function") events2026Dialog.close();
