@@ -3057,7 +3057,7 @@
     .natal-inline-symbols > div + div { border-left: 1px solid var(--line); }
     .natal-inline-arrows { position: absolute; left: 0; top: 0; width: 100%; pointer-events: none; overflow: visible; }
     .natal-relation-link { position: absolute; height: 24px; cursor: pointer; pointer-events: auto; color: var(--ink); }
-    .natal-relation-line { position: absolute; left: 7px; right: 7px; top: 13px; height: 3px; border-radius: 3px; background: currentColor; }
+    .natal-relation-line { position: absolute; left: 8px; right: 8px; top: 13px; height: 2.5px; border-radius: 3px; background: currentColor; }
     .natal-relation-head { position: absolute; top: 9px; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
     .natal-relation-head.start { left: 0; border-right: 7px solid currentColor; }
     .natal-relation-head.end { right: 0; border-left: 7px solid currentColor; }
@@ -11888,7 +11888,7 @@
       const add = (indices, label, element, type = "关系") => {
         const stems = indices.map((index) => pillars[index].stem);
         const branches = indices.map((index) => pillars[index].branch);
-        const root = branches.some((branch) => (hiddenStems[branch] || []).some((stem) => element && stemElement[stem] === element));
+        const root = kind === "stem" && branches.some((branch) => (hiddenStems[branch] || []).some((stem) => element && stemElement[stem] === element));
         const stem = branches.some((branch) => (hiddenStems[branch] || []).some((hidden) => stems.includes(hidden)));
         const marks = [root ? "通根" : "", stem ? "通干" : ""].filter(Boolean);
         links.push({ indices, label, detail: `${label}${energySuffix(indices, element, type)}`, marks, color: elementColors[element] || "#8f2637", type });
