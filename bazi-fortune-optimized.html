@@ -8712,7 +8712,7 @@
         patternName = "杂气格";
         patternGod = "杂气";
       }
-      const useful = ctx.favorable.join("、");
+      const useful = (ctx.natalFavorable || favorableElements(ctx.dayElement, ctx.baseStrength || ctx.strength)).join("、");
       const avoid = elementCycle.filter((el) => !ctx.favorable.includes(el)).join("、");
       const levelHints = [];
       const balance = balanceState(ctx.counts);
@@ -12189,7 +12189,7 @@
           <span class="tag">取格：${escapeHtml(pattern.stem)}</span>
           <span class="tag">本命：${escapeHtml(ctx.baseStrength?.label || ctx.strength.label)}</span>
           <span class="tag">本年：${escapeHtml(ctx.currentYearStrengthLabel || simpleStrengthLabel(ctx, new Date(new Date().getFullYear(), 0, 1, 12)))}</span>
-          <span class="tag">喜用：${escapeHtml(pattern.useful)}</span>
+          <span class="tag" title="按本命强弱推算的候选五行，尚未完成调候、格局和通关核验">喜用参考：${escapeHtml(pattern.useful)}</span>
         </div>
       `;
       colorizeGanzhi(box);
@@ -13692,6 +13692,7 @@
         counts,
         dayElement,
         natalStrength: baseStrength,
+        natalFavorable: baseFavorable,
         baseStrength,
         strength: baseStrength,
         favorable: baseFavorable,
@@ -13733,7 +13734,7 @@
         `日主：${dayElement}`,
         `本命：${strengthDisplay(baseStrength)}`,
         `本年：${ctx.currentYearStrengthLabel}`,
-        `喜用：${ctx.favorable.join("、")}`
+        `喜用参考：${ctx.natalFavorable.join("、")}`
       ].map((t) => `<span class="tag">${escapeHtml(t)}</span>`).join("");
 
       renderBars(counts);
