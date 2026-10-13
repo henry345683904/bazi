@@ -9179,6 +9179,77 @@
       return { strong, periods };
     }
 
+    function buildComprehensiveWealth(ctx) {
+      const dayStem = ctx.pillars[2].stem;
+      const dayElement = ctx.dayElement;
+      const allNatalGods = ctx.pillars.flatMap((pillar) => [tenGod(dayStem, pillar.stem), ...(hiddenStems[pillar.branch] || []).map((stem) => tenGod(dayStem, stem))]);
+      const wealthCount = allNatalGods.filter((god) => ["正财", "偏财"].includes(god)).length;
+      const outputCount = allNatalGods.filter((god) => ["食神", "伤官"].includes(god)).length;
+      const natalStrong = ["偏旺", "从强", "从旺"].includes(ctx.baseStrength?.label);
+      const dingCanCarry = dayStem === "丁";
+      let baseScore = 0;
+      const baseReasons = [];
+      if (natalStrong || dingCanCarry) {
+        baseScore += 3;
+        baseReasons.push(dingCanCarry ? "丁火日主具备承财条件" : "本命身强，财星承接力较强");
+      } else {
+        baseScore += 1;
+        baseReasons.push("本命身弱或中和，财星过旺时承财压力较大");
+      }
+      if (wealthCount) {
+        baseScore += Math.min(3, wealthCount * 0.9);
+        baseReasons.push(`本命正偏财${wealthCount}处`);
+      }
+      if (outputCount) {
+        baseScore += Math.min(2, outputCount * 0.7);
+        baseReasons.push(`本命食伤${outputCount}处，具备生财渠道`);
+      }
+      const ghost = buildFiveGhostWealth(ctx);
+      const lu = buildLuWealth(ctx);
+      const strong = buildStrongWealth(ctx);
+      const mainPeriods = [];
+      const latePeriods = [];
+      (ctx.lucks || []).forEach((luck) => {
+        const luckAge = Number(luck.startAge);
+        const luckGod = tenGod(dayStem, luck.pillar.stem);
+        const luckHidden = (hiddenStems[luck.pillar.branch] || []).map((stem) => tenGod(dayStem, stem));
+        const luckSignals = [];
+        let luckScore = 0;
+        if (luck.pillar.branch === ghost.branch) { luckScore += 2.5; luckSignals.push("五鬼运财大运"); }
+        if (luck.pillar.branch === lu.branch) { luckScore += 2.5; luckSignals.push("禄神大运"); }
+        if (["正财", "偏财"].includes(luckGod) || luckHidden.some((god) => ["正财", "偏财"].includes(god))) {
+          if (natalStrong || dingCanCarry) { luckScore += 3; luckSignals.push("身强走财星大运"); }
+          else { luckScore += 1; luckSignals.push("财星大运但承财压力较大"); }
+        }
+        if (luckScore) {
+          const item = { type: "大运", pillar: luck.pillar, age: `${luck.startAge}–${luck.endAge}岁`, years: `${luck.startYear}-${luck.endYear}`, score: luckScore, signals: luckSignals, effects: wealthEnergyEffects(ctx, luck.pillar) };
+          (luckAge >= 80 ? latePeriods : luckAge + 10 < 18 ? null : mainPeriods)?.push(item);
+        }
+        buildFlowYears(ctx, luck).forEach((year) => {
+          const age = luck.startAge + (year.year - luck.startYear);
+          const yearGod = tenGod(dayStem, year.pillar.stem);
+          const yearHidden = (hiddenStems[year.pillar.branch] || []).map((stem) => tenGod(dayStem, stem));
+          const signals = [];
+          let score = 0;
+          if (year.pillar.branch === ghost.branch) { score += 2; signals.push("五鬼运财流年"); }
+          if (year.pillar.branch === lu.branch) { score += 2; signals.push("禄神流年"); }
+          if (["正财", "偏财"].includes(yearGod) || yearHidden.some((god) => ["正财", "偏财"].includes(god))) {
+            if (natalStrong || dingCanCarry) { score += 2.5; signals.push("身强财旺流年"); }
+            else { score += 0.8; signals.push("财星出现但承财压力较大"); }
+          }
+          if (!score) return;
+          const item = { type: "流年", pillar: year.pillar, age: `${age}岁`, years: `${year.year}年`, score, signals, effects: wealthEnergyEffects(ctx, year.pillar) };
+          if (age >= 80) latePeriods.push(item);
+          else if (age >= 18) mainPeriods.push(item);
+        });
+      });
+      const totalScore = baseScore + mainPeriods.reduce((sum, item) => sum + item.score, 0) / Math.max(1, mainPeriods.length) + (ghost.periods.length ? 1 : 0) + (lu.periods.length ? 1 : 0) + (strong.periods.length ? 1.5 : 0);
+      const level = totalScore >= 9 ? "很高" : totalScore >= 7 ? "高" : totalScore >= 5 ? "中高" : totalScore >= 3.5 ? "中等" : "偏低";
+      const strongest = mainPeriods.sort((a, b) => b.score - a.score).slice(0, 8);
+      const lateStrongest = latePeriods.sort((a, b) => b.score - a.score).slice(0, 4);
+      return { level, baseScore, baseReasons, strongest, lateStrongest, ghost, lu, strong };
+    }
+
     function reportCategoryModel(category, ctx) {
       const categoryTitles = {
         overview: "人生总览",
@@ -13135,17 +13206,24 @@
       const result = buildFiveGhostWealth(ctx);
       const luResult = buildLuWealth(ctx);
       const strongResult = buildStrongWealth(ctx);
+      const comprehensive = buildComprehensiveWealth(ctx);
       const periods = result.periods.length
         ? result.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}</p>`).join("")
         : "<p>当前大运和流年中未出现五鬼运财地支。</p>";
       const luPeriods = luResult.periods.length ? luResult.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}</p>`).join("") : "<p>当前大运和流年中未出现禄神地支。</p>";
       const strongPeriods = strongResult.periods.length ? strongResult.periods.map((period) => `<p><strong>${period.type} ${period.pillar}</strong>　${period.age}　${period.years}<br>${escapeHtml(period.effects.join("；") || "财星能量稳定增强")}</p>`).join("") : strongResult.strong ? "<p>身强但当前大运、流年天干未出现正财或偏财。</p>" : "<p>本命身强条件未满足，暂不列入身旺财旺。</p>";
+      const comprehensivePeriods = comprehensive.strongest.length
+        ? comprehensive.strongest.map((period) => `<p><strong>${period.type} ${escapeHtml(period.pillar.text)}</strong>　${escapeHtml(period.age)}　${escapeHtml(period.years)}<br><span>财富能量${period.score.toFixed(1)}分：${escapeHtml(period.signals.join("、"))}${period.effects.length ? `；${escapeHtml(period.effects.join("、"))}` : ""}</span></p>`).join("")
+        : "<p>18岁至80岁之间暂未发现明显发财年份。</p>";
+      const lateWealthText = comprehensive.lateStrongest.length
+        ? comprehensive.lateStrongest.map((period) => `<p><strong>${period.type} ${escapeHtml(period.pillar.text)}</strong>　${escapeHtml(period.age)}　${escapeHtml(period.years)}<br>${escapeHtml(period.signals.join("、"))}</p>`).join("")
+        : "<p>80岁以后未发现明显晚年财运信号。</p>";
       const summaryParts = [
-        strongResult.strong ? "本命身强，遇到正财、偏财大运流年时有承接财星的基础。" : "本命身强条件不足，财星出现时承接力有限。",
+        `财富等级：${comprehensive.level}。${comprehensive.baseReasons.join("；")}。${ctx.pillars[2].stem === "丁" ? "丁火日主不论身强身弱，均按可承财处理。" : ""}`,
         result.periods.length ? `五鬼运财落在${result.branch}，本气为${result.god}，${result.text.replace(`五鬼运财地支本气为${result.god}：`, "")}` : "当前大运流年未出现五鬼运财地支。",
         luResult.periods.length ? `禄神为${luResult.branch}，命中大运流年时收入、工作和赚钱机会增强。` : "当前大运流年未出现禄神地支。"
       ];
-      content.innerHTML = `<details class="five-ghost-details"><summary>综合财运</summary><div class="five-ghost-content">${summaryParts.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}</div></details><details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details><details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(luResult.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${luPeriods}</div></details><details class="five-ghost-details"><summary>身旺财旺</summary><div class="five-ghost-content">${strongPeriods}</div></details>`;
+      content.innerHTML = `<details class="five-ghost-details"><summary>综合财运</summary><div class="five-ghost-content">${summaryParts.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}<p><strong>18岁至80岁发财年份</strong></p>${comprehensivePeriods}<p><strong>晚年财运</strong></p>${lateWealthText}</div></details><details class="five-ghost-details"><summary>五鬼运财</summary><div class="five-ghost-content"><p>月令${escapeHtml(ctx.pillars[1].branch)}顺数第四支为${escapeHtml(result.branch)}，本气十神为${escapeHtml(result.god)}。</p><p>${escapeHtml(result.text)}</p>${periods}</div></details><details class="five-ghost-details"><summary>禄神生财</summary><div class="five-ghost-content"><p>日主禄神为${escapeHtml(luResult.branch)}，禄神出现时收入、工作和赚钱机会增强。</p>${luPeriods}</div></details><details class="five-ghost-details"><summary>身旺财旺</summary><div class="five-ghost-content">${strongPeriods}</div></details>`;
     }
 
     function generate(options = {}) {
