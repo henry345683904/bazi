@@ -13569,13 +13569,19 @@
       const cautionLines = cautionYears
         .sort((a, b) => b.score - a.score || a.age - b.age)
         .slice(0, 1)
-        .map((item) => `${item.age}岁（${item.year}年）：${item.reasons.join("、")}；感情关系容易出现确定、分合、争执或现实选择。`);
+        .map((item) => `${item.age}岁（${item.year}年）：${item.reasons.join("、")}；具体表现为${ctx.state.gender === "女" ? "伴侣关系确定、争执升级、冷处理或重新选择对象" : "异性关系确定、因钱财或第三者问题争执、关系中断或重新选择对象"}。`);
+      const spouseSummary = spouseHits.length
+        ? `${spouseHits.join("、")}，配偶星已经出现在命局的${spouseHits.map((hit) => hit.slice(0, 2)).join("、")}，对应对象容易通过工作、家庭介绍或现实合作进入生活。`
+        : `原局${spouseLabel}未透出，出生信息本身不能锁定配偶出现时间；只有大运或流年再次引动${spouseLabel}时，才列入具体感情年份。`;
+      const spousePalaceSummary = branchRelationObjects(dayBranch, dayBranch).some((item) => item.type !== "同")
+        ? `日支${dayBranch}为配偶宫，原局日支自身存在关系信号。`
+        : `日支${dayBranch}为配偶宫，原局没有直接刑冲破害；关系事件主要由日支被大运、流年合冲刑破害时发生。`;
       const lines = [
-        `配偶星看${spouseLabel}：${spouseHits.length ? spouseHits.join("、") : `原局${spouseLabel}不透，感情机会需要等大运流年引动。`}`,
-        `日支${dayBranch}为配偶宫，${relation(dayStem === ctx.pillars[2].stem ? ctx.dayElement : stemElement[dayStem], branchElement[dayBranch]) === "官星" ? "配偶宫带官杀压力" : "配偶宫按本命五行承载关系"}；感情稳定度还要看运年是否再次引动。`,
-        relationLines.length ? relationLines.slice(0, 3).join(" ") : "原局相邻地支未见明显合化或刑冲破害，关系发展较少由突发冲合主导。",
-        stars.includes("桃花") ? "原局见桃花，异性接触、社交吸引或关系机会更容易被看见。" : "原局未见明显桃花神煞，感情更依赖现实接触、工作往来和运年引动。",
-        stars.includes("天喜") ? "天喜同现，感情互动、确定关系或喜庆事件的信号增强。" : "感情关键仍取决于配偶星、日支和运年合冲的共同变化。"
+        spouseSummary,
+        spousePalaceSummary,
+        relationLines.length ? relationLines.slice(0, 3).join(" ") : "原局四柱相邻地支没有直接合化、刑冲破害，未形成固定的争吵或分离信号。",
+        stars.includes("桃花") ? "原局有桃花：社交、工作往来或异性接触中更容易出现追求和暧昧对象。" : "原局没有桃花：感情对象主要通过工作、家庭介绍或长期现实接触出现。",
+        stars.includes("天喜") ? "原局有天喜：订婚、结婚、确定关系或家庭喜事的信号增强。" : "原局没有天喜：不单独生成结婚或喜庆事件。"
       ];
       const cautionContent = cautionLines.length ? cautionLines : ["18岁至80岁之间暂未发现需要重点留意的感情年份。"];
       content.innerHTML = `<details class="five-ghost-details"><summary>感情综合分析</summary><div class="five-ghost-content">${uniqueList(lines).map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div></details><details class="five-ghost-details"><summary>需注意的年份（${cautionLines.length}项）</summary><div class="five-ghost-content">${cautionContent.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div></details>`;
