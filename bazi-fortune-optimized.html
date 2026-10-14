@@ -2422,14 +2422,28 @@
       box-shadow: none;
     }
 
+    .code-login-button,
     .language-toggle,
     .account-shortcut {
       min-height: 38px;
+      box-sizing: border-box;
       border: 1px solid #d9dedb;
       border-radius: 7px;
       background: #fff;
       color: var(--ink);
       box-shadow: none;
+    }
+
+    .code-login-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 58px;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
     }
 
     .account-shortcut {
@@ -2903,11 +2917,16 @@
         font-size: 11px;
       }
 
+      .code-login-button,
       .language-toggle,
       .account-shortcut {
         min-height: 36px;
         padding: 5px 7px;
         font-size: 11px;
+      }
+
+      .code-login-button {
+        min-width: 36px;
       }
 
       .account-shortcut {
@@ -3385,8 +3404,13 @@
     body.basic-chart-only .top-tools { display: flex !important; flex-direction: column; align-items: flex-end; justify-content: flex-start; width: auto; margin-left: auto; }
     body.basic-chart-only .top-tools > :not(#languageToggle) { display: none !important; }
     body.basic-chart-only #languageToggle { display: block; align-self: flex-start; margin: -6px 0 0; padding: 3px 6px; font-size: 10px; line-height: 1.1; }
-    body.basic-chart-only #codeLoginBtn { display: block !important; }
-    .code-login-button { display: none; padding: 3px 7px; border: 1px solid #d9b5bc; border-radius: 5px; background: #fff7f8; color: #7e3030; font-size: 10px; cursor: pointer; white-space: nowrap; }
+    body.basic-chart-only #codeLoginBtn {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
+    }
+    .code-login-button { display: none; }
     .code-login-dialog { width: min(330px, calc(100% - 28px)); padding: 18px; border: 1px solid #ead0d6; border-radius: 8px; background: #fff; box-shadow: 0 20px 60px rgba(22,53,48,.25); }
     .code-login-dialog::backdrop { background: rgba(28,35,38,.42); }
     .code-login-dialog h2 { margin: 0 0 12px; text-align: center; font-size: 18px; }
@@ -3395,7 +3419,7 @@
     body.basic-chart-only .top-tools { display: grid !important; grid-template-columns: auto auto; gap: 3px 5px; align-items: center; }
     body.basic-chart-only #languageToggle { margin: 0; }
     body.basic-chart-only .top-tools .developer-credit { grid-column: 1 / -1; }
-    body.basic-chart-only .top-tools > #codeLoginBtn { display: block !important; visibility: visible !important; opacity: 1 !important; }
+    body.basic-chart-only .top-tools > #codeLoginBtn { display: inline-flex !important; visibility: visible !important; opacity: 1 !important; }
     @media (max-width: 620px) {
       body.basic-chart-only .topbar { gap: 4px 8px; }
       body.basic-chart-only .topbar .brand { min-width: 0; }
@@ -5222,7 +5246,7 @@
       [attrScope, ...attrScope.querySelectorAll("[placeholder], [title], [aria-label], #shareLink")].forEach(localizeElementAttributes);
       const toggle = document.getElementById("languageToggle");
       if (toggle) {
-        toggle.textContent = currentLanguage === "en" ? "中文" : "English";
+        toggle.textContent = currentLanguage === "en" ? "中文" : "EN";
         toggle.title = currentLanguage === "en" ? "Switch to Chinese" : "切换到英文";
       }
       document.documentElement.lang = currentLanguage === "en" ? "en" : "zh-CN";
