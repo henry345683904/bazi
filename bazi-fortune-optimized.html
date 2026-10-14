@@ -13459,8 +13459,7 @@
         `调整后五行占比：${elementCycle.map((element) => `${element}${(profile.power[element] / Object.values(profile.power).reduce((a, b) => a + b, 0) * 100).toFixed(0)}%`).join("、")}`,
         profile.changes.length ? `本命能量调整：${profile.changes.join("、")}` : "相邻柱未见透干支持的合化或连续三柱成局。"
       ];
-      content.innerHTML = `<p>以下为传统命理健康倾向，不能判断是否患病或替代医学诊断。</p>`
-        + section("五行偏盛偏缺", elementLines)
+      content.innerHTML = section("五行偏盛偏缺", elementLines)
         + section("阴阳、燥湿与流通", [`阳${profile.yang}、阴${8 - profile.yang}：${profile.yang >= 6 ? "偏阳" : profile.yang <= 2 ? "偏阴" : "相对均衡"}`, profile.climate, profile.blocked.length ? `${profile.blocked.join("、")}旺而后续生化五行偏弱，流通衔接不足。` : "未见明显旺气后续生化断点。"])
         + section("七杀部位与宫位", profile.killing.length ? profile.killing : ["本命天干及藏干未见七杀。"])
         + section("刑冲克害牵动", profile.tensions.length ? profile.tensions : ["相邻原局柱未见明显刑冲克破害信号。"]);
