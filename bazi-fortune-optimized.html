@@ -3373,6 +3373,7 @@
     #personal2026Content > p:first-child { margin: 0 0 8px; line-height: 1.4; }
     #personal2026Content > section h3 { margin: 10px 0 6px; }
     #personal2026Content > section p { margin: 6px 0; }
+    #personal2026Content .no-wuxing-color { color: #20292b; }
     .resolve-contact-qr { display: block; width: min(240px, 100%); height: auto; aspect-ratio: 1; box-sizing: border-box; margin: 16px auto; padding: 12px; background: #fff; }
     .events-2026-content { display: grid; gap: 9px; }
     .events-2026-content h3 { margin: 0; color: #8d3838; font-size: 18px; text-align: center; }
@@ -5263,7 +5264,7 @@
           if (!pattern.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
           pattern.lastIndex = 0;
           const parent = node.parentElement;
-          if (!parent || parent.closest(".wuxing-char, script, style, svg, textarea, select, option")) {
+          if (!parent || parent.closest(".wuxing-char, .no-wuxing-color, script, style, svg, textarea, select, option")) {
             return NodeFilter.FILTER_REJECT;
           }
           return NodeFilter.FILTER_ACCEPT;
@@ -9150,6 +9151,7 @@
     function familyFlowPredictions(ctx, targetPillar) {
       const peopleByPillar = ["长辈、父系亲属或家族事务", "父母、兄弟姐妹或共同生活的家人", "伴侣或亲密关系", "子女、晚辈或下属"];
       const lines = [];
+
       ctx.pillars.forEach((pillar, index) => {
         branchRelationObjects(targetPillar.branch, pillar.branch).forEach((relationItem) => {
           const people = peopleByPillar[index];
@@ -13638,15 +13640,30 @@
       const family = ["父亲、母亲及长辈", "父母、兄弟姐妹", "本人和配偶", "子女"];
       const effects = { 冲: "生活安排突变、搬迁或关系波动", 刑: "事情反复、压力和纠纷", 破: "原有计划或合作中断", 害: "隐性矛盾、误会或事情受阻" };
       const lines = [];
+      const luckAssessment = (element) => {
+        const signs = [];
+        const luckElements = [stemElement[luck.pillar.stem], ...(hiddenStems[luck.pillar.branch] || []).map((stem) => stemElement[stem])];
+        const support = uniqueList(luckElements.filter((source) => source === element || generatesElement(source, element)));
+        const pressure = uniqueList(luckElements.filter((source) => controlsElement(source, element)));
+        const restrainsFire = luckElements.includes("水");
+        if (support.length) signs.push(`${luck.pillar.text}大运中${support.join("、")}生扶${element}，增加受作用五行的承受力`);
+        if (pressure.length) signs.push(`大运${pressure.join("、")}同时克${element}，与流年作用叠加`);
+        if (restrainsFire) signs.push("大运水气制约流年丙火，存在缓冲作用");
+        const transformation = stemCombineElement(year.stem, luck.pillar.stem);
+        if (transformation) signs.push(`丙${luck.pillar.stem}合${transformation}，合化条件仍按原局根气判断`);
+        if (!signs.length) signs.push(`大运${luck.pillar.text}未直接生扶或克制${element}`);
+        const result = pressure.length && !support.length && !restrainsFire ? "运年克制叠加，压力增强" : (support.length || restrainsFire) && !pressure.length ? "有生扶或制火缓冲，压力减轻" : "生扶与克制并存，不能判作单向加重";
+        return `${signs.join("；")}。综合：${result}。`;
+      };
       ctx.pillars.forEach((pillar, index) => {
         const relations = branchRelationObjects(year.branch, pillar.branch).filter((item) => effects[item.type]);
         if (pillar.branch === "午" && !relations.some((item) => item.type === "刑")) relations.push({ type: "刑" });
         relations.forEach((item) => {
           const organ = baziDiseaseOrganByElement(branchElement[pillar.branch]);
-          lines.push(`午${pillar.branch}${item.type}，落在${pillarLabels[index]}：传统宫位涉及${family[index]}，事件倾向为${effects[item.type]}。身体象意对应${slots[index + 4].area}，五行对应${organ}；这些对应不能据此认定本人或亲属会患病或发生事故。`);
+          lines.push(`午${pillar.branch}${item.type}，落在${pillarLabels[index]}：传统宫位涉及${family[index]}，事件倾向为${effects[item.type]}。身体象意对应${slots[index + 4].area}，五行对应${organ}。${luckAssessment(branchElement[pillar.branch])}`);
         });
         if (stemClashPairs[year.stem] === pillar.stem || stemControlType(year.stem, pillar.stem) === "克") {
-          lines.push(`流年丙火${stemClashPairs[year.stem] === pillar.stem ? "冲克" : "克"}${pillar.stem}，落在${pillarLabels[index]}天干；传统身体象意为${slots[index].area}、${baziStemOrgan(pillar.stem)}。是否形成压力还需结合大运${luck.pillar.text}及原局生扶，不能单凭此项判断疾病。`);
+          lines.push(`流年丙火${stemClashPairs[year.stem] === pillar.stem ? "冲克" : "克"}${pillar.stem}，落在${pillarLabels[index]}天干；传统身体象意为${slots[index].area}、${baziStemOrgan(pillar.stem)}。${luckAssessment(stemElement[pillar.stem])}`);
         }
       });
       sections.push({ title: "原局宫位与身体对应", lines: lines.length ? uniqueList(lines) : ["2026午支未与原局构成直接刑冲破害，丙干也未形成上述冲克；不生成相应风险条目。"] });
@@ -13966,7 +13983,7 @@
     const personal2026Dialog = document.getElementById("personal2026Dialog");
     document.getElementById("personal2026Btn").addEventListener("click", () => {
       const content = document.getElementById("personal2026Content");
-      content.innerHTML = chartContext ? `<p><strong>${escapeHtml(chartContext.state.name || "命主")} · 2026丙午年</strong></p>${buildPersonal2026Notice(chartContext).map((section) => `<section><h3>${escapeHtml(section.title)}</h3>${section.lines.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</section>`).join("")}` : "<p>请先在首页输入生日并生成命盘。</p>";
+      content.innerHTML = chartContext ? `<p><strong>${escapeHtml(chartContext.state.name || "命主")} · 2026丙午年</strong></p>${buildPersonal2026Notice(chartContext).map((section) => `<section><h3>${escapeHtml(section.title)}</h3>${section.lines.map((line) => `<p>${escapeHtml(line).replace(/脖子|子女/g, (word) => `<span class="no-wuxing-color">${word}</span>`)}</p>`).join("")}</section>`).join("")}` : "<p>请先在首页输入生日并生成命盘。</p>";
       personal2026Dialog.showModal();
     });
     document.getElementById("personal2026Close").addEventListener("click", () => personal2026Dialog.close());
