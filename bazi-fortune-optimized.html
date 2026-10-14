@@ -12791,6 +12791,10 @@
 
     async function saveQueryRecord(record) {
       if (!accountFeatureEnabled) return;
+      if (activeRecordCode) {
+        try { await saveCodeRecord(record); showToast("已保存云端记录"); } catch (_) { showToast("云端记录保存失败，请先启用代码记录表"); }
+        return;
+      }
       const client = getSupabaseClient();
       if (!client || !supabaseSession?.user || !record) return;
       try {
@@ -13194,6 +13198,23 @@
     let activeRecordCode = localStorage.getItem("baziActiveRecordCode") || "";
     function basicRecordsKey() {
       return /^\d{6}$/.test(activeRecordCode) ? `baziBasicRecords-code-${activeRecordCode}` : "baziBasicRecords";
+    }
+    async function loadCodeRecords() {
+      const client = getSupabaseClient();
+      if (!client || !/^\d{6}$/.test(activeRecordCode)) return [];
+      const { data, error } = await client.from("bazi_code_records").select("record_data").eq("access_code", activeRecordCode).eq("tool", "bazi").order("updated_at", { ascending: false }).limit(80);
+      if (error) throw error;
+      const records = (data || []).map((row) => normalizeRecordObject(row.record_data)).filter(Boolean);
+      localStorage.setItem(basicRecordsKey(), JSON.stringify(records));
+      renderBasicSavedRecords();
+      return records;
+    }
+    async function saveCodeRecord(record) {
+      const client = getSupabaseClient();
+      if (!client || !/^\d{6}$/.test(activeRecordCode) || !record) return false;
+      const { error } = await client.from("bazi_code_records").upsert({ access_code: activeRecordCode, tool: "bazi", signature: record.signature, title: record.title, birth_text: record.birthText, record_data: record, updated_at: new Date().toISOString() }, { onConflict: "access_code,tool,signature" });
+      if (error) throw error;
+      return true;
     }
     function readBasicRecords() {
       try {
@@ -14058,7 +14079,7 @@
       codeLoginDialog.showModal();
       document.getElementById("codeLoginInput").focus();
     });
-    const submitRecordCode = () => {
+    const submitRecordCode = async () => {
       const code = document.getElementById("codeLoginInput").value.trim();
       if (!/^\d{6}$/.test(code)) { showToast("请输入6位数字代码"); return; }
       activeRecordCode = code;
@@ -14067,7 +14088,8 @@
       updateCodeLoginButton();
       renderBasicSavedRecords();
       codeLoginDialog.close();
-      showToast("已登录，记录保存在本浏览器中");
+      try { await loadCodeRecords(); showToast("已登录，云端记录已加载"); }
+      catch (_) { showToast("已登录，但云端记录表尚未启用"); }
     };
     document.getElementById("codeLoginSubmit").addEventListener("click", submitRecordCode);
     document.getElementById("codeLoginCancel").addEventListener("click", () => codeLoginDialog.close());
