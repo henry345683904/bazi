@@ -3385,6 +3385,16 @@
     body.basic-chart-only .top-tools { display: flex !important; flex-direction: column; align-items: flex-end; justify-content: flex-start; width: auto; margin-left: auto; }
     body.basic-chart-only .top-tools > :not(#languageToggle) { display: none !important; }
     body.basic-chart-only #languageToggle { display: block; align-self: flex-start; margin: -6px 0 0; padding: 3px 6px; font-size: 10px; line-height: 1.1; }
+    body.basic-chart-only #codeLoginBtn { display: block !important; }
+    .code-login-button { display: none; padding: 3px 7px; border: 1px solid #d9b5bc; border-radius: 5px; background: #fff7f8; color: #7e3030; font-size: 10px; cursor: pointer; white-space: nowrap; }
+    .code-login-dialog { width: min(330px, calc(100% - 28px)); padding: 18px; border: 1px solid #ead0d6; border-radius: 8px; background: #fff; box-shadow: 0 20px 60px rgba(22,53,48,.25); }
+    .code-login-dialog::backdrop { background: rgba(28,35,38,.42); }
+    .code-login-dialog h2 { margin: 0 0 12px; text-align: center; font-size: 18px; }
+    .code-login-dialog input { display: block; width: 100%; box-sizing: border-box; padding: 9px; border: 1px solid #d8e1de; border-radius: 6px; text-align: center; letter-spacing: 4px; font-size: 18px; }
+    .code-login-actions { display: flex; justify-content: center; gap: 8px; margin-top: 12px; }
+    body.basic-chart-only .top-tools { display: grid !important; grid-template-columns: auto auto; gap: 3px 5px; align-items: center; }
+    body.basic-chart-only #languageToggle { margin: 0; }
+    body.basic-chart-only .top-tools .developer-credit { grid-column: 1 / -1; }
     @media (max-width: 620px) {
       body.basic-chart-only .topbar { gap: 4px 8px; }
       body.basic-chart-only .topbar .brand { min-width: 0; }
@@ -3413,6 +3423,7 @@
           <button type="button" data-display-mode-choice="daily" title="只看具体预测">日常版</button>
           <button type="button" data-display-mode-choice="pro" title="显示完整分析过程">专业版</button>
         </div>
+        <button class="code-login-button" type="button" id="codeLoginBtn">登录</button>
         <button class="language-toggle" type="button" id="languageToggle" title="切换中英文">English</button>
         <span class="developer-credit no-translate">Henry开发免费使用</span>
         <button class="account-shortcut" type="button" id="accountToggle" aria-expanded="false" title="账号与查询记录">
@@ -3423,6 +3434,12 @@
         <div class="source-note professional-only">四柱、五行、十神、合冲刑破害合并分析。</div>
       </div>
     </header>
+    <dialog class="code-login-dialog" id="codeLoginDialog" aria-labelledby="codeLoginTitle">
+      <h2 id="codeLoginTitle">代码登录</h2>
+      <p class="hint">输入自定义6位数字代码，保存和查看对应八字记录。</p>
+      <input id="codeLoginInput" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="6位数字" autocomplete="off">
+      <div class="code-login-actions"><button class="btn" type="button" id="codeLoginSubmit">登录</button><button class="btn secondary" type="button" id="codeLoginCancel">取消</button></div>
+    </dialog>
 
     <div class="primary-controls">
       <nav class="tool-switch" id="toolSwitch" aria-label="测算类型">
@@ -13173,15 +13190,19 @@
     }
 
     let editingBasicRecordId = null;
+    let activeRecordCode = localStorage.getItem("baziActiveRecordCode") || "";
+    function basicRecordsKey() {
+      return /^\d{6}$/.test(activeRecordCode) ? `baziBasicRecords-code-${activeRecordCode}` : "baziBasicRecords";
+    }
     function readBasicRecords() {
       try {
-        const records = JSON.parse(localStorage.getItem("baziBasicRecords") || "[]");
+        const records = JSON.parse(localStorage.getItem(basicRecordsKey()) || "[]");
         return Array.isArray(records) ? records.map((record, i) => ({ ...record, _id: record._id || `legacy-${i}` })) : [];
       } catch (_) { return []; }
     }
 
     function writeBasicRecords(records) {
-      localStorage.setItem("baziBasicRecords", JSON.stringify(records));
+      localStorage.setItem(basicRecordsKey(), JSON.stringify(records));
       renderBasicSavedRecords();
     }
 
@@ -14015,6 +14036,41 @@
     document.getElementById("qimenDialogClose").addEventListener("click", closeQimenDialog);
 
     const events2026Dialog = document.getElementById("events2026Dialog");
+    const codeLoginDialog = document.getElementById("codeLoginDialog");
+    const codeLoginButton = document.getElementById("codeLoginBtn");
+    const updateCodeLoginButton = () => {
+      codeLoginButton.textContent = activeRecordCode ? "退出" : "登录";
+      codeLoginButton.title = activeRecordCode ? `当前代码：${activeRecordCode}，点击退出` : "输入6位代码登录";
+    };
+    updateCodeLoginButton();
+    codeLoginButton.addEventListener("click", () => {
+      if (activeRecordCode) {
+        activeRecordCode = "";
+        localStorage.removeItem("baziActiveRecordCode");
+        editingBasicRecordId = null;
+        updateCodeLoginButton();
+        renderBasicSavedRecords();
+        showToast("已退出代码登录");
+        return;
+      }
+      document.getElementById("codeLoginInput").value = "";
+      codeLoginDialog.showModal();
+      document.getElementById("codeLoginInput").focus();
+    });
+    const submitRecordCode = () => {
+      const code = document.getElementById("codeLoginInput").value.trim();
+      if (!/^\d{6}$/.test(code)) { showToast("请输入6位数字代码"); return; }
+      activeRecordCode = code;
+      localStorage.setItem("baziActiveRecordCode", code);
+      editingBasicRecordId = null;
+      updateCodeLoginButton();
+      renderBasicSavedRecords();
+      codeLoginDialog.close();
+      showToast("已登录，记录保存在本浏览器中");
+    };
+    document.getElementById("codeLoginSubmit").addEventListener("click", submitRecordCode);
+    document.getElementById("codeLoginCancel").addEventListener("click", () => codeLoginDialog.close());
+    document.getElementById("codeLoginInput").addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); submitRecordCode(); } });
     const personal2026Dialog = document.getElementById("personal2026Dialog");
     document.getElementById("personal2026Btn").addEventListener("click", () => {
       const content = document.getElementById("personal2026Content");
