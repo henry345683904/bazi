@@ -5277,6 +5277,11 @@
         let lastIndex = 0;
         node.nodeValue.replace(pattern, (char, index) => {
           if (index > lastIndex) fragment.append(document.createTextNode(node.nodeValue.slice(lastIndex, index)));
+          if (char === "未" && node.nodeValue.slice(index, index + 2) === "未婚") {
+            fragment.append(document.createTextNode(char));
+            lastIndex = index + char.length;
+            return char;
+          }
           const element = ganzhiElement[char];
           const span = document.createElement("span");
           span.className = `wuxing-char ${elementClasses[element]}`;
