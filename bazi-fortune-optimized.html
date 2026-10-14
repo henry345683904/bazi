@@ -3424,6 +3424,29 @@
       body.basic-chart-only .topbar { gap: 4px 8px; }
       body.basic-chart-only .topbar .brand { min-width: 0; }
       body.basic-chart-only .developer-credit { font-size: 7px; }
+      body.basic-chart-only .topbar {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        padding-top: 8px;
+        padding-bottom: 4px;
+      }
+      body.basic-chart-only .topbar .brand {
+        grid-column: 1;
+        grid-row: 1;
+      }
+      body.basic-chart-only .topbar .top-tools {
+        grid-column: 2;
+        grid-row: 1;
+      }
+      body.basic-chart-only .events-2026-trigger {
+        position: static;
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-self: center;
+        transform: none;
+        margin: 2px 0 0;
+      }
     }
   </style>
 </head>
