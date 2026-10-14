@@ -13622,8 +13622,8 @@
       const content = block?.querySelector(".analysis-content");
       if (!content) return;
       const result = buildWealthVaultPeriods(ctx);
-      const periods = result.periods.length ? result.periods.map((period) => `<p><strong>${escapeHtml(`${period.type} ${period.pillar}`)}</strong>　${escapeHtml(period.age)}　${escapeHtml(period.years)}<br>${escapeHtml(period.reasons.join("；"))}。传统命理对应积存资金释放、资产变现、回款或收入增加的可能，不等于必然发财。</p>`).join("") : "<p>18岁至70岁之间暂未发现财库被大运或流年冲开的阶段。</p>";
-      content.insertAdjacentHTML("beforeend", `<details class="five-ghost-details"><summary>财库冲开</summary><div class="five-ghost-content"><p>命主财星为${escapeHtml(result.wealthElement)}，财库为${escapeHtml(result.vault)}。</p>${periods}</div></details>`);
+      const periods = result.periods.length ? result.periods.map((period) => `<p><strong>${escapeHtml(`${period.type} ${period.pillar}`)}</strong>　${escapeHtml(period.age)}　${escapeHtml(period.years)}<br>${escapeHtml(period.reasons.join("；"))}。</p>`).join("") : "<p>18岁至70岁之间暂未发现财库被大运或流年冲开的阶段。</p>";
+      content.insertAdjacentHTML("beforeend", `<details class="five-ghost-details"><summary>财库冲开</summary><div class="five-ghost-content"><p>命主财星为${escapeHtml(result.wealthElement)}，财库为${escapeHtml(result.vault)}。</p><p>传统命理对应积存资金释放、资产变现、回款或收入增加的可能，不等于必然发财。</p>${periods}</div></details>`);
     }
 
     function buildPersonal2026Notice(ctx) {
