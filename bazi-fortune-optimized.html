@@ -13626,14 +13626,18 @@
       const luck = luckForDate(ctx, new Date(2026, 6, 1, 12));
       const slots = baziBodySlots(ctx);
       const sections = [];
-      const zodiac = ctx.pillars[0].branch;
-      const taiSui = { 午: "值太岁、午午自刑", 子: "冲太岁", 丑: "害太岁", 卯: "破太岁" };
-      sections.push({ title: "犯太岁", lines: [taiSui[zodiac] ? `出生年支${zodiac}：2026年${taiSui[zodiac]}。下方按实际受作用的原局宫位细分。` : `出生年支${zodiac}与午未构成值、冲、刑、害、破太岁关系。`] });
+      const taiSui = { 午: "值太岁、刑太岁（午午自刑）", 子: "冲太岁（子午冲）", 丑: "害太岁（丑午害）", 卯: "破太岁（卯午破）" };
+      const taiSuiLines = ctx.pillars.flatMap((pillar, index) => taiSui[pillar.branch]
+        ? [`${pillarLabels[index]}地支${pillar.branch}：2026年${taiSui[pillar.branch]}。`]
+        : []);
+      sections.push({ title: "犯太岁（四柱）", lines: taiSuiLines.length ? taiSuiLines : ["原局年、月、日、时四柱地支均未与2026午形成值、刑、冲、害、破太岁关系。"] });
       const family = ["父亲、母亲及长辈", "父母、兄弟姐妹", "本人和配偶", "子女"];
       const effects = { 冲: "生活安排突变、搬迁或关系波动", 刑: "事情反复、压力和纠纷", 破: "原有计划或合作中断", 害: "隐性矛盾、误会或事情受阻" };
       const lines = [];
       ctx.pillars.forEach((pillar, index) => {
-        branchRelationObjects(year.branch, pillar.branch).filter((item) => effects[item.type]).forEach((item) => {
+        const relations = branchRelationObjects(year.branch, pillar.branch).filter((item) => effects[item.type]);
+        if (pillar.branch === "午" && !relations.some((item) => item.type === "刑")) relations.push({ type: "刑" });
+        relations.forEach((item) => {
           const organ = baziDiseaseOrganByElement(branchElement[pillar.branch]);
           lines.push(`午${pillar.branch}${item.type}，落在${pillarLabels[index]}：传统宫位涉及${family[index]}，事件倾向为${effects[item.type]}。身体象意对应${slots[index + 4].area}，五行对应${organ}；这些对应不能据此认定本人或亲属会患病或发生事故。`);
         });
