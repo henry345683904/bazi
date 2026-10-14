@@ -13465,6 +13465,25 @@
         + section("刑冲克害牵动", profile.tensions.length ? profile.tensions : ["相邻原局柱未见明显刑冲克破害信号。"]);
     }
 
+    function build2026LoveImageRules(ctx) {
+      const dayStem = ctx.pillars[2].stem;
+      const dayBranch = ctx.pillars[2].branch;
+      const matches = [];
+      if (ctx.state.gender === "女" && ["庚", "辛"].includes(dayStem)) {
+        matches.push("若未婚：2026年有遇到适合发展稳定关系对象的机会，恋爱关系可能进一步确定。");
+      }
+      if (ctx.state.gender === "男" && ["壬", "癸"].includes(dayStem)) {
+        matches.push("若未婚：2026年有遇到适合发展稳定关系对象的机会，恋爱关系可能进一步确定。");
+      }
+      if (["未", "午", "戌", "寅"].includes(dayBranch) || dayStem === "辛") {
+        matches.push("若未婚且已有稳定对象：2026年有确定婚期、订婚或登记结婚的机会。");
+      }
+      if (["子", "丑", "卯"].includes(dayBranch)) {
+        matches.push(`若已婚：2026年午与配偶宫${dayBranch}${{ 子: "冲", 丑: "害", 卯: "破" }[dayBranch]}，夫妻之间可能出现矛盾、争吵或关系波动。`);
+      }
+      return uniqueList(matches);
+    }
+
     function renderBasicLovePrediction(ctx) {
       const block = Array.from(document.querySelectorAll("#basicAnalysisView .basic-analysis-block"))
         .find((item) => item.querySelector("h3")?.textContent.includes("感情"));
@@ -13553,6 +13572,10 @@
       ];
       const cautionContent = cautionLines.length ? cautionLines : ["18岁至80岁之间暂未发现需要重点留意的感情年份。"];
       content.innerHTML = `<details class="five-ghost-details"><summary>感情综合分析</summary><div class="five-ghost-content">${uniqueList(lines).map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div></details><details class="five-ghost-details"><summary>需注意的年份（${cautionLines.length}项）</summary><div class="five-ghost-content">${cautionContent.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div></details>`;
+      const love2026 = build2026LoveImageRules(ctx);
+      if (love2026.length) {
+        content.insertAdjacentHTML("afterbegin", `<details class="five-ghost-details"><summary>2026感情</summary><div class="five-ghost-content">${love2026.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div></details>`);
+      }
     }
 
     function buildWealthVaultPeriods(ctx) {
