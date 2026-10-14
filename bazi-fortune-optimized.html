@@ -13228,18 +13228,29 @@
       renderBasicSavedRecords();
     }
 
+    function basicRecordState(record) {
+      const nestedState = record?.state;
+      return nestedState && typeof nestedState === "object" && !Array.isArray(nestedState)
+        ? nestedState
+        : (record || {});
+    }
+
     function renderBasicSavedRecords() {
       const list = document.getElementById("basicSavedList");
       list.replaceChildren();
       const records = readBasicRecords().sort((a, b) => Number(!!b._pinned) - Number(!!a._pinned));
       records.forEach((state) => {
+        const profile = basicRecordState(state);
         const row = document.createElement("div");
         row.className = "basic-record-row";
         const button = document.createElement("button");
         button.type = "button";
         button.className = "basic-record-open";
-        button.textContent = `${state._pinned ? "★ " : ""}${state.name || "命主"} ${state.birthDate} ${state.birthTime}`;
-        button.addEventListener("click", () => { editingBasicRecordId = null; applyState(state); generate(); });
+        const name = profile.name || "命主";
+        const birthDate = profile.birthDate || "--";
+        const birthTime = profile.birthTime || "--";
+        button.textContent = `${state._pinned ? "★ " : ""}${name} ${birthDate} ${birthTime}`;
+        button.addEventListener("click", () => { editingBasicRecordId = null; applyState(profile); generate(); });
         row.append(button);
         const actions = [
           [state._pinned ? "取消置顶" : "置顶常用", "pin", () => writeBasicRecords(readBasicRecords().map((r) => r._id === state._id ? { ...r, _pinned: !r._pinned } : r))],
