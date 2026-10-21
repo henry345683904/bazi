@@ -3682,6 +3682,7 @@
           <div class="xipan-table-wrap" id="xipanMainTable"></div>
           <div class="xipan-attention" id="xipanAttention"></div>
           <div class="xipan-table-wrap" id="xipanFineTable"></div>
+          <div id="fineCombinationSummary" hidden style="font-size:11px;line-height:1.5;padding:4px 2px;overflow-wrap:anywhere"></div>
           <div class="mingpan-grid" id="mingpanGrid"></div>
           <div>
             <div class="small-title flow-title">大运 <small id="luckStrengthLabel"></small></div>
@@ -12209,6 +12210,38 @@
           return stars.length ? stars.map((star) => `<span class="chart-star">${escapeHtml(star)}</span>`).join('<span class="star-separator">、</span>') : "无明显";
         })}
       </table>`;
+      colorizeGanzhi(target);
+      renderFineCombinations(columns);
+    }
+
+    function renderFineCombinations(columns) {
+      const target = document.getElementById("fineCombinationSummary");
+      const lines = [];
+      const label = (col, kind) => `${col.name}${col.item.pillar[kind]}`;
+      for (let i = 0; i < columns.length; i++) {
+        for (let j = i + 1; j < columns.length; j++) {
+          // Preserve adjacency rules for the four natal pillars.
+          if (i >= 4 && j !== i + 1) continue;
+          const left = columns[i], right = columns[j];
+          const a = left.item.pillar, b = right.item.pillar;
+          const element = stemCombineElement(a.stem, b.stem);
+          if (element) lines.push(`${label(left, "stem")}与${label(right, "stem")}合${element}`);
+          branchRelationObjects(a.branch, b.branch).filter((r) => r.type === "合").forEach((r) => {
+            lines.push(`${label(left, "branch")}与${label(right, "branch")}合${r.element || ""}`);
+          });
+        }
+      }
+      [...branchMeetings, ...branchCombinations].forEach((group) => {
+        const matches = group.branches.map((branch) => columns.filter((col) => col.item.pillar.branch === branch));
+        if (matches.some((items) => !items.length)) return;
+        for (const a of matches[0]) for (const b of matches[1]) for (const c of matches[2]) {
+          const indices = [a, b, c].map((col) => columns.indexOf(col)).sort((x, y) => x - y);
+          if (indices[0] >= 4 && indices[2] - indices[0] !== 2) continue;
+          lines.push(`${[a, b, c].map((col) => label(col, "branch")).join("、")}：${group.name}`);
+        }
+      });
+      target.hidden = !lines.length;
+      target.textContent = lines.length ? `细盘合化：${[...new Set(lines)].join("；")}` : "";
       colorizeGanzhi(target);
     }
 
