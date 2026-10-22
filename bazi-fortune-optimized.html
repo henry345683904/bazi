@@ -13300,7 +13300,16 @@
     function readBasicRecords() {
       try {
         const records = JSON.parse(localStorage.getItem(basicRecordsKey()) || "[]");
-        return Array.isArray(records) ? records.map((record, i) => ({ ...record, _id: record._id || `legacy-${i}` })) : [];
+        if (!Array.isArray(records)) return [];
+        const seen = new Set();
+        return records.filter((record) => {
+          const state = basicRecordState(record);
+          if (!state.birthDate || !state.birthTime) return false;
+          const key = querySignature(state);
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        }).map((record, i) => ({ ...record, _id: record._id || record.id || `legacy-${i}` }));
       } catch (_) { return []; }
     }
 
@@ -14006,7 +14015,7 @@
       document.getElementById("quickHint").innerHTML = `<strong>近期应事：</strong>${escapeHtml(focusTips[state.focus] || focusTips.overall)}${escapeHtml(shortSentences(tenGodScenario(yearGod, ctx), 1))}`;
       refreshLanguage(document.body);
       setBirthFormCollapsed(true);
-      if (!options.skipHistory) {
+      if (options.saveHistory === true && !options.skipHistory) {
         try {
           const records = readBasicRecords();
           const signature = (item) => querySignature(basicRecordState(item));
@@ -14016,7 +14025,7 @@
           editingBasicRecordId = null;
         } catch (_) {}
       }
-      if (!options.skipHistory) saveCurrentQueryRecord(ctx);
+      if (options.saveHistory === true && !options.skipHistory) saveCurrentQueryRecord(ctx);
       if (!options.skipNavigation) {
         const basicChartMode = document.body.classList.contains("basic-chart-only");
         setBaziView(basicChartMode ? "chart" : "fortune", true, true);
@@ -14060,7 +14069,7 @@
 
     document.getElementById("baziForm").addEventListener("submit", (event) => {
       event.preventDefault();
-      generate();
+      generate({ saveHistory: true });
     });
 
     document.getElementById("languageToggle").addEventListener("click", () => {
