@@ -7,6 +7,35 @@
   <link rel="apple-touch-icon" sizes="180x180" href="myfate-icon-180.png?v=20261021">
   <link rel="icon" type="image/png" sizes="192x192" href="myfate-icon-192.png?v=20261021">
   <meta name="apple-mobile-web-app-title" content="八字运势">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <script>
+    (() => {
+      const version = "20261023-records-3";
+      let checking = false;
+      async function checkAppVersion() {
+        if (checking || document.hidden || !/^https?:$/.test(location.protocol)) return;
+        checking = true;
+        try {
+          const response = await fetch(`app-version.json?t=${Date.now()}`, { cache: "no-store" });
+          if (!response.ok) return;
+          const latest = await response.json();
+          if (latest.version && latest.version !== version) {
+            const url = new URL(location.href);
+            if (url.searchParams.get("appVersion") !== latest.version) {
+              url.searchParams.set("appVersion", latest.version);
+              location.replace(url.href);
+            }
+          }
+        } catch (_) {
+          // Offline use should not prevent opening the chart.
+        } finally { checking = false; }
+      }
+      checkAppVersion();
+      window.addEventListener("pageshow", checkAppVersion);
+      document.addEventListener("visibilitychange", checkAppVersion);
+    })();
+  </script>
   <meta name="description" content="离线八字与数字预测工具，输入资料后直接生成今日、本周、本月和今年可能发生的事。">
   <style>
     :root {
