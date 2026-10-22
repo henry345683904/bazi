@@ -13331,7 +13331,7 @@
         const birthDate = profile.birthDate || "--";
         const birthTime = profile.birthTime || "--";
         button.textContent = `${state._pinned ? "★ " : ""}${name} ${birthDate} ${birthTime}`;
-        button.addEventListener("click", () => { editingBasicRecordId = null; applyState(profile); generate(); });
+        button.addEventListener("click", () => { editingBasicRecordId = null; applyState(profile); generate({ skipHistory: true }); });
         row.append(button);
         const actions = [
           [state._pinned ? "取消置顶" : "置顶常用", "pin", () => writeBasicRecords(readBasicRecords().map((r) => r._id === state._id ? { ...r, _pinned: !r._pinned } : r))],
@@ -14009,7 +14009,7 @@
       if (!options.skipHistory) {
         try {
           const records = readBasicRecords();
-          const signature = (item) => JSON.stringify(Object.fromEntries(Object.entries(item).filter(([key]) => !key.startsWith("_")).sort(([a], [b]) => a.localeCompare(b))));
+          const signature = (item) => querySignature(basicRecordState(item));
           const existing = records.find((item) => item._id === editingBasicRecordId) || records.find((item) => signature(item) === signature(state));
           const saved = { ...state, _id: existing?._id || crypto.randomUUID(), _pinned: existing?._pinned || false };
           writeBasicRecords([saved, ...records.filter((item) => item._id !== saved._id && signature(item) !== signature(state))]);
@@ -14377,7 +14377,7 @@
       if (state) {
         setActiveTool("bazi");
         applyState(state);
-        generate();
+        generate({ skipHistory: true });
         return;
       }
       const now = new Date();
