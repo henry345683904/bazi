@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <script>
     (() => {
-      const version = "20261023-zoom-1";
+      const version = "20261030-login-1";
       let checking = false;
       async function checkAppVersion() {
         if (checking || document.hidden || !/^https?:$/.test(location.protocol)) return;
@@ -13322,7 +13322,8 @@
     }
     async function loadCodeRecords() {
       const client = getSupabaseClient();
-      if (!client || !/^\d{6}$/.test(activeRecordCode)) return [];
+      if (!client) throw new Error("云端连接组件未加载，请检查网络后重试");
+      if (!/^\d{6}$/.test(activeRecordCode)) return [];
       const { data, error } = await client.from("bazi_code_records").select("record_data").eq("access_code", activeRecordCode).eq("tool", "bazi").order("updated_at", { ascending: false }).limit(80);
       if (error) throw error;
       const records = (data || []).map((row) => normalizeRecordObject(row.record_data)).filter(Boolean);
@@ -14230,7 +14231,7 @@
       renderBasicSavedRecords();
       codeLoginDialog.close();
       try { await loadCodeRecords(); showToast("已登录，云端记录已加载"); }
-      catch (_) { showToast("已登录，但云端记录表尚未启用"); }
+      catch (error) { showToast(`代码已登录，本机记录可用；云端暂时无法连接，跨设备记录未加载。${error?.code === "42P01" ? "请检查云端记录表。" : "请检查网络或 Supabase 项目运行状态。"}`); }
     };
     document.getElementById("codeLoginSubmit").addEventListener("click", submitRecordCode);
     document.getElementById("codeLoginCancel").addEventListener("click", () => codeLoginDialog.close());
