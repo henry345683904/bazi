@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <script>
     (() => {
-      const version = "20261102-selected-stars-1";
+      const version = "20261102-qimen-popup-1";
       let checking = false;
       async function checkAppVersion() {
         if (checking || document.hidden || !/^https?:$/.test(location.protocol)) return;
@@ -3485,6 +3485,10 @@
       body.basic-chart-only .brand-title-row h1 { font-size: clamp(19px, 6vw, 26px); }
       body.basic-chart-only .events-2026-trigger { padding: 3px 6px; font-size: 9px; }
     }
+    #quickQimenDialog .qimen-palace .professional-only { display: flex !important; }
+    #quickQimenDialog .qimen-board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #quickQimenDialog .qimen-palace { min-width: 0; padding: 6px; }
+    #quickQimenDialog .qimen-palace p { font-size: 11px; overflow-wrap: anywhere; }
     @media (pointer: coarse) {
       body input, body select, body textarea { font-size: 16px !important; }
     }
@@ -3545,6 +3549,7 @@
         <div class="panel-title">
           <h2>出生资料</h2>
           <div class="panel-title-actions">
+            <button class="analysis-notice-button" type="button" id="quickQimenBtn">奇门起局</button>
             <span class="tag">离线生成</span>
             <button class="icon-command" type="button" id="toggleBirthFormBtn" title="收起出生资料" aria-label="收起出生资料" aria-expanded="true">
               <i data-lucide="chevron-up" aria-hidden="true"></i>
@@ -7819,6 +7824,35 @@
       refreshLanguage(document.getElementById("qimenTool"));
       colorizeGanzhi(document.getElementById("qimenTool"));
       if (openDialog) openQimenDialog();
+    }
+
+    function openQuickQimen() {
+      generateQimenChart({ skipHistory: true, date: beijingDateNow() });
+      let dialog = document.getElementById("quickQimenDialog");
+      if (!dialog) {
+        dialog = document.createElement("dialog");
+        dialog.id = "quickQimenDialog";
+        dialog.className = "qimen-dialog";
+        dialog.setAttribute("aria-label", "奇门遁甲起局");
+        document.body.append(dialog);
+        dialog.addEventListener("click", (event) => {
+          if (event.target === dialog || event.target.closest("[data-close-qimen]")) dialog.close();
+          const palace = event.target.closest("[data-palace]");
+          if (palace) {
+            showQimenPalaceDetail(Number(palace.dataset.palace), false);
+            dialog.querySelector(".quick-qimen-detail").innerHTML = document.getElementById("qimenDetail").innerHTML;
+            dialog.querySelectorAll("[data-palace]").forEach((button) => button.classList.toggle("active", button === palace));
+          }
+        });
+      }
+      dialog.innerHTML = `<div class="qimen-dialog-shell">
+        <div class="qimen-dialog-head"><div><h2 style="margin:0">奇门遁甲</h2><small>${escapeHtml(currentQimenChart.timeText)} 北京时间</small></div><button type="button" class="qimen-dialog-close" data-close-qimen aria-label="关闭">×</button></div>
+        <div class="qimen-dialog-body"><div class="qimen-board">${document.getElementById("qimenBoard").innerHTML}</div>
+        <h3>解释</h3><div>${document.getElementById("qimenSummary").innerHTML}</div>
+        <div class="quick-qimen-detail">${document.getElementById("qimenDetail").innerHTML}</div></div></div>`;
+      colorizeGanzhi(dialog);
+      refreshLanguage(dialog);
+      dialog.showModal();
     }
 
     function generateQimenChart(eventOrOptions) {
@@ -14202,6 +14236,7 @@
       showToast("已清空手机号");
     });
 
+    document.getElementById("quickQimenBtn").addEventListener("click", openQuickQimen);
     document.getElementById("qimenGenerateBtn").addEventListener("click", generateQimenChart);
 
     document.getElementById("qimenBoard").addEventListener("click", (event) => {
