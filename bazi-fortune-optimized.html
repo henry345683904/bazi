@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <script>
     (() => {
-      const version = "20261102-qimen-chaibu-1";
+      const version = "20261102-remove-offline-1";
       let checking = false;
       async function checkAppVersion() {
         if (checking || document.hidden || !/^https?:$/.test(location.protocol)) return;
@@ -3550,7 +3550,6 @@
           <h2>出生资料</h2>
           <div class="panel-title-actions">
             <button class="analysis-notice-button" type="button" id="quickQimenBtn">奇门起局</button>
-            <span class="tag">离线生成</span>
             <button class="icon-command" type="button" id="toggleBirthFormBtn" title="收起出生资料" aria-label="收起出生资料" aria-expanded="true">
               <i data-lucide="chevron-up" aria-hidden="true"></i>
             </button>
