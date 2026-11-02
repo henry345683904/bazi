@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <script>
     (() => {
-      const version = "20261030-login-1";
+      const version = "20261102-selected-stars-1";
       let checking = false;
       async function checkAppVersion() {
         if (checking || document.hidden || !/^https?:$/.test(location.protocol)) return;
@@ -12251,10 +12251,10 @@
         })}
       </table>`;
       colorizeGanzhi(target);
-      renderFineCombinations(columns);
+      renderFineCombinations(columns, ctx);
     }
 
-    function renderFineCombinations(columns) {
+    function renderFineCombinations(columns, ctx) {
       const target = document.getElementById("fineCombinationSummary");
       const lines = [];
       for (let i = 0; i < columns.length; i++) {
@@ -12279,8 +12279,21 @@
           lines.push(`${group.branches.join("")}${group.name.replace(/局$/, "")}`);
         }
       });
-      target.hidden = !lines.length;
-      target.textContent = [...new Set(lines)].join("；");
+      const dayColumn = columns.find((col) => col.name === "流日");
+      const stars = dayColumn ? compactStars(symbolicStars(ctx, dayColumn.item.pillar)) : [];
+      target.hidden = !lines.length && !stars.length;
+      target.replaceChildren();
+      if (lines.length) {
+        const combinations = document.createElement("div");
+        combinations.textContent = [...new Set(lines)].join("；");
+        target.append(combinations);
+      }
+      if (stars.length) {
+        const starLine = document.createElement("div");
+        starLine.className = "no-wuxing-color";
+        starLine.textContent = `流日神煞：${stars.join("、")}`;
+        target.append(starLine);
+      }
       colorizeGanzhi(target);
     }
 
