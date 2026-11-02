@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <script>
     (() => {
-      const version = "20261102-qimen-popup-1";
+      const version = "20261102-qimen-chaibu-1";
       let checking = false;
       async function checkAppVersion() {
         if (checking || document.hidden || !/^https?:$/.test(location.protocol)) return;
@@ -7363,6 +7363,16 @@
     }
 
     function qimenPillars(date) {
+      if (window.Solar) {
+        const lunar = window.Solar.fromYmdHms(date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()).getLunar();
+        const eight = lunar.getEightChar();
+        eight.setSect(2);
+        const pillar = (text) => {
+          for (let i = 0; i < 60; i++) if (ganzhi(i).text === text) return ganzhi(i);
+          throw new Error("奇门干支换算失败");
+        };
+        return { year: pillar(eight.getYear()), month: pillar(eight.getMonth()), day: pillar(eight.getDay()), hour: pillar(eight.getTime()) };
+      }
       const year = yearPillar(date, 8);
       const month = monthPillar(date, stems.indexOf(year.stem), 8);
       const day = dayPillar(date);
@@ -7372,23 +7382,31 @@
 
     function qimenYinYangDun(date) {
       const year = date.getFullYear();
-      const summerSolstice = new Date(year, 5, 21, 0, 0, 0);
-      const winterSolstice = new Date(year, 11, 21, 0, 0, 0);
+      const summerSolstice = solarTermDate(year, 11, 8);
+      const winterSolstice = solarTermDate(year, 23, 8);
       return date >= winterSolstice || date < summerSolstice ? "阳遁" : "阴遁";
     }
 
     function qimenYuan(day) {
-      const index = Math.floor((day.index % 15) / 5);
+      const headBranch = ((day.index - day.index % 5) % 12 + 12) % 12;
+      const index = [0, 3, 6, 9].includes(headBranch) ? 0 : [2, 5, 8, 11].includes(headBranch) ? 1 : 2;
       return { index, label: ["上元", "中元", "下元"][index] };
     }
 
     function qimenJu(date, dun, yuan) {
-      const termIndex = monthIndexBySolarTerm(date, 8);
-      const yangBase = [8, 9, 1, 4, 5, 6, 7, 8, 9, 1, 2, 3];
-      const yinBase = [2, 1, 9, 6, 5, 4, 3, 2, 1, 9, 8, 7];
-      const base = (dun === "阳遁" ? yangBase : yinBase)[termIndex] || 1;
-      const offset = yuan.index * (dun === "阳遁" ? 1 : -1);
-      return ((base + offset - 1 + 18) % 9) + 1;
+      const table = [[2,5,8],[3,6,9],[8,5,2],[9,6,3],[1,7,4],[3,9,6],
+        [4,1,7],[5,2,8],[4,1,7],[5,2,8],[6,3,9],[9,3,6],
+        [8,2,5],[7,1,4],[2,5,8],[1,4,7],[9,3,6],[7,1,4],
+        [6,9,3],[5,8,2],[6,9,3],[5,8,2],[4,7,1],[1,7,4]];
+      return table[qimenTermIndex(date)][yuan.index];
+    }
+
+    function qimenTermIndex(date) {
+      let index = 23;
+      for (let i = 0; i < 24; i++) {
+        if (date >= solarTermDate(date.getFullYear(), i, 8)) index = i;
+      }
+      return index;
     }
 
     function qimenEarthPlate(ju, dun) {
@@ -7613,17 +7631,29 @@
       const dun = qimenYinYangDun(date);
       const yuan = qimenYuan(pillars.day);
       const ju = qimenJu(date, dun, yuan);
-      const termIndex = monthIndexBySolarTerm(date);
+      const termIndex = qimenTermIndex(date);
       const { plate: earth, sequence } = qimenEarthPlate(ju, dun);
       const hourBranchIndex = branches.indexOf(pillars.hour.branch);
-      const doorSeed = (hourBranchIndex + ju + yuan.index) % qimenMoveOrder.length;
-      const starSeed = (pillars.day.index + ju + yuan.index) % qimenMoveOrder.length;
-      const godSeed = (pillars.hour.index + ju) % qimenGodOrder.length;
-      const sky = qimenSkyPlate(earth, sequence, (pillars.hour.index + ju + yuan.index) % sequence.length);
-      const doorMap = qimenRotatedMap(qimenMoveOrder, qimenDoorOrder, doorSeed, qimenCenterDoor);
-      const starValues = qimenMoveOrder.map((palace) => qimenStarBase[palace]);
-      const starMap = qimenRotatedMap(qimenMoveOrder, starValues, starSeed, qimenStarBase[5]);
-      const godMap = qimenRotatedMap(qimenMoveOrder, qimenGodOrder, godSeed, qimenGodOrder[(godSeed + 4) % qimenGodOrder.length]);
+      const xunStem = ["戊", "己", "庚", "辛", "壬", "癸"][Math.floor(pillars.hour.index / 10)];
+      const palaceOf = (stem) => Number(Object.keys(earth).find((key) => earth[key] === stem));
+      const lodge = (palace) => palace === 5 ? 2 : palace;
+      const chiefOrigin = palaceOf(xunStem);
+      const chiefDestination = lodge(palaceOf(qimenXunShouStem(pillars.hour)));
+      const shift = qimenMoveOrder.indexOf(chiefDestination) - qimenMoveOrder.indexOf(lodge(chiefOrigin));
+      const sky = { 5: earth[5] }, starMap = { 5: qimenStarBase[5] };
+      qimenMoveOrder.forEach((origin, i) => {
+        const destination = qimenMoveOrder[(i + shift + 8) % 8];
+        sky[destination] = earth[origin];
+        starMap[destination] = qimenStarBase[origin];
+      });
+      const direction = dun === "阳遁" ? 1 : -1;
+      const envoyDestination = lodge(((chiefOrigin - 1 + direction * (pillars.hour.index % 10)) % 9 + 9) % 9 + 1);
+      const doorShift = qimenMoveOrder.indexOf(envoyDestination) - qimenMoveOrder.indexOf(lodge(chiefOrigin));
+      const doorMap = { 5: qimenCenterDoor }, godMap = { 5: { name: "", plain: "", event: "" } };
+      qimenMoveOrder.forEach((origin, i) => {
+        doorMap[qimenMoveOrder[(i + doorShift + 8) % 8]] = qimenDoorOrder[i];
+        godMap[qimenMoveOrder[(qimenMoveOrder.indexOf(chiefDestination) + direction * i + 8) % 8]] = qimenGodOrder[i];
+      });
       const cells = qimenDisplayOrder.map((palace) => {
         const info = qimenPalaceInfo[palace];
         const cell = {
@@ -7633,6 +7663,7 @@
           star: starMap[palace],
           god: godMap[palace],
           skyStem: sky[palace],
+          hostedSkyStem: starMap[palace] === qimenStarBase[2] ? earth[5] : "",
           earthStem: earth[palace]
         };
         cell.dailyPredictions = qimenPalaceDailyPredictions(cell);
@@ -7644,7 +7675,7 @@
       const dayRole = qimenRoleForPillar(cells, pillars.day, "日干", "self");
       const hourRole = qimenRoleForPillar(cells, pillars.hour, "时干", "matter");
       const chiefCell = cells.find((cell) => cell.god.name === "值符") || cells.slice().sort((a, b) => b.score - a.score)[0];
-      const envoyDoor = qimenDoorOrder[(hourBranchIndex + doorSeed) % qimenDoorOrder.length];
+      const envoyDoor = qimenDoorOrder[qimenMoveOrder.indexOf(lodge(chiefOrigin))];
       const keyCells = [];
       [dayRole.cell, hourRole.cell, chiefCell, cells.find((cell) => cell.door.name === "生门"), cells.find((cell) => cell.door.name === "开门"), cells.find((cell) => ["伤门", "惊门", "死门"].includes(cell.door.name) || ["白虎", "玄武"].includes(cell.god.name))].forEach((cell) => {
         if (cell && !keyCells.some((item) => item.palace === cell.palace)) keyCells.push(cell);
@@ -7655,7 +7686,7 @@
         dun,
         yuan,
         ju,
-        termName: qimenSolarTermNames[termIndex] || "节气",
+        termName: solarTermNames[termIndex] || "节气",
         cells,
         dayRole,
         hourRole,
@@ -7758,7 +7789,7 @@
             </div>
             <div class="qimen-line professional-only">
               <span>${escapeHtml(cell.god.name)}</span>
-              <span>${escapeHtml(cell.skyStem)}/${escapeHtml(cell.earthStem)}</span>
+              <span>${escapeHtml(cell.skyStem)}${cell.hostedSkyStem ? `（禽${escapeHtml(cell.hostedSkyStem)}）` : ""}/${escapeHtml(cell.earthStem)}</span>
             </div>
             <p class="qimen-prediction">${escapeHtml(cell.cardPrediction)}</p>
           </button>
@@ -7846,7 +7877,7 @@
         });
       }
       dialog.innerHTML = `<div class="qimen-dialog-shell">
-        <div class="qimen-dialog-head"><div><h2 style="margin:0">奇门遁甲</h2><small>${escapeHtml(currentQimenChart.timeText)} 北京时间</small></div><button type="button" class="qimen-dialog-close" data-close-qimen aria-label="关闭">×</button></div>
+        <div class="qimen-dialog-head"><div><h2 style="margin:0">奇门遁甲</h2><small>${escapeHtml(currentQimenChart.timeText)}</small><br><small>时家转盘 · 拆补 · ${currentQimenChart.dun}${currentQimenChart.ju}局 · ${currentQimenChart.yuan.label}</small><br><small>${Object.values(currentQimenChart.pillars).map((p) => escapeHtml(p.text)).join("　")}</small></div><button type="button" class="qimen-dialog-close" data-close-qimen aria-label="关闭">×</button></div>
         <div class="qimen-dialog-body"><div class="qimen-board">${document.getElementById("qimenBoard").innerHTML}</div>
         <h3>解释</h3><div>${document.getElementById("qimenSummary").innerHTML}</div>
         <div class="quick-qimen-detail">${document.getElementById("qimenDetail").innerHTML}</div></div></div>`;
