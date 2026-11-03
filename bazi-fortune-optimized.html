@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <script>
     (() => {
-      const version = "20261102-remove-offline-1";
+      const version = "20261103-personality-1";
       let checking = false;
       async function checkAppVersion() {
         if (checking || document.hidden || !/^https?:$/.test(location.protocol)) return;
@@ -12418,6 +12418,37 @@
       colorizeGanzhi(grid);
     }
 
+    function dayPillarPersonality(ctx) {
+      const day = ctx.pillars[2];
+      const stemTraits = {
+        甲: "表达直接，重原则和承诺，做事希望有清晰方向；被反复催促时容易坚持自己的节奏。",
+        乙: "善于观察气氛，表达讲究分寸，遇事愿意寻找转圜；内心有自己的标准，不一定当场说出来。",
+        丙: "表达热情，喜欢把想法讲清楚，行动积极；情绪上来时反应快，容易先表态再调整。",
+        丁: "关注细节和他人的反应，重视关系中的回应；想法细腻，遇到在意的事容易反复琢磨。",
+        戊: "重稳定和兑现，做决定倾向先看是否可靠；认定之后不轻易改变，也不喜欢计划频繁被打乱。",
+        己: "习惯照顾具体事务，考虑周全，愿意承担细节；容易把别人的需求也放进自己的责任范围。",
+        庚: "讲效率和边界，遇到问题倾向直接处理；不喜欢含糊拖延，说话有时比本意更硬。",
+        辛: "注重品质、体面和细节，对不合理的地方敏感；不愿随意将就，也在意自己的付出是否被尊重。",
+        壬: "思路开放，适应变化快，愿意接触不同的人和办法；选择多时容易同时推进几件事。",
+        癸: "观察细致，先了解情况再表达，重视安全感；对语气和细微变化敏感，心事不一定直接透露。"
+      };
+      const seatedTraits = {
+        比肩: "亲近后仍重视独立和平等，希望自己的选择得到尊重；遇到分歧倾向自己拿主意。",
+        劫财: "重朋友和参与感，遇事愿意出头，也容易被竞争激起行动；亲密相处中不喜欢被管得太紧。",
+        食神: "相处偏自然随和，重生活感受，喜欢用陪伴、分享和具体照顾表达善意。",
+        伤官: "有自己的见解，擅长发现问题，表达欲较强；熟悉之后更容易直言，对生硬命令接受度低。",
+        正财: "看重实际行动、秩序和兑现，倾向用付出与承担维系关系；对长期安排比较认真。",
+        偏财: "重人情和机会，社交中较灵活，喜欢主动张罗；不喜欢关系过于单调或拘束。",
+        正官: "在意规则、责任和评价，通常愿意约束自己；相处中希望彼此有交代、有分寸。",
+        七杀: "内在警觉性和行动力较强，面对压力倾向迅速作决定；信任建立之前容易保持防备。",
+        正印: "重理解、照顾和精神上的认同，愿意先听再回应；相处中希望获得稳定支持。",
+        偏印: "思考独立，关注不易被注意的细节，需要独处空间；兴趣和信任往往有自己的筛选标准。"
+      };
+      const mainStem = hiddenStems[day.branch]?.[0];
+      const seatedGod = mainStem ? tenGod(day.stem, mainStem) : "";
+      return `<details class="five-ghost-details"><summary>性格分析 · ${escapeHtml(day.text)}日柱</summary><div class="five-ghost-content"><p>${escapeHtml(stemTraits[day.stem] || "")}</p><p>${escapeHtml(seatedTraits[seatedGod] || "")}</p><p style="font-size:11px;color:var(--muted)">按日干与日支本气作传统命理倾向解读，不是心理测评结论。</p></div></details>`;
+    }
+
     function renderPatternBox(ctx) {
       const pattern = ctx.pattern || buildPattern(ctx);
       const box = document.getElementById("patternBox");
@@ -12432,6 +12463,7 @@
           <span class="tag">本年：${escapeHtml(ctx.currentYearStrengthLabel || simpleStrengthLabel(ctx, new Date(new Date().getFullYear(), 0, 1, 12)))}</span>
           <span class="tag" id="selectedFlowFavorable" title="按原局与所选大运、流年的动态强弱推算，不计流月流日">喜用：${escapeHtml(ctx.favorable.join("、"))}</span>
         </div>
+        ${dayPillarPersonality(ctx)}
       `;
       colorizeGanzhi(box);
     }
